@@ -1,5 +1,5 @@
 // Define the dimensions of the chart
-const margin = { top: 40, right: 30, bottom: 60, left: 80 }
+const margin = { top: 40, right: 30, bottom: 100, left: 80 }
 const width = 960 - margin.left - margin.right;
 const height = 500 - margin.top - margin.bottom;
 
@@ -34,7 +34,7 @@ d3.csv("../data_processing/output/sorted_emissions_one_year.csv").then(data => {
         .attr("transform", "translate(0," + height + ")")
         .call(d3.axisBottom(x))
         .selectAll("text")
-        .attr("transform", "rotate(-45)")
+        .attr("transform", "rotate(-30)")
         .style("text-anchor", "end");
 
     svg.append("g")
@@ -53,8 +53,8 @@ d3.csv("../data_processing/output/sorted_emissions_one_year.csv").then(data => {
 
     svg.append("text")
         .attr("text-anchor", "end")
-        .attr("x", -margin.left + 20)
-        .attr("y", -20)
+        .attr("x", -margin.left + 40)
+        .attr("y", -50)
         .attr("dy", "1em")
         .attr("transform", "rotate(-90)")
         .text("Annual CO₂ emissions (per capita)");

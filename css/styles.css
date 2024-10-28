@@ -4,26 +4,17 @@
     box-sizing: border-box;
 }
 
-body, html {
-    height: 100%;
+body {
     font-family: Arial, sans-serif;
 }
-
-body {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-image: url('../img/background.jpg'); 
-    background-size: cover;
-    background-position: center;
+#chart {
+    margin: 20px;
 }
-
-h1 {
-    color: #570063;
-    font-size: 2.5rem;
-}
-
-h4 {
-    color: #9909ac;
-    align-items: center;
+.tooltip {
+    position: absolute;
+    background-color: white;
+    border: 1px solid #d3d3d3;
+    padding: 5px;
+    pointer-events: none;
+    opacity: 0;
 }

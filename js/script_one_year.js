@@ -4,7 +4,7 @@ const width = 960 - margin.left - margin.right;
 const height = 500 - margin.top - margin.bottom;
 
 // Create the SVG container
-const svg = d3.select("#chart")
+const svg = d3.select("#chart-one-year")
     .append("svg")
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
@@ -15,6 +15,7 @@ const svg = d3.select("#chart")
 // Load the CSV data
 d3.csv("../data_processing/output/sorted_emissions_one_year.csv").then(data => {
     // Parse the data to convert numeric fields
+    data = data.slice(0, 20);
     data.forEach(d => {
         d["Annual CO₂ emissions (per capita)"] = +d["Annual CO₂ emissions (per capita)"];
     });

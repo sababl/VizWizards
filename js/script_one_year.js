@@ -11,9 +11,14 @@ const svg = d3.select("#chart-one-year")
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
+const tooltip = d3.select("body").append("div")
+    .attr("class", "tooltip") // You can define styles for this class in CSS
+    .style("opacity", 0)
+    .style("position", "absolute")
+    .style("pointer-events", "none");
 
 // Load the CSV data
-d3.csv("../data_processing/output/sorted_emissions_one_year.csv").then(data => {
+d3.csv("data_processing/output/sorted_emissions_one_year.csv").then(data => {
     // Parse the data to convert numeric fields
     data = data.slice(0, 20);
     data.forEach(d => {
@@ -49,7 +54,20 @@ d3.csv("../data_processing/output/sorted_emissions_one_year.csv").then(data => {
         .attr("y", d => y(d["Annual CO₂ emissions (per capita)"]))
         .attr("width", x.bandwidth())
         .attr("height", d => height - y(d["Annual CO₂ emissions (per capita)"]))
-        .attr("fill", "steelblue");
+        .attr("fill", "steelblue")
+        .on("mouseover", function(event, d) {
+            tooltip.transition()
+                .duration(200)
+                .style("opacity", .9);
+            tooltip.html("Country: " + d.Entity + "<br/>Value: " + d["Annual CO₂ emissions (per capita)"])
+                .style("left", (event.pageX) + "px")
+                .style("top", (event.pageY - 28) + "px");
+        })
+        .on("mouseout", function(event, d) {
+            tooltip.transition()
+                .duration(500)
+                .style("opacity", 0);
+        });
 
     svg.append("text")
         .attr("text-anchor", "end")

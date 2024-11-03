@@ -1,17 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>D3 Bar Chart</title>
     <script src="https://d3js.org/d3.v7.min.js"></script>
-    <link rel="stylesheet" href="css/styles.css">
-</head>
-<body>
-    <h1>CO₂ emissions per capita, 1996</h1>
-    <div id="chart-one-year"></div>
-    <script src="./js/script_one_year.js"></script></body>
-    <div id="chart-one-decade"></div>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
+  <body
+    style="display: flex; justify-content: center; flex-direction: column"
+    ng-app="myApp"
+  >
+    <div ng-controller="saba">
+      <h1 ng-bind="name"></h1>
+      <div id="chart-one-year"></div>
+      <div id="chart-stacked"></div>
 
-</body>
+    </div>
+
+    <div ng-controller="melika">
+      <h1 ng-bind="name"></h1>
+    </div>
+
+    <div ng-controller="romena">
+      <h1 ng-bind="name"></h1>
+    </div>
+
+    <script src="js/master.js"></script>
+  </body>
 </html>

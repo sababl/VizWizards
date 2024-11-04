@@ -16,7 +16,7 @@ app.controller("saba", function ($scope) {
       .domain([1, 5])
       .range(["#fde0ef", "#c51b8a"]),
   };
-  
+
   const margin = { top: 60, right: 50, bottom: 150, left: 100 };
   const width = 1280 - margin.left - margin.right;
   const height = 800 - margin.top - margin.bottom;
@@ -233,16 +233,25 @@ app.controller("saba", function ($scope) {
       });
   });
 
-  d3.csv("data_processing/output/continent_summary_1996.csv").then(function(data) {
+  d3.csv("data_processing/output/continent_summary_1996.csv").then(function (
+    data
+  ) {
     // Process data for each country field
-    const countries = ["country_1", "country_2", "country_3", "country_4", "country_5", "other"];
-    const processedData = data.map(d => {
-        const continentData = { continent: d.Continent };
-        countries.forEach(country => {
-            // Extract the value for each country, assuming the format {'CountryName': value}
-            continentData[country] = parseFloat(d[country].match(/\d+\.\d+/)[0]);
-        });
-        return continentData;
+    const countries = [
+      "country_1",
+      "country_2",
+      "country_3",
+      "country_4",
+      "country_5",
+      "other",
+    ];
+    const processedData = data.map((d) => {
+      const continentData = { continent: d.Continent };
+      countries.forEach((country) => {
+        // Extract the value for each country, assuming the format {'CountryName': value}
+        continentData[country] = parseFloat(d[country].match(/\d+\.\d+/)[0]);
+      });
+      return continentData;
     });
 
     // Set up the chart dimensions
@@ -251,63 +260,162 @@ app.controller("saba", function ($scope) {
     const margin = { top: 20, right: 20, bottom: 20, left: 70 };
 
     // Create scales
-    const xScale = d3.scaleLinear()
-        .domain([0, 150])
-        .range([0, width - margin.left - margin.right]);
+    const xScale = d3
+      .scaleLinear()
+      .domain([0, 150])
+      .range([0, width - margin.left - margin.right]);
 
-    const yScale = d3.scaleBand()
-        .domain(processedData.map(d => d.continent))
-        .range([0, height - margin.top - margin.bottom])
-        .padding(0.1);
+    const yScale = d3
+      .scaleBand()
+      .domain(processedData.map((d) => d.continent))
+      .range([0, height - margin.top - margin.bottom])
+      .padding(0.1);
 
     // Function to draw a chart
     function drawChart(containerId, dataKey, title) {
-        // Create a container for the chart
-        const container = d3.select("#chart-container")
-            .append("div")
-            .attr("class", "chart")
-            .style("width", `${width}px`);
+      // Create a container for the chart
+      const container = d3
+        .select("#chart-container")
+        .append("div")
+        .attr("class", "chart")
+        .style("width", `${width}px`);
 
-        // Add title
-        container.append("div")
-            .attr("class", "chart-title")
-            .text(title);
+      // Add title
+      container.append("div").attr("class", "chart-title").text(title);
 
-        // Create the SVG container
-        const svg = container.append("svg")
-            .attr("width", width)
-            .attr("height", height);
+      // Create the SVG container
+      const svg = container
+        .append("svg")
+        .attr("width", width)
+        .attr("height", height);
 
-        // Create the chart group
-        const chart = svg.append("g")
-            .attr("transform", `translate(${margin.left}, ${margin.top})`);
+      // Create the chart group
+      const chart = svg
+        .append("g")
+        .attr("transform", `translate(${margin.left}, ${margin.top})`);
 
-        // Draw the bars
-        chart.selectAll(".bar")
-            .data(processedData)
-            .enter()
-            .append("rect")
-            .attr("class", "bar")
-            .attr("y", d => yScale(d.continent))
-            .attr("height", yScale.bandwidth())
-            .attr("width", d => xScale(d[dataKey]) * 0.5) 
-            .attr("fill", d => colorScales[d.continent](5));
+      // Draw the bars
+      chart
+        .selectAll(".bar")
+        .data(processedData)
+        .enter()
+        .append("rect")
+        .attr("class", "bar")
+        .attr("y", (d) => yScale(d.continent))
+        .attr("height", yScale.bandwidth())
+        .attr("width", (d) => xScale(d[dataKey]) * 0.5)
+        .attr("fill", (d) => colorScales[d.continent](5));
 
-        // Add x-axis
-        chart.append("g")
-            .attr("transform", `translate(0, ${height - margin.top - margin.bottom})`)
-            .call(d3.axisBottom(xScale));
+      // Add x-axis
+      chart
+        .append("g")
+        .attr(
+          "transform",
+          `translate(0, ${height - margin.top - margin.bottom})`
+        )
+        .call(d3.axisBottom(xScale));
 
-        // Add y-axis
-        chart.append("g")
-            .call(d3.axisLeft(yScale));
+      // Add y-axis
+      chart.append("g").call(d3.axisLeft(yScale));
     }
 
     // Generate a chart for each country
-    countries.forEach(country => {
-        drawChart("#chart-container", country, country);
+    countries.forEach((country) => {
+      drawChart("#chart-container", country, country);
     });
 
+    drawStackedChart(processedData);
+
+    // Function to draw the stacked bar chart
+    function drawStackedChart(data) {
+      const stackedWidth = 600;
+      const stackedHeight = 400;
+      const stackedMargin = { top: 20, right: 20, bottom: 40, left: 100 };
+
+      // Calculate the total for each continent
+      data.forEach((d) => {
+        d.total = countries.reduce((sum, country) => sum + d[country], 0);
+      });
+
+      // Normalize data for stacked chart
+      const normalizedData = processedData.map(d => {
+        const total = countries.reduce((sum, country) => sum + d[country], 0);
+        let x0 = 0;
+        return {
+            continent: d.continent,
+            categories: countries.map((country, index) => {
+                const value = (d[country] / total) * 100;  // Convert to percentage
+                const obj = {
+                    country,
+                    x0,
+                    x1: x0 + value,
+                    color: colorScales[d.continent](index + 1) // Apply color scale based on index
+                };
+                x0 += value;
+                return obj;
+            })
+        };
+    });
+
+      // Define x and y scales
+      const xStackedScale = d3
+        .scaleLinear()
+        .domain([0, 100])
+        .range([0, stackedWidth - stackedMargin.left - stackedMargin.right]);
+      const yStackedScale = d3
+        .scaleBand()
+        .domain(data.map((d) => d.continent))
+        .range([0, stackedHeight - stackedMargin.top - stackedMargin.bottom])
+        .padding(0.1);
+
+      // Create the SVG container for the stacked chart
+      const svgStacked = d3
+        .select("#stacked-chart")
+        .append("svg")
+        .attr("width", stackedWidth)
+        .attr("height", stackedHeight);
+
+      // Create the chart group
+      const chartStacked = svgStacked
+        .append("g")
+        .attr(
+          "transform",
+          `translate(${stackedMargin.left}, ${stackedMargin.top})`
+        );
+
+      // Draw stacked bars
+      normalizedData.forEach(d => {
+        chartStacked.selectAll(`.bar-${d.continent}`)
+            .data(d.categories)
+            .enter()
+            .append("rect")
+            .attr("class", `bar-${d.continent}`)
+            .attr("y", () => yStackedScale(d.continent))
+            .attr("height", yStackedScale.bandwidth())
+            .attr("x", d => xStackedScale(d.x0))
+            .attr("width", d => xStackedScale(d.x1) - xStackedScale(d.x0))
+            .attr("fill", d => d.color);  // Use custom color for each section
+    });
+
+      // Add x-axis
+      chartStacked
+        .append("g")
+        .attr(
+          "transform",
+          `translate(0, ${
+            stackedHeight - stackedMargin.top - stackedMargin.bottom
+          })`
+        )
+        .call(
+          d3
+            .axisBottom(xStackedScale)
+            .ticks(10)
+            .tickFormat((d) => d + "%")
+        );
+
+      // Add y-axis
+      chartStacked.append("g").call(d3.axisLeft(yStackedScale));
+    }
   });
 });
 

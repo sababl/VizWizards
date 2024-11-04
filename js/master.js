@@ -3,9 +3,9 @@ app.controller("saba", function ($scope) {
   // codaye saba inja bashe
   $scope.name = "saba";
 
-  const margin = { top: 40, right: 30, bottom: 100, left: 80 };
-  const width = 960 - margin.left - margin.right;
-  const height = 500 - margin.top - margin.bottom;
+  const margin = { top: 60, right: 50, bottom: 150, left: 100 };
+  const width = 1280 - margin.left - margin.right;
+  const height = 800 - margin.top - margin.bottom;
 
   //
   // Create the SVG container
@@ -43,10 +43,7 @@ app.controller("saba", function ($scope) {
 
       const y = d3
         .scaleLinear()
-        .domain([
-          0,
-          d3.max(data, (d) => d["Annual CO₂ emissions (per capita)"]),
-        ])
+        .domain([0, d3.max(data, (d) => d["Annual CO₂ emissions (per capita)"])])
         .nice()
         .range([height, 0]);
 
@@ -107,6 +104,7 @@ app.controller("saba", function ($scope) {
         .text("Country");
     }
   );
+
 // Create an SVG container
 const svg_stacked_chart = d3
   .select("#chart-stacked")
@@ -182,7 +180,19 @@ d3.csv("data_processing/output/continent_summary_1996.csv").then(data => {
           .attr("y", y(yOffset + country.value))
           .attr("width", x.bandwidth())
           .attr("height", height - y(country.value))
-          .attr("fill", colorScale(index + 1));
+          .attr("fill", colorScale(index + 1))
+          .on("mouseover", function (event) {
+            tooltip.transition().duration(200).style("opacity", 0.9);
+            tooltip
+              .html(
+                "Continent: " + d.continent + "<br/>Country: " + country.name + "<br/>Value: " + country.value
+              )
+              .style("left", event.pageX + "px")
+              .style("top", event.pageY - 28 + "px");
+          })
+          .on("mouseout", function () {
+            tooltip.transition().duration(500).style("opacity", 0);
+          });
         yOffset += country.value;
       });
     });

@@ -1,0 +1,7 @@
+Continent,annual_co2,country_1,country_2,country_3,country_4,country_5,other
+Africa,54.149598433,{'Libya': 11.193171},{'South Africa': 8.144183},{'Gabon': 5.1152673},{'Algeria': 3.4514637},{'Seychelles': 3.1030302},"{'Other', 23.142483233000004}"
+Asia,321.327206415,{'Qatar': 65.039116},{'Kuwait': 30.309591},{'United Arab Emirates': 29.31201},{'Bahrain': 25.315393},{'Brunei': 19.198332},"{152.15276441499998, 'Other'}"
+Europe,325.47293897,{'Luxembourg': 22.283075},{'Denmark': 14.250308},{'Estonia': 13.273492},{'Czechia': 13.114143},{'Belgium': 12.79026},"{'Other', 249.76166096999998}"
+North America,94.77045666000001,{'United States': 20.867321},{'Canada': 17.172369},{'Trinidad and Tobago': 14.053402},{'Bahamas': 5.9475837},{'Barbados': 5.094993},"{'Other', 31.634787960000004}"
+Oceania,52.382194420000005,{'Australia': 17.128435},{'Palau': 11.141168},{'Nauru': 9.893153},{'New Zealand': 7.859588},{'Marshall Islands': 1.7056404},"{'Other', 4.654210020000001}"
+South America,29.36594754,{'Venezuela': 5.2389092},{'Suriname': 4.6920376},{'Argentina': 3.7054877},{'Chile': 3.29967},{'Guyana': 2.192827},"{'Other', 10.23701604}"

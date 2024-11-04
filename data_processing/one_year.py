@@ -11,6 +11,5 @@ def one_year_data(data_path):
 
     return
 
-
 if __name__ == "__main__":
     one_year_data("data/co-emissions-per-capita.csv")

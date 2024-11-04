@@ -2,7 +2,21 @@ var app = angular.module("myApp", []);
 app.controller("saba", function ($scope) {
   // codaye saba inja bashe
   $scope.name = "saba";
-
+  const colorScales = {
+    Oceania: d3.scaleLinear().domain([1, 5]).range(["#c6e5f5", "#08306b"]),
+    Africa: d3.scaleLinear().domain([1, 5]).range(["#fdd0a2", "#e6550d"]),
+    Europe: d3.scaleLinear().domain([1, 5]).range(["#e5f5e0", "#31a354"]),
+    Asia: d3.scaleLinear().domain([1, 5]).range(["#dadaeb", "#54278f"]),
+    "North America": d3
+      .scaleLinear()
+      .domain([1, 5])
+      .range(["#fee0d2", "#de2d26"]),
+    "South America": d3
+      .scaleLinear()
+      .domain([1, 5])
+      .range(["#fde0ef", "#c51b8a"]),
+  };
+  
   const margin = { top: 60, right: 50, bottom: 150, left: 100 };
   const width = 1280 - margin.left - margin.right;
   const height = 800 - margin.top - margin.bottom;
@@ -43,7 +57,10 @@ app.controller("saba", function ($scope) {
 
       const y = d3
         .scaleLinear()
-        .domain([0, d3.max(data, (d) => d["Annual CO₂ emissions (per capita)"])])
+        .domain([
+          0,
+          d3.max(data, (d) => d["Annual CO₂ emissions (per capita)"]),
+        ])
         .nice()
         .range([height, 0]);
 
@@ -105,99 +122,193 @@ app.controller("saba", function ($scope) {
     }
   );
 
-// Create an SVG container
-const svg_stacked_chart = d3
-  .select("#chart-stacked")
-  .append("svg")
-  .attr("width", width + margin.left + margin.right)
-  .attr("height", height + margin.top + margin.bottom)
-  .append("g")
-  .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+  // Create an SVG container
+  const svg_stacked_chart = d3
+    .select("#chart-stacked")
+    .append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-// Load the CSV data
-d3.csv("data_processing/output/continent_summary_1996.csv").then(data => {
-  // Parse the CSV data to the required structure
-  const parsedData = data.map(d => {
-    return {
-      continent: d.Continent,
-      countries: [
-        { name: d.country_1.split(':')[0].replace(/[{}']/g, '').trim(), value: +d.country_1.split(':')[1].replace(/[{}']/g, '').trim() },
-        { name: d.country_2.split(':')[0].replace(/[{}']/g, '').trim(), value: +d.country_2.split(':')[1].replace(/[{}']/g, '').trim() },
-        { name: d.country_3.split(':')[0].replace(/[{}']/g, '').trim(), value: +d.country_3.split(':')[1].replace(/[{}']/g, '').trim() },
-        { name: d.country_4.split(':')[0].replace(/[{}']/g, '').trim(), value: +d.country_4.split(':')[1].replace(/[{}']/g, '').trim() },
-        { name: d.country_5.split(':')[0].replace(/[{}']/g, '').trim(), value: +d.country_5.split(':')[1].replace(/[{}']/g, '').trim() }
-      ].sort((a, b) => b.value - a.value)
-    };
+  // Load the CSV data
+  d3.csv("data_processing/output/continent_summary_1996.csv").then((data) => {
+    // Parse the CSV data to the required structure
+    const parsedData = data.map((d) => {
+      return {
+        continent: d.Continent,
+        countries: [
+          {
+            name: d.country_1.split(":")[0].replace(/[{}']/g, "").trim(),
+            value: +d.country_1.split(":")[1].replace(/[{}']/g, "").trim(),
+          },
+          {
+            name: d.country_2.split(":")[0].replace(/[{}']/g, "").trim(),
+            value: +d.country_2.split(":")[1].replace(/[{}']/g, "").trim(),
+          },
+          {
+            name: d.country_3.split(":")[0].replace(/[{}']/g, "").trim(),
+            value: +d.country_3.split(":")[1].replace(/[{}']/g, "").trim(),
+          },
+          {
+            name: d.country_4.split(":")[0].replace(/[{}']/g, "").trim(),
+            value: +d.country_4.split(":")[1].replace(/[{}']/g, "").trim(),
+          },
+          {
+            name: d.country_5.split(":")[0].replace(/[{}']/g, "").trim(),
+            value: +d.country_5.split(":")[1].replace(/[{}']/g, "").trim(),
+          },
+          {
+            name: d.other.split(",")[0].replace(/[{}']/g, "").trim(),
+            value: +d.other.split(",")[1].replace(/[{}']/g, "").trim(),
+          },
+        ].sort((a, b) => b.value - a.value),
+      };
+    });
+
+    // Set up x and y scales
+    const x = d3
+      .scaleBand()
+      .domain(parsedData.map((d) => d.continent))
+      .range([0, width])
+      .padding(0.2);
+
+    const y = d3
+      .scaleLinear()
+      .domain([
+        0,
+        d3.max(parsedData, (d) => d3.sum(d.countries, (c) => c.value)),
+      ])
+      .nice()
+      .range([height, 0]);
+
+    // Append axes
+    svg_stacked_chart
+      .append("g")
+      .attr("class", "x-axis")
+      .attr("transform", "translate(0," + height + ")")
+      .call(d3.axisBottom(x));
+
+    svg_stacked_chart.append("g").attr("class", "y-axis").call(d3.axisLeft(y));
+
+    // Append bars for each continent
+    svg_stacked_chart
+      .selectAll(".bar")
+      .data(parsedData)
+      .enter()
+      .append("g")
+      .attr("class", "bar")
+      .attr("transform", (d) => `translate(${x(d.continent)}, 0)`)
+      .each(function (d, i) {
+        const continentGroup = d3.select(this);
+        let yOffset = 0;
+        const colorScale =
+          colorScales[d.continent] ||
+          d3
+            .scaleLinear()
+            .domain([1, d.countries.length])
+            .range(["#d3d3d3", "#696969"]);
+        d.countries.forEach((country, index) => {
+          continentGroup
+            .append("rect")
+            .attr("x", 0)
+            .attr("y", y(yOffset + country.value))
+            .attr("width", x.bandwidth())
+            .attr("height", height - y(country.value))
+            .attr("fill", colorScale(index + 1))
+            .on("mouseover", function (event) {
+              tooltip.transition().duration(200).style("opacity", 0.9);
+              tooltip
+                .html(
+                  "Country: " + country.name + "<br/>Value: " + country.value
+                )
+                .style("left", event.pageX + "px")
+                .style("top", event.pageY - 28 + "px");
+            })
+            .on("mouseout", function () {
+              tooltip.transition().duration(500).style("opacity", 0);
+            });
+          yOffset += country.value;
+        });
+      });
   });
 
-  // Set color scales for continents
-  const colorScales = {
-    Oceania: d3.scaleLinear().domain([1, 5]).range(["#c6e5f5", "#08306b"]),
-    Africa: d3.scaleLinear().domain([1, 5]).range(["#fdd0a2", "#e6550d"]),
-    Europe: d3.scaleLinear().domain([1, 5]).range(["#e5f5e0", "#31a354"]),
-    Asia: d3.scaleLinear().domain([1, 5]).range(["#dadaeb", "#54278f"]),
-    "North America": d3.scaleLinear().domain([1, 5]).range(["#fee0d2", "#de2d26"]),
-    "South America": d3.scaleLinear().domain([1, 5]).range(["#fde0ef", "#c51b8a"])
-  };
-
-  // Set up x and y scales
-  const x = d3
-    .scaleBand()
-    .domain(parsedData.map(d => d.continent))
-    .range([0, width])
-    .padding(0.2);
-
-  const y = d3.scaleLinear().domain([0, d3.max(parsedData, d => d3.sum(d.countries, c => c.value))]).nice().range([height, 0]);
-
-  // Append axes
-  svg_stacked_chart
-    .append("g")
-    .attr("class", "x-axis")
-    .attr("transform", "translate(0," + height + ")")
-    .call(d3.axisBottom(x));
-
-  svg_stacked_chart
-    .append("g")
-    .attr("class", "y-axis")
-    .call(d3.axisLeft(y));
-
-  // Append bars for each continent
-  svg_stacked_chart
-    .selectAll(".bar")
-    .data(parsedData)
-    .enter()
-    .append("g")
-    .attr("class", "bar")
-    .attr("transform", d => `translate(${x(d.continent)}, 0)`)
-    .each(function (d, i) {
-      const continentGroup = d3.select(this);
-      let yOffset = 0;
-      const colorScale = colorScales[d.continent] || d3.scaleLinear().domain([1, d.countries.length]).range(["#d3d3d3", "#696969"]);
-      d.countries.forEach((country, index) => {
-        continentGroup
-          .append("rect")
-          .attr("x", 0)
-          .attr("y", y(yOffset + country.value))
-          .attr("width", x.bandwidth())
-          .attr("height", height - y(country.value))
-          .attr("fill", colorScale(index + 1))
-          .on("mouseover", function (event) {
-            tooltip.transition().duration(200).style("opacity", 0.9);
-            tooltip
-              .html(
-                "Country: " + country.name + "<br/>Value: " + country.value
-              )
-              .style("left", event.pageX + "px")
-              .style("top", event.pageY - 28 + "px");
-          })
-          .on("mouseout", function () {
-            tooltip.transition().duration(500).style("opacity", 0);
-          });
-        yOffset += country.value;
-      });
+  d3.csv("data_processing/output/continent_summary_1996.csv").then(function(data) {
+    // Process data for each country field
+    const countries = ["country_1", "country_2", "country_3", "country_4", "country_5", "other"];
+    const processedData = data.map(d => {
+        const continentData = { continent: d.Continent };
+        countries.forEach(country => {
+            // Extract the value for each country, assuming the format {'CountryName': value}
+            continentData[country] = parseFloat(d[country].match(/\d+\.\d+/)[0]);
+        });
+        return continentData;
     });
-});
 
+    // Set up the chart dimensions
+    const width = 250;
+    const height = 300;
+    const margin = { top: 20, right: 20, bottom: 20, left: 70 };
+
+    // Create scales
+    const xScale = d3.scaleLinear()
+        .domain([0, 150])
+        .range([0, width - margin.left - margin.right]);
+
+    const yScale = d3.scaleBand()
+        .domain(processedData.map(d => d.continent))
+        .range([0, height - margin.top - margin.bottom])
+        .padding(0.1);
+
+    // Function to draw a chart
+    function drawChart(containerId, dataKey, title) {
+        // Create a container for the chart
+        const container = d3.select("#chart-container")
+            .append("div")
+            .attr("class", "chart")
+            .style("width", `${width}px`);
+
+        // Add title
+        container.append("div")
+            .attr("class", "chart-title")
+            .text(title);
+
+        // Create the SVG container
+        const svg = container.append("svg")
+            .attr("width", width)
+            .attr("height", height);
+
+        // Create the chart group
+        const chart = svg.append("g")
+            .attr("transform", `translate(${margin.left}, ${margin.top})`);
+
+        // Draw the bars
+        chart.selectAll(".bar")
+            .data(processedData)
+            .enter()
+            .append("rect")
+            .attr("class", "bar")
+            .attr("y", d => yScale(d.continent))
+            .attr("height", yScale.bandwidth())
+            .attr("width", d => xScale(d[dataKey]) * 0.5) 
+            .attr("fill", d => colorScales[d.continent](5));
+
+        // Add x-axis
+        chart.append("g")
+            .attr("transform", `translate(0, ${height - margin.top - margin.bottom})`)
+            .call(d3.axisBottom(xScale));
+
+        // Add y-axis
+        chart.append("g")
+            .call(d3.axisLeft(yScale));
+    }
+
+    // Generate a chart for each country
+    countries.forEach(country => {
+        drawChart("#chart-container", country, country);
+    });
+
+  });
 });
 
 app.controller("melika", function ($scope) {

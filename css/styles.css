@@ -33,3 +33,13 @@ body {
 body {
   margin-left: 20px;
 }
+#chart-container {
+  display: flex;
+  gap: 30px;
+  flex-wrap: wrap;
+}
+.chart-title {
+  text-align: center;
+  font-size: 16px;
+  margin-bottom: 10px;
+}

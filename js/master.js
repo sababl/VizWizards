@@ -185,7 +185,7 @@ d3.csv("data_processing/output/continent_summary_1996.csv").then(data => {
             tooltip.transition().duration(200).style("opacity", 0.9);
             tooltip
               .html(
-                "Continent: " + d.continent + "<br/>Country: " + country.name + "<br/>Value: " + country.value
+                "Country: " + country.name + "<br/>Value: " + country.value
               )
               .style("left", event.pageX + "px")
               .style("top", event.pageY - 28 + "px");

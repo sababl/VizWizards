@@ -12,13 +12,23 @@
     style="display: flex; justify-content: center; flex-direction: column"
     ng-app="myApp"
   >
+  
     <div ng-controller="saba">
+      <button ng-click="tstfunc('1')">click me</button>
+      <button ng-click="tstfunc('2')">click 2</button>
+
+      <div ng-show="pageNum=='1'"> 
       <!-- <h1 ng-bind="name"></h1> -->
       <div id="chart-one-year"></div>
-      <div id="chart-stacked"></div>
       <div id="chart-container" style="display: flex; gap: 30px"></div>
       <h3 style="text-align: center">Stacked CO2 Contribution by Country</h3>
       <div id="stacked-chart"></div>
+      </div>
+
+      <div ng-show="pageNum=='2'"> 
+        <div id="chart-stacked"></div>
+      </div>
+
     </div>
 
     <div ng-controller="melika">

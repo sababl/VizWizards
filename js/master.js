@@ -1,5 +1,9 @@
 var app = angular.module("myApp", []);
 app.controller("saba", function ($scope) {
+  $scope.pageNum=null
+  $scope.tstfunc=function(item){
+    $scope.pageNum=item
+  }
   // codaye saba inja bashe
   $scope.name = "saba";
   const colorScales = {
@@ -255,7 +259,7 @@ app.controller("saba", function ($scope) {
     });
 
     // Set up the chart dimensions
-    const width = 250;
+    const width = 500;
     const height = 300;
     const margin = { top: 20, right: 20, bottom: 20, left: 70 };
 

@@ -1,9 +1,19 @@
 var app = angular.module("myApp", []);
-app.controller("saba", function ($scope) {
-  $scope.pageNum=null
-  $scope.tstfunc=function(item){
-    $scope.pageNum=item
-  }
+
+var namecontroller = "saba";
+
+app.controller(namecontroller, function ($scope, $controller) {
+  $scope.pageNum = null;
+  $scope.tstfunc = function (item) {
+    $scope.pageNum = item;
+
+    if (parseInt(item) > 4) {
+      $controller("melika", { $scope: $scope });
+      $scope.isMelikaActive = true;
+    } else {
+      $scope.isMelikaActive = false;
+    }
+  };
   // codaye saba inja bashe
   $scope.name = "saba";
   const colorScales = {
@@ -342,24 +352,24 @@ app.controller("saba", function ($scope) {
       });
 
       // Normalize data for stacked chart
-      const normalizedData = processedData.map(d => {
+      const normalizedData = processedData.map((d) => {
         const total = countries.reduce((sum, country) => sum + d[country], 0);
         let x0 = 0;
         return {
-            continent: d.continent,
-            categories: countries.map((country, index) => {
-                const value = (d[country] / total) * 100;  // Convert to percentage
-                const obj = {
-                    country,
-                    x0,
-                    x1: x0 + value,
-                    color: colorScales[d.continent](index + 1) // Apply color scale based on index
-                };
-                x0 += value;
-                return obj;
-            })
+          continent: d.continent,
+          categories: countries.map((country, index) => {
+            const value = (d[country] / total) * 100; // Convert to percentage
+            const obj = {
+              country,
+              x0,
+              x1: x0 + value,
+              color: colorScales[d.continent](index + 1), // Apply color scale based on index
+            };
+            x0 += value;
+            return obj;
+          }),
         };
-    });
+      });
 
       // Define x and y scales
       const xStackedScale = d3
@@ -388,18 +398,19 @@ app.controller("saba", function ($scope) {
         );
 
       // Draw stacked bars
-      normalizedData.forEach(d => {
-        chartStacked.selectAll(`.bar-${d.continent}`)
-            .data(d.categories)
-            .enter()
-            .append("rect")
-            .attr("class", `bar-${d.continent}`)
-            .attr("y", () => yStackedScale(d.continent))
-            .attr("height", yStackedScale.bandwidth())
-            .attr("x", d => xStackedScale(d.x0))
-            .attr("width", d => xStackedScale(d.x1) - xStackedScale(d.x0))
-            .attr("fill", d => d.color);  // Use custom color for each section
-    });
+      normalizedData.forEach((d) => {
+        chartStacked
+          .selectAll(`.bar-${d.continent}`)
+          .data(d.categories)
+          .enter()
+          .append("rect")
+          .attr("class", `bar-${d.continent}`)
+          .attr("y", () => yStackedScale(d.continent))
+          .attr("height", yStackedScale.bandwidth())
+          .attr("x", (d) => xStackedScale(d.x0))
+          .attr("width", (d) => xStackedScale(d.x1) - xStackedScale(d.x0))
+          .attr("fill", (d) => d.color); // Use custom color for each section
+      });
 
       // Add x-axis
       chartStacked
@@ -424,7 +435,13 @@ app.controller("saba", function ($scope) {
 });
 
 app.controller("melika", function ($scope) {
-  // codaye melika inja bashe
+  // // codaye melika inja bashe
+  // console.log("melika");
+  // $scope.pageNum="5"
+  // $scope.tstfunc=function(item){
+  //   $scope.pageNum=item
+  // }
+
   $scope.name = "melika";
 });
 

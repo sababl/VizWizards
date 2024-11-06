@@ -101,7 +101,7 @@ app.controller(namecontroller, function ($scope, $controller) {
           "height",
           (d) => height - y(d["Annual CO₂ emissions (per capita)"])
         )
-        .attr("fill", "steelblue")
+        .attr("fill", "blue")
         .on("mouseover", function (event, d) {
           tooltip.transition().duration(200).style("opacity", 0.9);
           tooltip
@@ -131,8 +131,8 @@ app.controller(namecontroller, function ($scope, $controller) {
         .append("text")
         .attr("text-anchor", "end")
         .attr("x", width / 2 + margin.left)
-        .attr("y", height + margin.bottom - 10)
-        .text("Country");
+        .attr("y", height + margin.bottom - 90)
+        .text("Countries");
     }
   );
 
@@ -468,6 +468,7 @@ app.controller(namecontroller, function ($scope, $controller) {
         ])
         .nice()
         .range([svgHeight, 0]);
+        
 
       svg
         .append("g")
@@ -494,7 +495,24 @@ app.controller(namecontroller, function ($scope, $controller) {
           "height",
           (d) => svgHeight - y(d["Average CO₂ emissions (2001-2010)"])
         )
-        .attr("fill", "steelblue");
+        .attr("fill", "blue");
+
+        svg
+        .append("text")
+        .attr("text-anchor", "end")
+        .attr("x", -margin.left + 40)
+        .attr("y", -50)
+        .attr("dy", "1em")
+        .attr("transform", "rotate(-90)")
+        .text("Average CO₂ Emissions (2001-2010)");
+
+      svg
+        .append("text")
+        .attr("text-anchor", "end")
+        .attr("x", width / 2 + margin.left)
+        .attr("y", height + margin.bottom +20)
+        .text("Countries"); 
     }
   );
+  
 });

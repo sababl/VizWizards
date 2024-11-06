@@ -432,13 +432,69 @@ app.controller(namecontroller, function ($scope, $controller) {
       chartStacked.append("g").call(d3.axisLeft(yStackedScale));
     }
   });
-});
 
-app.controller("melika", function ($scope) {
+  const margin2 = { top: 20, right: 30, bottom: 60, left: 60 };
+  const svgWidth = 1280 - margin2.left - margin2.right;
+  const svgHeight = 800 - margin2.top - margin2.bottom;
 
-});
+  const svg = d3
+    .select("#chart_decade")
+    .append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+    .attr("transform", `translate(${margin2.left},${margin2.top})`);
 
-app.controller("romena", function ($scope) {
-  // codaye romena inja bashe
-  $scope.name = "romena";
+  d3.csv("data_processing/output/average_emissions_2001_2010.csv").then(
+    (averageData) => {
+      averageData = averageData.slice(0, 20);
+      averageData.forEach((d) => {
+        d["Average CO₂ emissions (2001-2010)"] =
+          +d["Average CO₂ emissions (2001-2010)"];
+      });
+
+      // Set x and y scales
+      const x = d3
+        .scaleBand()
+        .domain(averageData.map((d) => d.Entity))
+        .range([0, svgWidth])
+        .padding(0.1);
+
+      const y = d3
+        .scaleLinear()
+        .domain([
+          0,
+          d3.max(averageData, (d) => d["Average CO₂ emissions (2001-2010)"]),
+        ])
+        .nice()
+        .range([svgHeight, 0]);
+
+      svg
+        .append("g")
+        .attr("class", "axis axis--x")
+        .attr("transform", `translate(0,${svgHeight})`)
+        .call(d3.axisBottom(x))
+        .selectAll("text")
+        .attr("transform", "rotate(-45)")
+        .style("text-anchor", "end"); // Align text to the end
+
+      svg.append("g").attr("class", "axis axis--y").call(d3.axisLeft(y));
+
+      // Create bars
+      svg
+        .selectAll(".bar")
+        .data(averageData)
+        .enter()
+        .append("rect")
+        .attr("class", "bar")
+        .attr("x", (d) => x(d.Entity))
+        .attr("y", (d) => y(d["Average CO₂ emissions (2001-2010)"]))
+        .attr("width", x.bandwidth())
+        .attr(
+          "height",
+          (d) => svgHeight - y(d["Average CO₂ emissions (2001-2010)"])
+        )
+        .attr("fill", "steelblue");
+    }
+  );
 });

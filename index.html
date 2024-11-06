@@ -1,22 +1,9 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>D3 Bar Chart</title>
-    <script src="https://d3js.org/d3.v7.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
-    <link rel="stylesheet" href="css/styles.css" />
-  </head>
-  <body
-    style="display: flex; justify-content: center; flex-direction: column"
-    ng-app="myApp"
-  >
+<!-- 
     <div ng-controller="saba">
       <button ng-click="tstfunc('1')">click me</button>
-      <button ng-click="tstfunc('2')">click 2</button>
-      <button ng-click="tstfunc('3')">click 3</button>
-      <button ng-click="tstfunc('4')">click 4</button>
+      <button ng-click="tstfunc('2')">click 3</button>
+      <button ng-click="tstfunc('4')">click 2</button>
+      <button ng-click="tstfunc('3')">click 4</button>
       <button ng-click="tstfunc('5')">click 5</button>
         <a href="decade.html">a decade</a>
         <a href="heatmap.html">heatmap</a>
@@ -38,25 +25,63 @@
 
       </div>
 
-
-      <div ng-controller="melika">
-        <div ng-if="isMelikaActive">
-          <h1 ng-bind="name"></h1>
-          <!-- <div id="chart-one-year"></div> -->
-          <svg width="800" height="400"></svg>
-
-        
-        </div>
-        <!-- <h1 ng-bind="name"></h1> -->
-      </div>
-    </div>
-
-    
-
-    <div ng-controller="romena">
-      <!-- <h1 ng-bind="name"></h1> -->
-    </div>
-
     <script src="master.js"></script>
   </body>
+</html> -->
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>D3 Bar Chart</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body  ng-app="myApp">
+
+    <!-- Header Section with Blur Background -->
+    <header class="hero-section">
+        <div class="hero-content">
+            <h1>Beautiful and easy <br> data visualization and storytelling</h1>
+            <div class="buttons">
+                <a href="#get-started" class="button">Get started now</a>
+                <a href="#contact" class="button">Get in touch</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Section -->
+    <main class="content">
+        <section class="info-section">
+            <h2>Easily turn your data into stunning charts, maps, and interactive stories.</h2>
+            <div class="image-grid">
+                <a href="page1.html" class="image-card">
+                    <img src="chart1.png" alt="Engage your audience">
+                    <h3>Engage your audience</h3>
+                    <p>Create agency-quality data graphics and animated stories that bring your data to life.</p>
+                </a>
+                <a href="page2.html" class="image-card">
+                    <img src="chart2.png" alt="Empower the whole team">
+                    <h3>Empower the whole team</h3>
+                    <p>Flourish is easy enough for anyone to use. Start with a template and drop in data.</p>
+                </a>
+                <a href="page3.html" class="image-card">
+                    <img src="chart3.png" alt="Embed, share, present">
+                    <h3>Embed, share, present</h3>
+                    <p>Create seamless embeds, magical presentations, or engaging content for social.</p>
+                </a>
+                <a href="page4.html" class="image-card">
+                    <img src="chart4.png" alt="Your brand, your style">
+                    <h3>Your brand, your style</h3>
+                    <p>Get custom themes so everything has your logo, fonts, colors, and styles.</p>
+                </a>
+            </div>
+        </section>
+    </main>
+
+</body>
 </html>

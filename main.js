@@ -44,5 +44,6 @@
                 .attr("x", d => x(d.Entity))
                 .attr("y", d => y(d["Average CO₂ emissions (2001-2010)"]))
                 .attr("width", x.bandwidth())
-                .attr("height", d => height - y(d["Average CO₂ emissions (2001-2010)"]));
+                .attr("height", d => height - y(d["Average CO₂ emissions (2001-2010)"]))
+                .attr("fill", "blue");
         });

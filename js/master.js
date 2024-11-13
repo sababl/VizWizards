@@ -54,7 +54,7 @@ app.controller(namecontroller, function ($scope, $controller) {
     .style("pointer-events", "none");
 
   // Load the CSV data
-  d3.csv("data_processing/output/sorted_emissions_one_year.csv").then(
+  d3.csv("../data_processing/output/sorted_emissions_one_year.csv").then(
     (data) => {
       // Parse the data to convert numeric fields
       data = data.slice(0, 20);
@@ -146,7 +146,7 @@ app.controller(namecontroller, function ($scope, $controller) {
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
   // Load the CSV data
-  d3.csv("data_processing/output/continent_summary_1996.csv").then((data) => {
+  d3.csv("../data_processing/output/continent_summary_1996.csv").then((data) => {
     // Parse the CSV data to the required structure
     const parsedData = data.map((d) => {
       return {
@@ -247,7 +247,7 @@ app.controller(namecontroller, function ($scope, $controller) {
       });
   });
 
-  d3.csv("data_processing/output/continent_summary_1996.csv").then(function (
+  d3.csv("../data_processing/output/continent_summary_1996.csv").then(function (
     data
   ) {
     // Process data for each country field
@@ -445,7 +445,7 @@ app.controller(namecontroller, function ($scope, $controller) {
     .append("g")
     .attr("transform", `translate(${margin2.left},${margin2.top})`);
 
-  d3.csv("data_processing/output/average_emissions_2001_2010.csv").then(
+  d3.csv("../data_processing/output/average_emissions_2001_2010.csv").then(
     (averageData) => {
       averageData = averageData.slice(0, 20);
       averageData.forEach((d) => {

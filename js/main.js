@@ -7,7 +7,7 @@
             .append("g")
             .attr("transform", `translate(${margin.left},${margin.top})`);
 
-        d3.csv('data_processing/output/average_emissions_2001_2010.csv').then(averageData => {
+        d3.csv('../data_processing/output/average_emissions_2001_2010.csv').then(averageData => {
             averageData = averageData.slice(0, 20);
             averageData.forEach(d => {
 

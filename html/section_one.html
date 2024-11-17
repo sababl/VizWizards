@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+
+    <title>Chart Viewer</title>
+    <link rel="stylesheet" href="../css/styles.css" />
+  </head>
+  <body ng-app="myApp">
+    <section
+      ng-controller="saba"
+      style="display: flex; flex-wrap: wrap; height: 800px"
+    >
+      <div class="tab-nav-container" style="height: 100px">
+        <div class="tab-nav">
+          <button
+            class="tab-item"
+            onclick="window.location.href='../index.html'"
+          >
+            <img src="../img/home.png" alt="Home" class="icon" /> Home
+          </button>
+          <button class="tab-item active">
+            <img src="../img/bar.png" alt="bar" class="icon" /> Comparing
+            Categories
+          </button>
+          <button class="tab-item">
+            <img src="../img/alluvial-blue.png" alt="alluvial" class="icon" />
+            Alluvial
+          </button>
+        </div>
+      </div>
+
+      <div
+        style="
+          width: 80%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        "
+      >
+        <aside class="sidebar">
+          <nav class="nav">
+            <ul style="display: flex">
+              <li class="active">
+                <a ng-click="changeTab('/html/bar.html')">Bar Chart</a>
+              </li>
+              <li>
+                <a ng-click="changeTab('/html/stacked.html')">Stacked Chart</a>
+              </li>
+              <li><a ng-click="changeTab('/html/heatmap.html')">Heatmap</a></li>
+            </ul>
+          </nav>
+        </aside>
+      </div>
+
+      <iframe
+        height="100%"
+        width="100%"
+        ng-src="{{nametst}}"
+        title="description"
+        class="charts-container"
+      ></iframe>
+    </section>
+
+    <script src="../js/master.js"></script>
+  </body>
+</html>

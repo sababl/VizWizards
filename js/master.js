@@ -2,7 +2,27 @@ var app = angular.module("myApp", []);
 
 var namecontroller = "saba";
 
+const rootStyles = getComputedStyle(document.documentElement);
+const barColor = rootStyles.getPropertyValue("--blue").trim(); // Main bar color
+const barHoverColor = rootStyles.getPropertyValue("--saphire").trim(); // Hover color
+
 app.controller(namecontroller, function ($scope, $controller) {
+  $scope.nametst = "/html/bar.html";
+
+  $scope.changeTab = function (item) {
+    $scope.nametst = item;
+  };
+
+  function showContent(chartType) {
+    // Hide all content-divs
+    const contentDivs = document.querySelectorAll(".content-div");
+    contentDivs.forEach((div) => {
+      div.style.display = "none";
+    });
+
+    // Show the selected content-div
+    document.getElementById(chartType).style.display = "block";
+  }
   $scope.pageNum = null;
   $scope.tstfunc = function (item) {
     $scope.pageNum = item;
@@ -32,7 +52,7 @@ app.controller(namecontroller, function ($scope, $controller) {
   };
 
   const margin = { top: 60, right: 50, bottom: 150, left: 100 };
-  const width = 1280 - margin.left - margin.right;
+  const width = 1000 - margin.left - margin.right;
   const height = 800 - margin.top - margin.bottom;
 
   //
@@ -101,8 +121,12 @@ app.controller(namecontroller, function ($scope, $controller) {
           "height",
           (d) => height - y(d["Annual CO₂ emissions (per capita)"])
         )
-        .attr("fill", "blue")
+        .attr("fill", barColor) // Use CSS variable for fill color
         .on("mouseover", function (event, d) {
+          // Change color on hover
+          d3.select(this).attr("fill", barHoverColor);
+
+          // Show tooltip
           tooltip.transition().duration(200).style("opacity", 0.9);
           tooltip
             .html(
@@ -115,9 +139,12 @@ app.controller(namecontroller, function ($scope, $controller) {
             .style("top", event.pageY - 28 + "px");
         })
         .on("mouseout", function (event, d) {
+          // Revert color on mouse out
+          d3.select(this).attr("fill", barColor);
+
+          // Hide tooltip
           tooltip.transition().duration(500).style("opacity", 0);
         });
-
       svg_one_year
         .append("text")
         .attr("text-anchor", "end")
@@ -146,106 +173,111 @@ app.controller(namecontroller, function ($scope, $controller) {
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
   // Load the CSV data
-  d3.csv("../data_processing/output/continent_summary_1996.csv").then((data) => {
-    // Parse the CSV data to the required structure
-    const parsedData = data.map((d) => {
-      return {
-        continent: d.Continent,
-        countries: [
-          {
-            name: d.country_1.split(":")[0].replace(/[{}']/g, "").trim(),
-            value: +d.country_1.split(":")[1].replace(/[{}']/g, "").trim(),
-          },
-          {
-            name: d.country_2.split(":")[0].replace(/[{}']/g, "").trim(),
-            value: +d.country_2.split(":")[1].replace(/[{}']/g, "").trim(),
-          },
-          {
-            name: d.country_3.split(":")[0].replace(/[{}']/g, "").trim(),
-            value: +d.country_3.split(":")[1].replace(/[{}']/g, "").trim(),
-          },
-          {
-            name: d.country_4.split(":")[0].replace(/[{}']/g, "").trim(),
-            value: +d.country_4.split(":")[1].replace(/[{}']/g, "").trim(),
-          },
-          {
-            name: d.country_5.split(":")[0].replace(/[{}']/g, "").trim(),
-            value: +d.country_5.split(":")[1].replace(/[{}']/g, "").trim(),
-          },
-          {
-            name: d.other.split(",")[0].replace(/[{}']/g, "").trim(),
-            value: +d.other.split(",")[1].replace(/[{}']/g, "").trim(),
-          },
-        ].sort((a, b) => b.value - a.value),
-      };
-    });
-
-    // Set up x and y scales
-    const x = d3
-      .scaleBand()
-      .domain(parsedData.map((d) => d.continent))
-      .range([0, width])
-      .padding(0.2);
-
-    const y = d3
-      .scaleLinear()
-      .domain([
-        0,
-        d3.max(parsedData, (d) => d3.sum(d.countries, (c) => c.value)),
-      ])
-      .nice()
-      .range([height, 0]);
-
-    // Append axes
-    svg_stacked_chart
-      .append("g")
-      .attr("class", "x-axis")
-      .attr("transform", "translate(0," + height + ")")
-      .call(d3.axisBottom(x));
-
-    svg_stacked_chart.append("g").attr("class", "y-axis").call(d3.axisLeft(y));
-
-    // Append bars for each continent
-    svg_stacked_chart
-      .selectAll(".bar")
-      .data(parsedData)
-      .enter()
-      .append("g")
-      .attr("class", "bar")
-      .attr("transform", (d) => `translate(${x(d.continent)}, 0)`)
-      .each(function (d, i) {
-        const continentGroup = d3.select(this);
-        let yOffset = 0;
-        const colorScale =
-          colorScales[d.continent] ||
-          d3
-            .scaleLinear()
-            .domain([1, d.countries.length])
-            .range(["#d3d3d3", "#696969"]);
-        d.countries.forEach((country, index) => {
-          continentGroup
-            .append("rect")
-            .attr("x", 0)
-            .attr("y", y(yOffset + country.value))
-            .attr("width", x.bandwidth())
-            .attr("height", height - y(country.value))
-            .attr("fill", colorScale(index + 1))
-            .on("mouseover", function (event) {
-              tooltip.transition().duration(200).style("opacity", 0.9);
-              tooltip
-                .html(
-                  "Country: " + country.name + "<br/>Value: " + country.value
-                )
-                .style("left", event.pageX + "px")
-                .style("top", event.pageY - 28 + "px");
-            })
-            .on("mouseout", function () {
-              tooltip.transition().duration(500).style("opacity", 0);
-            });
-          yOffset += country.value;
-        });
+  d3.csv("../data_processing/output/continent_summary_1996.csv").then(
+    (data) => {
+      // Parse the CSV data to the required structure
+      const parsedData = data.map((d) => {
+        return {
+          continent: d.Continent,
+          countries: [
+            {
+              name: d.country_1.split(":")[0].replace(/[{}']/g, "").trim(),
+              value: +d.country_1.split(":")[1].replace(/[{}']/g, "").trim(),
+            },
+            {
+              name: d.country_2.split(":")[0].replace(/[{}']/g, "").trim(),
+              value: +d.country_2.split(":")[1].replace(/[{}']/g, "").trim(),
+            },
+            {
+              name: d.country_3.split(":")[0].replace(/[{}']/g, "").trim(),
+              value: +d.country_3.split(":")[1].replace(/[{}']/g, "").trim(),
+            },
+            {
+              name: d.country_4.split(":")[0].replace(/[{}']/g, "").trim(),
+              value: +d.country_4.split(":")[1].replace(/[{}']/g, "").trim(),
+            },
+            {
+              name: d.country_5.split(":")[0].replace(/[{}']/g, "").trim(),
+              value: +d.country_5.split(":")[1].replace(/[{}']/g, "").trim(),
+            },
+            {
+              name: d.other.split(",")[0].replace(/[{}']/g, "").trim(),
+              value: +d.other.split(",")[1].replace(/[{}']/g, "").trim(),
+            },
+          ].sort((a, b) => b.value - a.value),
+        };
       });
-  });
+
+      // Set up x and y scales
+      const x = d3
+        .scaleBand()
+        .domain(parsedData.map((d) => d.continent))
+        .range([0, width])
+        .padding(0.2);
+
+      const y = d3
+        .scaleLinear()
+        .domain([
+          0,
+          d3.max(parsedData, (d) => d3.sum(d.countries, (c) => c.value)),
+        ])
+        .nice()
+        .range([height, 0]);
+
+      // Append axes
+      svg_stacked_chart
+        .append("g")
+        .attr("class", "x-axis")
+        .attr("transform", "translate(0," + height + ")")
+        .call(d3.axisBottom(x));
+
+      svg_stacked_chart
+        .append("g")
+        .attr("class", "y-axis")
+        .call(d3.axisLeft(y));
+
+      // Append bars for each continent
+      svg_stacked_chart
+        .selectAll(".bar")
+        .data(parsedData)
+        .enter()
+        .append("g")
+        .attr("class", "bar")
+        .attr("transform", (d) => `translate(${x(d.continent)}, 0)`)
+        .each(function (d, i) {
+          const continentGroup = d3.select(this);
+          let yOffset = 0;
+          const colorScale =
+            colorScales[d.continent] ||
+            d3
+              .scaleLinear()
+              .domain([1, d.countries.length])
+              .range(["#d3d3d3", "#696969"]);
+          d.countries.forEach((country, index) => {
+            continentGroup
+              .append("rect")
+              .attr("x", 0)
+              .attr("y", y(yOffset + country.value))
+              .attr("width", x.bandwidth())
+              .attr("height", height - y(country.value))
+              .attr("fill", colorScale(index + 1))
+              .on("mouseover", function (event) {
+                tooltip.transition().duration(200).style("opacity", 0.9);
+                tooltip
+                  .html(
+                    "Country: " + country.name + "<br/>Value: " + country.value
+                  )
+                  .style("left", event.pageX + "px")
+                  .style("top", event.pageY - 28 + "px");
+              })
+              .on("mouseout", function () {
+                tooltip.transition().duration(500).style("opacity", 0);
+              });
+            yOffset += country.value;
+          });
+        });
+    }
+  );
 
   d3.csv("../data_processing/output/continent_summary_1996.csv").then(function (
     data
@@ -434,7 +466,7 @@ app.controller(namecontroller, function ($scope, $controller) {
   });
 
   const margin2 = { top: 20, right: 30, bottom: 60, left: 60 };
-  const svgWidth = 1280 - margin2.left - margin2.right;
+  const svgWidth = 1000 - margin2.left - margin2.right;
   const svgHeight = 800 - margin2.top - margin2.bottom;
 
   const svg = d3
@@ -468,7 +500,6 @@ app.controller(namecontroller, function ($scope, $controller) {
         ])
         .nice()
         .range([svgHeight, 0]);
-        
 
       svg
         .append("g")
@@ -483,21 +514,50 @@ app.controller(namecontroller, function ($scope, $controller) {
 
       // Create bars
       svg
-        .selectAll(".bar")
-        .data(averageData)
-        .enter()
-        .append("rect")
-        .attr("class", "bar")
-        .attr("x", (d) => x(d.Entity))
-        .attr("y", (d) => y(d["Average CO₂ emissions (2001-2010)"]))
-        .attr("width", x.bandwidth())
-        .attr(
-          "height",
-          (d) => svgHeight - y(d["Average CO₂ emissions (2001-2010)"])
-        )
-        .attr("fill", "blue");
+      .selectAll(".bar")
+      .data(averageData)
+      .enter()
+      .append("rect")
+      .attr("class", "bar")
+      .attr("x", (d) => x(d.Entity))
+      .attr("y", (d) => y(d["Average CO₂ emissions (2001-2010)"]))
+      .attr("width", x.bandwidth())
+      .attr(
+        "height",
+        (d) => svgHeight - y(d["Average CO₂ emissions (2001-2010)"])
+      )
+      .attr("fill", barColor) // Use CSS variable for fill color
+      .on("mouseover", function (event, d) {
+        // Change bar color on hover
+        d3.select(this).attr("fill", barHoverColor);
+    
+        // Show tooltip
+        tooltip
+          .transition()
+          .duration(200)
+          .style("opacity", 0.9);
+        tooltip
+          .html(
+            "Country: " +
+              d.Entity +
+              "<br/>Average Value: " +
+              d["Average CO₂ emissions (2001-2010)"]
+          )
+          .style("left", event.pageX + "px")
+          .style("top", event.pageY - 28 + "px");
+      })
+      .on("mouseout", function () {
+        // Revert bar color on mouse out
+        d3.select(this).attr("fill", barColor);
+    
+        // Hide tooltip
+        tooltip
+          .transition()
+          .duration(500)
+          .style("opacity", 0);
+      });
 
-        svg
+      svg
         .append("text")
         .attr("text-anchor", "end")
         .attr("x", -margin.left + 40)
@@ -510,9 +570,8 @@ app.controller(namecontroller, function ($scope, $controller) {
         .append("text")
         .attr("text-anchor", "end")
         .attr("x", width / 2 + margin.left)
-        .attr("y", height + margin.bottom +20)
-        .text("Countries"); 
+        .attr("y", height + margin.bottom + 20)
+        .text("Countries");
     }
   );
-  
 });

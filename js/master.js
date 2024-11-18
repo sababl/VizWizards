@@ -7,7 +7,7 @@ const barColor = rootStyles.getPropertyValue("--blue").trim(); // Main bar color
 const barHoverColor = rootStyles.getPropertyValue("--saphire").trim(); // Hover color
 
 app.controller(namecontroller, function ($scope, $controller) {
-  $scope.nametst = "/html/bar.html";
+  $scope.nametst = "./bar.html";
 
   $scope.changeTab = function (item) {
     $scope.nametst = item;

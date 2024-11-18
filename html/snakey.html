@@ -6,20 +6,27 @@
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <script src="https://unpkg.com/d3-sankey@0.12.3/dist/d3-sankey.min.js"></script>
     <title>Alluvial Chart Visualization</title>
+    <style>
+        text {
+            font-family: Arial, sans-serif;
+            font-size: 12px;
+            fill: #000;
+        }
+    </style>
 </head>
 <body>
-    <div id="chart"></div>
+    <div id="chart" style="width: 100%;"></div>
     <script>
         // Set the dimensions of the chart
-        const margin = {top: 20, right: 20, bottom: 20, left: 20};
+        const margin = {top: 20, right: 20, bottom: 20, left: 100};
         const width = 900 - margin.left - margin.right;
         const height = 600 - margin.top - margin.bottom;
 
         // Create the SVG element
         const svg = d3.select("#chart")
             .append("svg")
-            .attr("width", width + margin.left + margin.right)
-            .attr("height", height + margin.top + margin.bottom)
+            .attr("width", 1400)
+            .attr("height", 700)
             .append("g")
             .attr("transform", `translate(${margin.left}, ${margin.top})`);
 
@@ -75,6 +82,9 @@
 
             const graph = sankey();
 
+            // Define a color scale for better contrast
+            const colorScale = d3.scaleOrdinal(d3.schemeCategory10);
+
             // Add nodes to the chart
             svg.append("g")
                 .selectAll("rect")
@@ -85,9 +95,21 @@
                 .attr("y", d => d.y0)
                 .attr("height", d => d.y1 - d.y0)
                 .attr("width", sankey.nodeWidth())
-                .style("fill", d => d3.color("steelblue"))
+                .style("fill", d => colorScale(d.name))
                 .append("title")
                 .text(d => `${d.name}\n${d.value}`);
+
+            // Add labels to nodes
+            svg.append("g")
+                .selectAll("text")
+                .data(graph.nodes)
+                .enter()
+                .append("text")
+                .attr("x", d => d.x0 < width / 2 ? d.x0 - 10 : d.x1 + 10)
+                .attr("y", d => (d.y0 + d.y1) / 2)
+                .attr("dy", "0.35em")
+                .attr("text-anchor", d => d.x0 < width / 2 ? "end" : "start")
+                .text(d => d.name);
 
             // Add links to the chart
             svg.append("g")
@@ -98,7 +120,7 @@
                 .append("path")
                 .attr("d", d3.sankeyLinkHorizontal())
                 .attr("stroke-width", d => Math.max(1, d.width))
-                .style("stroke", "#888")
+                .style("stroke", d => colorScale(d.source.name))
                 .style("opacity", 0.5)
                 .append("title")
                 .text(d => `${d.source.name} -> ${d.target.name}\n${d.value}`);

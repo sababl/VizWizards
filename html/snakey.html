@@ -12,20 +12,30 @@
             font-size: 12px;
             fill: #000;
         }
+        .axis line,
+        .axis path {
+            shape-rendering: crispEdges;
+            stroke: #000;
+            fill: none;
+        }
+        .axis text {
+            font-size: 10px;
+            fill: #000;
+        }
     </style>
 </head>
 <body>
     <div id="chart" style="width: 100%;"></div>
     <script>
         // Set the dimensions of the chart
-        const margin = {top: 20, right: 20, bottom: 20, left: 100};
+        const margin = {top: 20, right: 100, bottom: 20, left: 100};
         const width = 900 - margin.left - margin.right;
         const height = 600 - margin.top - margin.bottom;
 
         // Create the SVG element
         const svg = d3.select("#chart")
             .append("svg")
-            .attr("width", 1400)
+            .attr("width", 1600)
             .attr("height", 700)
             .append("g")
             .attr("transform", `translate(${margin.left}, ${margin.top})`);
@@ -75,7 +85,7 @@
             // Update the Sankey Generator to use the node and link arrays correctly
             const sankey = d3.sankey()
                 .nodeWidth(15)
-                .nodePadding(10)
+                .nodePadding(15) // Adjusted node padding to balance spacing between nodes
                 .extent([[1, 1], [width - 1, height - 6]])
                 .nodes(nodes)
                 .links(links);
@@ -93,23 +103,41 @@
                 .append("rect")
                 .attr("x", d => d.x0)
                 .attr("y", d => d.y0)
-                .attr("height", d => d.y1 - d.y0)
+                .attr("height", d => Math.max(d.y1 - d.y0, 10)) // Ensure minimum height for visibility
                 .attr("width", sankey.nodeWidth())
                 .style("fill", d => colorScale(d.name))
                 .append("title")
-                .text(d => `${d.name}\n${d.value}`);
+                .text(d => `${d.name}
+${d.value}`);
 
-            // Add labels to nodes
+            // Add labels to nodes with background box
             svg.append("g")
-                .selectAll("text")
+                .selectAll("g.node-label")
                 .data(graph.nodes)
                 .enter()
-                .append("text")
-                .attr("x", d => d.x0 < width / 2 ? d.x0 - 10 : d.x1 + 10)
-                .attr("y", d => (d.y0 + d.y1) / 2)
-                .attr("dy", "0.35em")
-                .attr("text-anchor", d => d.x0 < width / 2 ? "end" : "start")
-                .text(d => d.name);
+                .append("g")
+                .attr("class", "node-label")
+                .each(function(d) {
+                    const g = d3.select(this);
+
+                    // Add a background rectangle for the text
+                    const text = g.append("text")
+                        .attr("x", d => d.x0 < width / 2 ? d.x0 - 10 : d.x1 + 10)
+                        .attr("y", d => (d.y0 + d.y1) / 2)
+                        .attr("dy", "0.35em")
+                        .attr("text-anchor", d => d.x0 < width / 2 ? "end" : "start")
+                        .text(d => d.name);
+
+                    const bbox = text.node().getBBox();
+
+                    g.insert("rect", "text")
+                        .attr("x", bbox.x - 4)
+                        .attr("y", bbox.y - 2)
+                        .attr("width", bbox.width + 8)
+                        .attr("height", bbox.height + 4)
+                        .attr("fill", "#ffffff")
+                        .attr("opacity", 0.7);
+                });
 
             // Add links to the chart
             svg.append("g")
@@ -123,7 +151,21 @@
                 .style("stroke", d => colorScale(d.source.name))
                 .style("opacity", 0.5)
                 .append("title")
-                .text(d => `${d.source.name} -> ${d.target.name}\n${d.value}`);
+                .text(d => `${d.source.name} -> ${d.target.name}
+${d.value}`);
+
+            // Add value axis
+            const yAxisScale = d3.scaleLinear()
+                .domain([0, d3.max(graph.nodes, d => d.y1)])
+                .range([height, 0]);
+
+            const yAxis = d3.axisRight(yAxisScale)
+                .ticks(10, "s");
+
+            svg.append("g")
+                .attr("class", "axis")
+                .attr("transform", `translate(${width + margin.right + 80}, 0)`) // Move axis to the right side of the chart
+                .call(yAxis);
         });
     </script>
 </body>

@@ -25,38 +25,45 @@
 
         // Load the CSV data
         d3.csv("../data/Alluvial_1996.csv").then(function(data) {
-            // Assuming the data has columns like 'source', 'target', and 'value'
+            // Assuming the data has columns: 'Entity', 'Continent', 'Annual CO₂ emissions including land-use change'
 
             // Convert numerical values to number type
             data.forEach(d => {
-                d.value = +d.value;
+                d["Annual CO₂ emissions including land-use change"] = +d["Annual CO₂ emissions including land-use change"];
+            });
+
+            // Filter top 5 countries for each continent
+            const topCountriesByContinent = d3.group(data, d => d.Continent);
+            const filteredData = [];
+
+            topCountriesByContinent.forEach((values, key) => {
+                const sortedValues = values.sort((a, b) => b["Annual CO₂ emissions including land-use change"] - a["Annual CO₂ emissions including land-use change"]);
+                filteredData.push(...sortedValues.slice(0, 5));
             });
 
             // Create unique nodes and map them to indices
             const nodeMap = new Map();
             let index = 0;
-            data.forEach(d => {
-                if (!nodeMap.has(d.source)) {
-                    nodeMap.set(d.source, { name: d.source, index: index++ });
+            filteredData.forEach(d => {
+                if (!nodeMap.has(d.Continent)) {
+                    nodeMap.set(d.Continent, { name: d.Continent, index: index++ });
                 }
-                if (!nodeMap.has(d.target)) {
-                    nodeMap.set(d.target, { name: d.target, index: index++ });
+                if (!nodeMap.has(d.Entity)) {
+                    nodeMap.set(d.Entity, { name: d.Entity, index: index++ });
                 }
             });
 
             const nodes = Array.from(nodeMap.values());
 
-            // Create links and ensure no circular links
-            const links = data.map(d => {
-                if (d.source !== d.target) {
-                    return {
-                        source: nodeMap.get(d.source).index,
-                        target: nodeMap.get(d.target).index,
-                        value: d.value
-                    };
-                }
-                return null;
-            }).filter(link => link !== null);
+            // Create links for each layer (Continent -> Entity)
+            const links = [];
+            filteredData.forEach(d => {
+                links.push({
+                    source: nodeMap.get(d.Continent).index,
+                    target: nodeMap.get(d.Entity).index,
+                    value: d["Annual CO₂ emissions including land-use change"]
+                });
+            });
 
             // Update the Sankey Generator to use the node and link arrays correctly
             const sankey = d3.sankey()

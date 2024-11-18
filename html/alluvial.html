@@ -16,80 +16,8 @@
   </style>
 </head>
 <body>
+  <p>this is a test</p>
   <div id="alluvial-chart"></div>
-  <script src="../js/alluvial.js">
-
-    // Set up the SVG container
-    const width = 960, height = 500;
-    const svg = d3.select("#alluvial-chart")
-      .append("svg")
-      .attr("width", width)
-      .attr("height", height);
-
-    // Define the data for the Alluvial/Sankey Diagram
-    const alluvialData = [
-      { source: "Asia", target: "China", value: 1000 },
-      { source: "Asia", target: "India", value: 800 },
-      { source: "China", target: "Fossil", value: 700 },
-      { source: "China", target: "Land", value: 300 },
-      { source: "India", target: "Fossil", value: 500 },
-      { source: "India", target: "Land", value: 300 }
-    ];
-
-    // Create a Sankey layout
-    const sankey = d3.sankey()
-      .nodeWidth(15)
-      .nodePadding(10)
-      .extent([[1, 1], [width - 1, height - 6]]);
-
-    // Create nodes and links from data
-    const nodes = Array.from(new Set(alluvialData.flatMap(d => [d.source, d.target])), name => ({ name }));
-    const links = alluvialData.map(d => ({
-      source: nodes.findIndex(n => n.name === d.source),
-      target: nodes.findIndex(n => n.name === d.target),
-      value: d.value
-    }));
-
-    // Create Sankey layout structure
-    sankey({
-      nodes,
-      links
-    });
-
-    // Draw nodes
-    svg.append("g")
-      .selectAll("rect")
-      .data(nodes)
-      .join("rect")
-      .attr("x", d => d.x0)
-      .attr("y", d => d.y0)
-      .attr("height", d => d.y1 - d.y0)
-      .attr("width", d => d.x1 - d.x0)
-      .attr("fill", "steelblue")
-      .attr("stroke", "#000");
-
-    // Draw links
-    svg.append("g")
-      .selectAll("path")
-      .data(links)
-      .join("path")
-      .attr("d", d3.sankeyLinkHorizontal())
-      .attr("stroke", "gray")
-      .attr("stroke-width", d => Math.max(1, d.width))
-      .attr("fill", "none")
-      .attr("stroke-opacity", 0.5);
-
-    // Add node labels
-    svg.append("g")
-      .selectAll("text")
-      .data(nodes)
-      .join("text")
-      .attr("x", d => d.x0 < width / 2 ? d.x1 + 6 : d.x0 - 6)
-      .attr("y", d => (d.y1 + d.y0) / 2)
-      .attr("dy", "0.35em")
-      .attr("text-anchor", d => d.x0 < width / 2 ? "start" : "end")
-      .text(d => d.name)
-      .style("font-size", "12px");
-  </script>
+  <script src="../js/alluvial.js"></script>
 </body>
 </html>

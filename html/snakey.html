@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <script src="https://unpkg.com/d3-sankey@0.12.3/dist/d3-sankey.min.js"></script>
+    <link rel="stylesheet" href="../css/styles.css" />
     <title>Alluvial Chart Visualization</title>
     <style>
         text {
@@ -25,7 +26,7 @@
     </style>
 </head>
 <body>
-    <div id="chart" style="width: 100%;"></div>
+    <div id="chart"></div>
     <script>
         // Set the dimensions of the chart
         const margin = {top: 20, right: 100, bottom: 20, left: 100};
@@ -42,7 +43,6 @@
 
         // Load the CSV data
         d3.csv("../data/Alluvial_1996.csv").then(function(data) {
-            // Assuming the data has columns: 'Entity', 'Continent', 'Annual CO₂ emissions including land-use change'
 
             // Convert numerical values to number type
             data.forEach(d => {

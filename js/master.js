@@ -3,8 +3,8 @@ var app = angular.module("myApp", []);
 var namecontroller = "saba";
 
 const rootStyles = getComputedStyle(document.documentElement);
-const barColor = rootStyles.getPropertyValue("--blue").trim(); // Main bar color
-const barHoverColor = rootStyles.getPropertyValue("--saphire").trim(); // Hover color
+const barColor = rootStyles.getPropertyValue("--blue").trim(); 
+const barHoverColor = rootStyles.getPropertyValue("--saphire").trim();
 
 app.controller(namecontroller, function ($scope, $controller) {
   $scope.nametst = "./bar.html";
@@ -74,7 +74,7 @@ app.controller(namecontroller, function ($scope, $controller) {
     .style("pointer-events", "none");
 
   // Load the CSV data
-  d3.csv("../data_processing/output/sorted_emissions_one_year.csv").then(
+  d3.csv("../data/sorted_emissions_one_year.csv").then(
     (data) => {
       // Parse the data to convert numeric fields
       data = data.slice(0, 20);

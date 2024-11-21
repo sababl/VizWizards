@@ -10,7 +10,6 @@ Brunei,BRN,1996,19.198332
 Canada,CAN,1996,17.172369
 Australia,AUS,1996,17.128435
 Sint Maarten (Dutch part),SXM,1996,15.3045845
-North America,,1996,14.402925
 Denmark,DNK,1996,14.250308
 Trinidad and Tobago,TTO,1996,14.053402
 Faroe Islands,FRO,1996,13.606322
@@ -19,9 +18,7 @@ Estonia,EST,1996,13.273492
 Singapore,SGP,1996,13.147368
 Czechia,CZE,1996,13.114143
 Belgium,BEL,1996,12.79026
-High-income countries,,1996,12.499062
 Finland,FIN,1996,12.494933
-Oceania,,1996,11.953363
 Germany,DEU,1996,11.803728
 Netherlands,NLD,1996,11.731838
 Libya,LBY,1996,11.193171
@@ -41,12 +38,7 @@ Iceland,ISL,1996,9.376993
 Israel,ISR,1996,9.253601
 South Korea,KOR,1996,9.220204
 Aruba,ABW,1996,9.133246
-Europe (excl. EU-27),,1996,9.06119
-European Union (28),,1996,8.930186
-Europe,,1996,8.891271
-Europe (excl. EU-28),,1996,8.814806
 Bermuda,BMU,1996,8.814609
-European Union (27),,1996,8.769708
 Austria,AUT,1996,8.467981
 Greece,GRC,1996,8.248475
 Slovakia,SVK,1996,8.2164545
@@ -78,7 +70,6 @@ Malaysia,MYS,1996,5.347406
 Venezuela,VEN,1996,5.2389092
 Portugal,PRT,1996,5.131173
 Gabon,GAB,1996,5.1152673
-North America (excl. USA),,1996,5.1142936
 Barbados,BRB,1996,5.094993
 Montserrat,MSR,1996,4.735686
 North Macedonia,MKD,1996,4.7219
@@ -100,11 +91,9 @@ Latvia,LVA,1996,3.6352124
 Macao,MAC,1996,3.4799867
 Iraq,IRQ,1996,3.4525044
 Algeria,DZA,1996,3.4514637
-Upper-middle-income countries,,1996,3.3770304
 Mongolia,MNG,1996,3.366689
 Turkey,TUR,1996,3.3112319
 Chile,CHL,1996,3.29967
-Asia (excl. China and India),,1996,3.2234113
 Syria,SYR,1996,3.2040303
 Lebanon,LBN,1996,3.1611278
 Niue,NIU,1996,3.1545415
@@ -150,7 +139,6 @@ Africa,,1996,1.1761504
 Saint Vincent and the Grenadines,VCT,1996,1.1540056
 Maldives,MDV,1996,1.0970018
 Morocco,MAR,1996,1.0935374
-Lower-middle-income countries,,1996,1.0858201
 Bosnia and Herzegovina,BIH,1996,1.0848964
 Angola,AGO,1996,1.060181
 Dominica,DMA,1996,1.0592351
@@ -185,7 +173,6 @@ Tajikistan,TJK,1996,0.46785668
 Papua New Guinea,PNG,1996,0.45760554
 Cameroon,CMR,1996,0.4401117
 Mauritania,MRT,1996,0.43747813
-Low-income countries,,1996,0.4321997
 Senegal,SEN,1996,0.4143357
 Eritrea,ERI,1996,0.39684013
 Tuvalu,TUV,1996,0.38043818

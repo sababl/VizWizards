@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Choropleth Map</title>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <style>
+    /* General styling for the map */
+    #map {
+      margin: 0 auto;
+      width: 1000px;
+      height: 600px;
+    }
+
+    /* Tooltip styling */
+    .tooltip {
+      position: absolute;
+      background-color: white;
+      border: 1px solid #ccc;
+      padding: 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.3);
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+  <div class="tooltip" style="display: none;"></div>
+  <script>
+    // Dimensions and projection setup
+    const width = 1000;
+    const height = 600;
+    const projection = d3.geoNaturalEarth1().scale(160).translate([width / 2, height / 2]);
+    const path = d3.geoPath().projection(projection);
+
+    // SVG Canvas
+    const svg = d3.select("#map")
+      .append("svg")
+      .attr("width", width)
+      .attr("height", height);
+
+    // Tooltip
+    const tooltip = d3.select(".tooltip");
+
+    // Color scale
+    const colorScale = d3.scaleQuantize()
+      .domain([0, 5000000]) // Adjust domain based on data range
+      .range(d3.schemeReds[9]); // Using a predefined D3 color scheme
+
+    // Load GeoJSON and Data
+    Promise.all([
+      d3.json("https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/world.geojson"), // GeoJSON
+      d3.csv("../data/Alluvial.csv") // Your data file
+    ]).then(([geojson, data]) => {
+
+      // Data processing: Create a map for emissions
+      const emissionsMap = new Map(data.map(d => [d.Country, +d['Annual CO₂ emissions']]));
+
+      // Draw the map
+      svg.selectAll("path")
+        .data(geojson.features)
+        .join("path")
+        .attr("d", path)
+        .attr("fill", d => {
+          const emissions = emissionsMap.get(d.properties.name);
+          return emissions ? colorScale(emissions) : "#ccc"; // Grey for no data
+        })
+        .attr("stroke", "#333")
+        .on("mouseover", (event, d) => {
+          const emissions = emissionsMap.get(d.properties.name);
+          tooltip.style("display", "block")
+            .html(`<strong>Country:</strong> ${d.properties.name}<br>
+                   <strong>CO₂ Emissions:</strong> ${emissions ? emissions.toLocaleString() : "No data"}`);
+        })
+        .on("mousemove", (event) => {
+          tooltip.style("top", (event.pageY + 10) + "px")
+            .style("left", (event.pageX + 10) + "px");
+        })
+        .on("mouseout", () => {
+          tooltip.style("display", "none");
+        });
+
+      // Add legend (optional)
+      const legend = svg.append("g")
+        .attr("transform", `translate(20,20)`);
+
+      legend.selectAll("rect")
+        .data(colorScale.range().map(color => {
+          const d = colorScale.invertExtent(color);
+          if (!d[0]) d[0] = 0;
+          if (!d[1]) d[1] = 5000000;
+          return d;
+        }))
+        .join("rect")
+        .attr("x", (d, i) => i * 40)
+        .attr("y", 0)
+        .attr("width", 40)
+        .attr("height", 10)
+        .attr("fill", d => colorScale(d[0]));
+
+      legend.append("text")
+        .attr("x", 0)
+        .attr("y", 30)
+        .text("CO₂ Emissions");
+    });
+  </script>
+</body>
+</html>

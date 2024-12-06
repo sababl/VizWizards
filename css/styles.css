@@ -1,14 +1,13 @@
 /* Reset and Basic Styling */
 :root {
-  --gray: #d6dddcf6;
-  --dun: #E4CDA8;
-  --blue: #0b1957;
-  --saphire:#426bc2;
-  --desert-sand: #DFAF9A;
+  --gray: #C7CDCC;
+  --khaki: #AFAE9F;
+  --dark-green: #1C554F;
+  --light-green:#019154;
   --white: #f8faf9;
-  --red: #FD6363;
-  --cream: #FCF3E3;
-  --lace: #f7f4ed;
+  --orange: #E05515;
+  --cream: #EBECEB;
+  --white: #f7f4ed;
 }
 
 * {

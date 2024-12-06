@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Choropleth Map</title>
   <script src="https://d3js.org/d3.v7.min.js"></script>
+  <link rel="stylesheet" href="../css/styles.css" />
   <style>
     /* General styling for the map */
     #map {
@@ -27,6 +28,33 @@
   </style>
 </head>
 <body>
+  <div class="sidebar" id="sidebar">
+    <!-- <button class="close-btn" onclick="toggleSidebar()">&#9776;</button> -->
+    <div class="sidebar-header">
+        <h2>Menu</h2>
+    </div>
+    <div class="sidebar-content">
+        <div class="accordion">
+            <a href="../index.html" class="accordion-btn" id="homelink">Home</a>
+
+            <button class="accordion-btn" onclick="toggleDropdown('section2')">Comparing Categories</button>
+            <div class="dropdown-content" id="section2">
+                <a href="../html/bar.html">Bar charts</a>
+                <a href="../html/stacked.html">Stacked charts</a>
+                <a href="../html/heatmap.html">Heatmap</a>
+            </div>
+            <a href="../html/snakey.html" class="accordion-btn" id="snakey">Alluvial</a>
+
+            <button class="accordion-btn" onclick="toggleDropdown('section3')">Maps</button>
+            <div class="dropdown-content" id="section3">
+                <a href="../html/map.html">Choropleth map (1)</a>
+                <a href="../html/choropleth2.html">Choropleth map (2)</a>
+            </div>
+        </div>
+    </div>
+    <script src="../js/base.js"></script>
+</div>
+<div class="content">
   <div id="map"></div>
   <div class="tooltip" style="display: none;"></div>
   <script>
@@ -107,5 +135,6 @@
         .text("CO₂ Emissions");
     });
   </script>
+  </div>
 </body>
 </html>

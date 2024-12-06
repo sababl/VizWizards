@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", function () {
     .append("svg")
     .attr("width", width)
     .attr("height", height)
-    .style("background", "#91C4F3FF"); // Adding a background color for better readability
+    // .style("background", "#91C4F3FF"); // Adding a background color for better readability
 
   // Define two projections
   const mercatorProjection = d3
@@ -49,17 +49,25 @@ document.addEventListener("DOMContentLoaded", function () {
     "https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/world.geojson"
   ).then(function (geoData) {
     // Loading the CSV data
-    d3.csv("../data/sorted_emissions_one_year.csv").then(function (data) {
+    d3.csv("../data/Alluvial_1996.csv").then(function (data) {
       const emissionsByCountry = {};
+      let minEmission = Infinity;
+      let maxEmission = -Infinity;
+
       data.forEach((d) => {
         if (d.Year == 1996) {
-          // Only using data from the year 1996
+          const emission = +d["Annual CO₂ emissions"];
           emissionsByCountry[d.Code] = {
-            emission: +d["Annual CO₂ emissions (per capita)"],
+            emission: emission,
             country: d.Entity,
           };
+          if (emission < minEmission) minEmission = emission;
+          if (emission > maxEmission) maxEmission = emission;
         }
       });
+      const colorScale = d3
+        .scaleSequential(d3.interpolateReds)
+        .domain([minEmission, maxEmission]); // Set the domain based on the data
 
       svg
         .selectAll("path")
@@ -81,7 +89,7 @@ document.addEventListener("DOMContentLoaded", function () {
             tooltip.transition().duration(200).style("opacity", 1);
             tooltip
               .html(
-                `<strong>${emissionData.country}</strong><br>Emissions: ${emissionData.emission} tons per capita`
+                `<strong>${emissionData.country}</strong><br>Emissions: ${emissionData.emission} tons`
               )
               .style("left", event.pageX + 10 + "px")
               .style("top", event.pageY - 28 + "px");
@@ -97,7 +105,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
 
       // Adding a color legend
-      const legendWidth = 300;
+      const legendWidth = 700;
       const legendHeight = 20;
 
       const legendSvg = svg
@@ -109,7 +117,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
       const legendScale = d3
         .scaleLinear()
-        .domain(colorScale.domain())
+        .domain([minEmission, maxEmission]) // Use dynamic domain from data
         .range([0, legendWidth]);
 
       const legendAxis = d3
@@ -150,7 +158,7 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   // Add a button to switch between projections
-  d3.select("body")
+  d3.select("#switch-button")
     .append("button")
     .text("Switch Projection")
     .on("click", function () {

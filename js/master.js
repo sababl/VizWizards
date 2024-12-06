@@ -3,8 +3,8 @@ var app = angular.module("myApp", []);
 var namecontroller = "saba";
 
 const rootStyles = getComputedStyle(document.documentElement);
-const barColor = rootStyles.getPropertyValue("--blue").trim(); 
-const barHoverColor = rootStyles.getPropertyValue("--saphire").trim();
+const barColor = rootStyles.getPropertyValue("--dark-green").trim(); 
+const barHoverColor = rootStyles.getPropertyValue("--light-green").trim();
 
 app.controller(namecontroller, function ($scope, $controller) {
   $scope.nametst = "./bar.html";

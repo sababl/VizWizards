@@ -8,7 +8,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
     <link rel="stylesheet" href="../css/styles.css" />
   </head>
-  <body>
+  <body ng-app="myApp">
     <div class="sidebar" id="sidebar">
       <!-- <button class="close-btn" onclick="toggleSidebar()">&#9776;</button> -->
       <div class="sidebar-header">
@@ -40,42 +40,41 @@
       </div>
     </div>
     <div class="content">
-      <!-- <div ng-controller="saba"> -->
-      <div class="inline-container">
+      <div ng-controller="saba">
+        <div class="inline-container">
+          <div id="chart-one-year"></div>
+          <div class="text-box">
+            <p>
+              This bar chart displays the annual CO₂ emissions per capita for
+              various countries, with Qatar reaching over 65 tons per capita.
+              Kuwait, the United Arab Emirates, and Curacao also have high
+              emissions, each with over 25 tons per capita. Belgia has the
+              lowest emissions per capita of all listed nations, emitting just
+              over 10 tons per person.
+            </p>
+          </div>
+        </div>
+
         <div id="chart-one-year"></div>
-        <div class="text-box">
-          <p>
-            This bar chart displays the annual CO₂ emissions per capita for
-            various countries, with Qatar reaching over 65 tons per capita.
-            Kuwait, the United Arab Emirates, and Curacao also have high
-            emissions, each with over 25 tons per capita. Belgia has the lowest
-            emissions per capita of all listed nations, emitting just over 10
-            tons per person.
-          </p>
+        <div class="inline-container">
+          <div id="chart_decade"></div>
+          <div class="text-box">
+            <p>
+              This chart displays the average CO₂ emissions by country from 2001
+              to 2010, showing considerable variation across different nations.
+              Aruba and Bahrain stand out with notably high emissions, with
+              Aruba reaching the highest levels among the countries represented.
+              In contrast, many countries such as Afghanistan and Bangladesh
+              display minimal emissions, indicating lower industrial activity or
+              stricter environmental regulations. The data suggests a
+              significant disparity in CO₂ contributions, highlighting regions
+              with potential environmental impact challenges.
+            </p>
+          </div>
         </div>
       </div>
-
-      <div id="chart-one-year"></div>
-      <div class="inline-container">
-        <div id="chart_decade"></div>
-        <div class="text-box">
-          <p>
-            This chart displays the average CO₂ emissions by country from 2001
-            to 2010, showing considerable variation across different nations.
-            Aruba and Bahrain stand out with notably high emissions, with Aruba
-            reaching the highest levels among the countries represented. In
-            contrast, many countries such as Afghanistan and Bangladesh display
-            minimal emissions, indicating lower industrial activity or stricter
-            environmental regulations. The data suggests a significant disparity
-            in CO₂ contributions, highlighting regions with potential
-            environmental impact challenges.
-          </p>
-        </div>
-      </div>
-
-      <script src="../js/master.js"></script>
-      <!-- </div> -->
     </div>
+    <script src="../js/master.js"></script>
     <script src="../js/base.js"></script>
   </body>
 </html>

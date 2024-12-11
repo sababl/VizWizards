@@ -93,7 +93,7 @@ app.controller(namecontroller, function ($scope, $controller) {
         .scaleLinear()
         .domain([
           0,
-          d3.max(data, (d) => d["Annual CO₂ emissions (per capita)"]),
+          d3.max(data, (d) => d["Annual CO₂ emissions (per capita)"])
         ])
         .nice()
         .range([height, 0]);
@@ -147,10 +147,18 @@ app.controller(namecontroller, function ($scope, $controller) {
         });
       svg_one_year
         .append("text")
-        .attr("text-anchor", "end")
-        .attr("x", -margin.left + 40)
-        .attr("y", -50)
-        .attr("dy", "1em")
+        .attr("text-anchor", "start")
+        .attr("x", -margin.left + 20)
+        .attr("y", -margin.top +50)
+        .style("font-size", "12px")
+        .text("tonns per person");
+        
+        svg_one_year
+        .append("text")
+        .attr("text-anchor", "middle")
+        .attr("x", -margin.left - 200)
+        .attr("y", -margin.top)
+        .style("font-size", "20px")
         .attr("transform", "rotate(-90)")
         .text("Annual CO₂ emissions (per capita)");
 
@@ -158,7 +166,7 @@ app.controller(namecontroller, function ($scope, $controller) {
         .append("text")
         .attr("text-anchor", "end")
         .attr("x", width / 2 + margin.left)
-        .attr("y", height + margin.bottom - 90)
+        .attr("y", height + margin.bottom - 70)
         .text("Countries");
     }
   );
@@ -514,53 +522,54 @@ app.controller(namecontroller, function ($scope, $controller) {
 
       // Create bars
       svg
-      .selectAll(".bar")
-      .data(averageData)
-      .enter()
-      .append("rect")
-      .attr("class", "bar")
-      .attr("x", (d) => x(d.Entity))
-      .attr("y", (d) => y(d["Average CO₂ emissions (2001-2010)"]))
-      .attr("width", x.bandwidth())
-      .attr(
-        "height",
-        (d) => svgHeight - y(d["Average CO₂ emissions (2001-2010)"])
-      )
-      .attr("fill", barColor) // Use CSS variable for fill color
-      .on("mouseover", function (event, d) {
-        // Change bar color on hover
-        d3.select(this).attr("fill", barHoverColor);
-    
-        // Show tooltip
-        tooltip
-          .transition()
-          .duration(200)
-          .style("opacity", 0.9);
-        tooltip
-          .html(
-            "Country: " +
-              d.Entity +
-              "<br/>Average Value: " +
-              d["Average CO₂ emissions (2001-2010)"]
-          )
-          .style("left", event.pageX + "px")
-          .style("top", event.pageY - 28 + "px");
-      })
-      .on("mouseout", function () {
-        // Revert bar color on mouse out
-        d3.select(this).attr("fill", barColor);
-    
-        // Hide tooltip
-        tooltip
-          .transition()
-          .duration(500)
-          .style("opacity", 0);
-      });
+        .selectAll(".bar")
+        .data(averageData)
+        .enter()
+        .append("rect")
+        .attr("class", "bar")
+        .attr("x", (d) => x(d.Entity))
+        .attr("y", (d) => y(d["Average CO₂ emissions (2001-2010)"]))
+        .attr("width", x.bandwidth())
+        .attr(
+          "height",
+          (d) => svgHeight - y(d["Average CO₂ emissions (2001-2010)"])
+        )
+        .attr("fill", barColor) // Use CSS variable for fill color
+        .on("mouseover", function (event, d) {
+          // Change bar color on hover
+          d3.select(this).attr("fill", barHoverColor);
 
+          // Show tooltip
+          tooltip.transition().duration(200).style("opacity", 0.9);
+          tooltip
+            .html(
+              "Country: " +
+                d.Entity +
+                "<br/>Average Value: " +
+                d["Average CO₂ emissions (2001-2010)"]
+            )
+            .style("left", event.pageX + "px")
+            .style("top", event.pageY - 28 + "px");
+        })
+        .on("mouseout", function () {
+          // Revert bar color on mouse out
+          d3.select(this).attr("fill", barColor);
+
+          // Hide tooltip
+          tooltip.transition().duration(500).style("opacity", 0);
+        });
+      svg
+        .append("text")
+        .attr("text-anchor", "start")
+        .attr("x", -margin.left + 50)
+        .attr("y", -margin.top +50)
+        .style("font-size", "12px")
+        .text("tonns per person");
+        
       svg
         .append("text")
         .attr("text-anchor", "end")
-        .attr("x", -margin.left + 40)
+        .attr("x", -margin.left - 150)
         .attr("y", -50)
         .attr("dy", "1em")
         .attr("transform", "rotate(-90)")
@@ -570,7 +579,7 @@ app.controller(namecontroller, function ($scope, $controller) {
         .append("text")
         .attr("text-anchor", "end")
         .attr("x", width / 2 + margin.left)
-        .attr("y", height + margin.bottom + 20)
+        .attr("y", height + margin.bottom + 30)
         .text("Countries");
     }
   );

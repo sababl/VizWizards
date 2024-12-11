@@ -25,6 +25,17 @@
       box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.3);
       pointer-events: none;
     }
+
+    /* Button styling */
+    #projectionButton {
+      position: absolute;
+      bottom: 20px;
+      left: 20px;
+      padding: 10px;
+      background-color: #fff;
+      border: 1px solid #ccc;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
@@ -55,62 +66,131 @@
     <script src="../js/base.js"></script>
 </div>
 <div class="content">
+  <button id="projectionButton">Globe</button>
   <div id="map"></div>
   <div class="tooltip" style="display: none;"></div>
   <script>
     // Dimensions and projection setup
     const width = 1000;
     const height = 600;
-    const projection = d3.geoNaturalEarth1().scale(160).translate([width / 2, height / 2]);
+
+    // Initial projection (Natural Earth)
+    let projection = d3.geoNaturalEarth1().scale(160).translate([width / 2, height / 2]);
     const path = d3.geoPath().projection(projection);
 
     // SVG Canvas
     const svg = d3.select("#map")
       .append("svg")
       .attr("width", width)
-      .attr("height", height);
+      .attr("height", height)
+      .style("background-color", "#f0f0f0");;
 
     // Tooltip
     const tooltip = d3.select(".tooltip");
 
     // Color scale
     const colorScale = d3.scaleQuantize()
-      .domain([0, 5000000]) // Adjust domain based on data range
+      .domain([0, 30]) // Adjust domain based on data range
       .range(d3.schemeReds[9]); // Using a predefined D3 color scheme
+
+    // Year to filter data
+    const yearToShow = 1990; // Change this to the desired year
 
     // Load GeoJSON and Data
     Promise.all([
-      d3.json("https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/world.geojson"), // GeoJSON
-      d3.csv("../data/Alluvial.csv") // Your data file
+      d3.json("https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/world.geojson"), // GeoJSON file with countries
+      d3.csv("../data/co-emissions-per-capitacopy.csv") // CO₂ data file
     ]).then(([geojson, data]) => {
+      console.log("All data loaded:", data);
 
-      // Data processing: Create a map for emissions
-      const emissionsMap = new Map(data.map(d => [d.Country, +d['Annual CO₂ emissions']]));
+      // Filter data for the specific year
+      const filteredData = data.filter(d => +d.Year === yearToShow);
+      console.log(`Data for year ${yearToShow}:`, filteredData);
 
-      // Draw the map
-      svg.selectAll("path")
-        .data(geojson.features)
-        .join("path")
-        .attr("d", path)
-        .attr("fill", d => {
-          const emissions = emissionsMap.get(d.properties.name);
-          return emissions ? colorScale(emissions) : "#ccc"; // Grey for no data
+      // Create a map for emissions for the specific year
+      const emissionsMap = new Map(
+        filteredData.map(d => [d.Entity, +d['Annual CO₂ emissions (per capita)']])
+      );
+
+      console.log(`Emissions map for year ${yearToShow}:`, emissionsMap);
+
+      // Modify the GeoJSON data to match the country names
+      const normalizedGeojson = geojson.features.map(feature => {
+        const countryName = feature.properties.name;
+
+        // Standardize country name matching between the CSV and GeoJSON files
+        const normalizedName = countryName === "United States of America" ? "USA" :
+                              countryName === "United Kingdom" ? "UK" : countryName;
+
+        // Add a property to match the names in the emissions data
+        feature.properties.normalized_name = normalizedName;
+        return feature;
+      });
+
+      // Function to update the map projection
+      function updateMap() {
+        path.projection(projection);
+
+        svg.selectAll("path")
+          .data(normalizedGeojson)
+          .join("path")
+          .attr("d", path)
+          .attr("fill", d => {
+            const emissions = emissionsMap.get(d.properties.normalized_name);
+            if (!emissions) {
+              console.log(`No data for region: ${d.properties.normalized_name}`);
+            }
+            return emissions ? colorScale(emissions) : "#ccc"; // Grey for no data
+          })
+          .attr("stroke", "#333")
+          .on("mouseover", (event, d) => {
+            const emissions = emissionsMap.get(d.properties.normalized_name);
+            tooltip.style("display", "block")
+              .html(`<strong>Country:</strong> ${d.properties.name}<br>
+                     <strong>CO₂ Emissions (${yearToShow}):</strong> ${emissions ? emissions.toLocaleString() : "No data"}`);
+          })
+          .on("mousemove", (event) => {
+            tooltip.style("top", (event.pageY + 10) + "px")
+              .style("left", (event.pageX + 10) + "px");
+          })
+          .on("mouseout", () => {
+            tooltip.style("display", "none");
+          });
+      }
+
+      // Initial map render
+      updateMap();
+
+      // Globe projection (Orthographic)
+      const globeProjection = d3.geoOrthographic().scale(250).translate([width / 2, height / 2]);
+
+      // Function to rotate the globe based on mouse drag
+      let rotate = [0, 0]; // Initial rotation values
+      const drag = d3.drag()
+        .on("start", (event) => {
+          rotate = [event.x, event.y];
         })
-        .attr("stroke", "#333")
-        .on("mouseover", (event, d) => {
-          const emissions = emissionsMap.get(d.properties.name);
-          tooltip.style("display", "block")
-            .html(`<strong>Country:</strong> ${d.properties.name}<br>
-                   <strong>CO₂ Emissions:</strong> ${emissions ? emissions.toLocaleString() : "No data"}`);
-        })
-        .on("mousemove", (event) => {
-          tooltip.style("top", (event.pageY + 10) + "px")
-            .style("left", (event.pageX + 10) + "px");
-        })
-        .on("mouseout", () => {
-          tooltip.style("display", "none");
+        .on("drag", (event) => {
+          const rotateX = rotate[0] - event.x;
+          const rotateY = rotate[1] - event.y;
+          rotate = [event.x, event.y];
+          projection.rotate([projection.rotate()[0] - rotateX / 5, projection.rotate()[1] + rotateY / 5]);
+          updateMap();
         });
 
+      // Toggle projection button functionality
+      let isGlobeProjection = false;
+      d3.select("#projectionButton").on("click", () => {
+        isGlobeProjection = !isGlobeProjection;
+        projection = isGlobeProjection ? globeProjection : d3.geoNaturalEarth1().scale(160).translate([width / 2, height / 2]);
+        d3.select("#projectionButton").text(isGlobeProjection ? "Natural Earth" : "Globe");
+        updateMap();
+      });
+
+      // Apply the drag interaction to the SVG element
+      svg.call(drag);
+
+      
       // Add legend (optional)
       const legend = svg.append("g")
         .attr("transform", `translate(20,20)`);
@@ -119,7 +199,7 @@
         .data(colorScale.range().map(color => {
           const d = colorScale.invertExtent(color);
           if (!d[0]) d[0] = 0;
-          if (!d[1]) d[1] = 5000000;
+          if (!d[1]) d[1] = 30;
           return d;
         }))
         .join("rect")
@@ -133,7 +213,11 @@
         .attr("x", 0)
         .attr("y", 30)
         .text("CO₂ Emissions");
+    }).catch(error => {
+      console.error("Error loading data:", error);
     });
+
+    
   </script>
   </div>
 </body>

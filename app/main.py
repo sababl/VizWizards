@@ -9,6 +9,9 @@ app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
 templates = Jinja2Templates(directory="app/templates")
 
+@app.get("/")
+async def root():
+    return {"status": "healthy"}
 
 @app.get("/map", response_class=HTMLResponse)
 async def map(request: Request):

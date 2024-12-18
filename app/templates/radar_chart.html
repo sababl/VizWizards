@@ -1,14 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Expandable Sidebar Navigation</title>
-    <link rel="stylesheet" href="../css/styles.css">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <link rel="stylesheet" href="../css/styles.css" />
 </head>
+
 <body>
     <div class="sidebar" id="sidebar">
-        <!-- <button class="close-btn" onclick="toggleSidebar()">&#9776;</button> -->
         <div class="sidebar-header">
             <h2>Menu</h2>
         </div>
@@ -16,7 +17,9 @@
             <div class="accordion">
                 <a href="../index.html" class="accordion-btn" id="homelink">Home</a>
 
-                <button class="accordion-btn" onclick="toggleDropdown('section2')">Comparing Categories</button>
+                <button class="accordion-btn" onclick="toggleDropdown('section2')">
+                    Comparing Categories
+                </button>
                 <div class="dropdown-content" id="section2">
                     <a href="../html/bar.html">Bar charts</a>
                     <a href="../html/stacked.html">Stacked charts</a>
@@ -24,7 +27,9 @@
                 </div>
                 <a href="../html/snakey.html" class="accordion-btn" id="snakey">Alluvial</a>
 
-                <button class="accordion-btn" onclick="toggleDropdown('section3')">Maps</button>
+                <button class="accordion-btn" onclick="toggleDropdown('section3')">
+                    Maps
+                </button>
                 <div class="dropdown-content" id="section3">
                     <a href="../html/map.html">Choropleth map (1)</a>
                     <a href="../html/choropleth2.html">Choropleth map (2)</a>
@@ -33,8 +38,11 @@
         </div>
     </div>
     <div class="content">
-        <p></p>
+
+        <h1>Radar Chart</h1>
+        <div id="radar_chart"></div>
+        <script src="../js/radar_chart.js"></script>
     </div>
-    <script src="../js/base.js"></script>
 </body>
+
 </html>

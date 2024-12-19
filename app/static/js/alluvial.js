@@ -6,7 +6,7 @@ const svg = d3.select("#alluvial-chart")
   .attr("height", height);
 
 // Load the dataset
-const dataPath = "../data/Alluvial_1996.csv"; // Adjust path as needed
+const dataPath = "/static/data/Alluvial_1996.csv";
 d3.csv(dataPath).then(data => {
   const sankeyData = [];
 

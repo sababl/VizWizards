@@ -49,7 +49,7 @@ document.addEventListener("DOMContentLoaded", function () {
     "https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/world.geojson"
   ).then(function (geoData) {
     // Loading the CSV data
-    d3.csv("../data/Alluvial_1996.csv").then(function (data) {
+    d3.csv("/static/data/Alluvial_1996.csv").then(function (data) {
       const emissionsByCountry = {};
       let minEmission = Infinity;
       let maxEmission = -Infinity;

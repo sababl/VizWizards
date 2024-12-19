@@ -1,41 +1,8 @@
-var app = angular.module("myApp", []);
-
-var namecontroller = "saba";
 
 const rootStyles = getComputedStyle(document.documentElement);
 const barColor = rootStyles.getPropertyValue("--dark-green").trim(); 
 const barHoverColor = rootStyles.getPropertyValue("--light-green").trim();
 
-app.controller(namecontroller, function ($scope, $controller) {
-  $scope.nametst = "./bar.html";
-
-  $scope.changeTab = function (item) {
-    $scope.nametst = item;
-  };
-
-  function showContent(chartType) {
-    // Hide all content-divs
-    const contentDivs = document.querySelectorAll(".content-div");
-    contentDivs.forEach((div) => {
-      div.style.display = "none";
-    });
-
-    // Show the selected content-div
-    document.getElementById(chartType).style.display = "block";
-  }
-  $scope.pageNum = null;
-  $scope.tstfunc = function (item) {
-    $scope.pageNum = item;
-
-    if (parseInt(item) > 4) {
-      $controller("melika", { $scope: $scope });
-      $scope.isMelikaActive = true;
-    } else {
-      $scope.isMelikaActive = false;
-    }
-  };
-  // codaye saba inja bashe
-  $scope.name = "saba";
   const colorScales = {
     Oceania: d3.scaleLinear().domain([1, 5]).range(["#c6e5f5", "#08306b"]),
     Africa: d3.scaleLinear().domain([1, 5]).range(["#fdd0a2", "#e6550d"]),
@@ -74,7 +41,7 @@ app.controller(namecontroller, function ($scope, $controller) {
     .style("pointer-events", "none");
 
   // Load the CSV data
-  d3.csv("../data/sorted_emissions_one_year.csv").then(
+  d3.csv("/static/data/sorted_emissions_one_year.csv").then(
     (data) => {
       // Parse the data to convert numeric fields
       data = data.slice(0, 20);
@@ -181,7 +148,7 @@ app.controller(namecontroller, function ($scope, $controller) {
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
   // Load the CSV data
-  d3.csv("../data_processing/output/continent_summary_1996.csv").then(
+  d3.csv("/static/data/continent_summary_1996.csv").then(
     (data) => {
       // Parse the CSV data to the required structure
       const parsedData = data.map((d) => {
@@ -287,7 +254,7 @@ app.controller(namecontroller, function ($scope, $controller) {
     }
   );
 
-  d3.csv("../data_processing/output/continent_summary_1996.csv").then(function (
+  d3.csv("/static/data/continent_summary_1996.csv").then(function (
     data
   ) {
     // Process data for each country field
@@ -485,7 +452,7 @@ app.controller(namecontroller, function ($scope, $controller) {
     .append("g")
     .attr("transform", `translate(${margin2.left},${margin2.top})`);
 
-  d3.csv("../data_processing/output/average_emissions_2001_2010.csv").then(
+  d3.csv("/static/data/average_emissions_2001_2010.csv").then(
     (averageData) => {
       averageData = averageData.slice(0, 20);
       averageData.forEach((d) => {
@@ -583,4 +550,3 @@ app.controller(namecontroller, function ($scope, $controller) {
         .text("Countries");
     }
   );
-});

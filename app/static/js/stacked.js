@@ -285,7 +285,7 @@ function drawStackedChart(processedData) {
 }
 
 // Load data and render charts
-d3.csv("../data_processing/output/continent_summary_1996.csv").then(data => {
+d3.csv("/static/data/continent_summary_1996.csv").then(data => {
   // Parse countries to include names and values
   const parsedData = data.map(d => {
     return {

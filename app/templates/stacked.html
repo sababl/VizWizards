@@ -1,51 +1,13 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>D3 Bar Chart</title>
-    <script src="https://d3js.org/d3.v7.min.js"></script>
-    <link rel="stylesheet" href="../css/styles.css" />
-  </head>
-  <body style="background-color: var(--white)">
-    <div class="sidebar" id="sidebar">
-      <div class="sidebar-header">
-        <h2>Menu</h2>
-      </div>
-      <div class="sidebar-content">
-        <div class="accordion">
-          <a href="../index.html" class="accordion-btn" id="homelink">Home</a>
+{% extends "base.html" %}
 
-          <button class="accordion-btn" onclick="toggleDropdown('section2')">
-            Comparing Categories
-          </button>
-          <div class="dropdown-content" id="section2">
-            <a href="../html/bar.html">Bar charts</a>
-            <a href="../html/stacked.html">Stacked charts</a>
-            <a href="../html/heatmap.html">Heatmap</a>
-          </div>
-          <a href="../html/snakey.html" class="accordion-btn" id="snakey"
-            >Alluvial</a
-          >
+{% block title %}Stacked Chart{% endblock %}
 
-          <button class="accordion-btn" onclick="toggleDropdown('section3')">
-            Maps
-          </button>
-          <div class="dropdown-content" id="section3">
-            <a href="../html/map.html">Choropleth map (1)</a>
-            <a href="../html/choropleth2.html">Choropleth map (2)</a>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="content">
-      <h2>Annual CO2 Emmisions(per capita) of the year 1996</h2>
-      <div id="chart-stacked"></div>
-      <div id="chart-container" style="display: flex; gap: 30px"></div>
-      <div id="stacked-chart"></div>
+{% block content %}
 
-      <script src="../js/stacked.js"></script>
-      <script src="../js/base.js"></script>
-    </div>
-  </body>
-</html>
+<h2>Annual CO2 Emmisions(per capita) of the year 1996</h2>
+<div id="chart-stacked"></div>
+<div id="chart-container" style="display: flex; gap: 30px"></div>
+<div id="stacked-chart"></div>
+
+<script src="/static/js/stacked.js"></script>
+{% endblock %}

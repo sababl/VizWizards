@@ -1,17 +1,14 @@
-<html lang="en">
- <head>
-  <meta charset="UTF-8">
-  <meta content="IE=edge" http-equiv="X-UA-Compatible">
-  <meta content="width=device-width, initial-scale=1" name="viewport">
-  <title>Heatmap</title>
-  <meta content="HeatMap Chart" name="keywords">
-  <meta content="AnyChart - JavaScript Charts designed to be embedded and integrated" name="description">
-  <link rel="stylesheet" href="../css/styles.css" />
+{% extends "base.html" %}
 
-  <!--[if lt IE 9]>
-<script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
-<script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-<![endif]-->
+{% block title %}Heatmap{% endblock %}
+
+{% block extra_styles %}
+<meta charset="UTF-8">
+<meta content="IE=edge" http-equiv="X-UA-Compatible">
+<meta content="width=device-width, initial-scale=1" name="viewport">
+<meta content="HeatMap Chart" name="keywords">
+<meta content="AnyChart - JavaScript Charts designed to be embedded and integrated" name="description">
+
   <style>html,
 body,
 #container {
@@ -20,39 +17,12 @@ body,
   margin: 0;
   padding: 0;
 }</style>
- </head>
- <body >
-  <div class="sidebar" id="sidebar">
-    <!-- <button class="close-btn" onclick="toggleSidebar()">&#9776;</button> -->
-    <div class="sidebar-header">
-        <h2>Menu</h2>
-    </div>
-    <div class="sidebar-content">
-        <div class="accordion">
-            <a href="../index.html" class="accordion-btn" id="homelink">Home</a>
+{% endblock %}
 
-            <button class="accordion-btn" onclick="toggleDropdown('section2')">Comparing Categories</button>
-            <div class="dropdown-content" id="section2">
-                <a href="../html/bar.html">Bar charts</a>
-                <a href="../html/stacked.html">Stacked charts</a>
-                <a href="../html/heatmap.html">Heatmap</a>
-            </div>
-            <a href="../html/snakey.html" class="accordion-btn" id="snakey">Alluvial</a>
-
-            <button class="accordion-btn" onclick="toggleDropdown('section3')">Maps</button>
-            <div class="dropdown-content" id="section3">
-                <a href="../html/map.html">Choropleth map (1)</a>
-                <a href="../html/choropleth2.html">Choropleth map (2)</a>
-            </div>
-        </div>
-    </div>
-</div>
-<div class="content">
+{% block content %}
   <div id="container"></div>
   <script src="https://cdn.anychart.com/releases/8.11.1/js/anychart-core.min.js"></script>
   <script src="https://cdn.anychart.com/releases/8.11.1/js/anychart-heatmap.min.js"></script>
-  <script src="../js/heatmap.js"></script>
+  <script src="/static/js/heatmap.js"></script>
 </div>
-<script src="../js/base.js"></script>
- </body>
-</html>
+{% endblock %}

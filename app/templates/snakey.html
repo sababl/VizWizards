@@ -1,200 +1,171 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://d3js.org/d3.v7.min.js"></script>
-    <script src="https://unpkg.com/d3-sankey@0.12.3/dist/d3-sankey.min.js"></script>
-    <link rel="stylesheet" href="../css/styles.css" />
-    <title>Alluvial Chart Visualization</title>
-    <style>
-        text {
-            font-family: Arial, sans-serif;
-            font-size: 12px;
-            fill: #000;
-        }
-        .axis line,
-        .axis path {
-            shape-rendering: crispEdges;
-            stroke: #000;
-            fill: none;
-        }
-        .axis text {
-            font-size: 10px;
-            fill: #000;
-        }
-    </style>
-</head>
-<body>
-    <div class="sidebar" id="sidebar">
-        <!-- <button class="close-btn" onclick="toggleSidebar()">&#9776;</button> -->
-        <div class="sidebar-header">
-            <h2>Menu</h2>
-        </div>
-        <div class="sidebar-content">
-            <div class="accordion">
-                <a href="../index.html" class="accordion-btn" id="homelink">Home</a>
+{% extends "base.html" %}
 
-                <button class="accordion-btn" onclick="toggleDropdown('section2')">Comparing Categories</button>
-                <div class="dropdown-content" id="section2">
-                    <a href="../html/bar.html">Bar charts</a>
-                    <a href="../html/stacked.html">Stacked charts</a>
-                    <a href="../html/heatmap.html">Heatmap</a>
-                </div>
-                <a href="../html/snakey.html" class="accordion-btn" id="snakey">Alluvial</a>
+{% block title %}Alluvial{% endblock %}
 
-                <button class="accordion-btn" onclick="toggleDropdown('section3')">Maps</button>
-                <div class="dropdown-content" id="section3">
-                    <a href="../html/map.html">Choropleth map (1)</a>
-                    <a href="../html/choropleth2.html">Choropleth map (2)</a>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="content">
-    <div id="chart"></div>
-    <script>
-        // Set the dimensions of the chart
-        const margin = {top: 20, right: 100, bottom: 20, left: 100};
-        const width = 900 - margin.left - margin.right;
-        const height = 600 - margin.top - margin.bottom;
+{% block extra_styles %}
+<style>
+    text {
+        font-family: Arial, sans-serif;
+        font-size: 12px;
+        fill: #000;
+    }
 
-        // Create the SVG element
-        const svg = d3.select("#chart")
-            .append("svg")
-            .attr("width", 1600)
-            .attr("height", 700)
-            .append("g")
-            .attr("transform", `translate(${margin.left}, ${margin.top})`);
+    .axis line,
+    .axis path {
+        shape-rendering: crispEdges;
+        stroke: #000;
+        fill: none;
+    }
 
-        // Load the CSV data
-        d3.csv("../data/Alluvial_1996.csv").then(function(data) {
+    .axis text {
+        font-size: 10px;
+        fill: #000;
+    }
+</style>
+{% endblock %}
 
-            // Convert numerical values to number type
-            data.forEach(d => {
-                d["Annual CO₂ emissions including land-use change"] = +d["Annual CO₂ emissions including land-use change"];
-            });
+{% block content %}
+<div id="chart"></div>
+<script>
+    // Set the dimensions of the chart
+    const margin = { top: 20, right: 100, bottom: 20, left: 100 };
+    const width = 900 - margin.left - margin.right;
+    const height = 600 - margin.top - margin.bottom;
 
-            // Filter top 5 countries for each continent
-            const topCountriesByContinent = d3.group(data, d => d.Continent);
-            const filteredData = [];
+    // Create the SVG element
+    const svg = d3.select("#chart")
+        .append("svg")
+        .attr("width", 1600)
+        .attr("height", 700)
+        .append("g")
+        .attr("transform", `translate(${margin.left}, ${margin.top})`);
 
-            topCountriesByContinent.forEach((values, key) => {
-                const sortedValues = values.sort((a, b) => b["Annual CO₂ emissions including land-use change"] - a["Annual CO₂ emissions including land-use change"]);
-                filteredData.push(...sortedValues.slice(0, 5));
-            });
+    // Load the CSV data
+    d3.csv("/static/data/Alluvial_1996.csv").then(function (data) {
 
-            // Create unique nodes and map them to indices
-            const nodeMap = new Map();
-            let index = 0;
-            filteredData.forEach(d => {
-                if (!nodeMap.has(d.Continent)) {
-                    nodeMap.set(d.Continent, { name: d.Continent, index: index++ });
-                }
-                if (!nodeMap.has(d.Entity)) {
-                    nodeMap.set(d.Entity, { name: d.Entity, index: index++ });
-                }
-            });
-
-            const nodes = Array.from(nodeMap.values());
-
-            // Create links for each layer (Continent -> Entity)
-            const links = [];
-            filteredData.forEach(d => {
-                links.push({
-                    source: nodeMap.get(d.Continent).index,
-                    target: nodeMap.get(d.Entity).index,
-                    value: d["Annual CO₂ emissions including land-use change"]
-                });
-            });
-
-            // Update the Sankey Generator to use the node and link arrays correctly
-            const sankey = d3.sankey()
-                .nodeWidth(15)
-                .nodePadding(15) // Adjusted node padding to balance spacing between nodes
-                .extent([[1, 1], [width - 1, height - 6]])
-                .nodes(nodes)
-                .links(links);
-
-            const graph = sankey();
-
-            // Define a color scale for better contrast
-            const colorScale = d3.scaleOrdinal(d3.schemeCategory10);
-
-            // Add nodes to the chart
-            svg.append("g")
-                .selectAll("rect")
-                .data(graph.nodes)
-                .enter()
-                .append("rect")
-                .attr("x", d => d.x0)
-                .attr("y", d => d.y0)
-                .attr("height", d => Math.max(d.y1 - d.y0, 10)) // Ensure minimum height for visibility
-                .attr("width", sankey.nodeWidth())
-                .style("fill", d => colorScale(d.name))
-                .append("title")
-                .text(d => `${d.name}
-${d.value}`);
-
-            // Add labels to nodes with background box
-            svg.append("g")
-                .selectAll("g.node-label")
-                .data(graph.nodes)
-                .enter()
-                .append("g")
-                .attr("class", "node-label")
-                .each(function(d) {
-                    const g = d3.select(this);
-
-                    // Add a background rectangle for the text
-                    const text = g.append("text")
-                        .attr("x", d => d.x0 < width / 2 ? d.x0 - 10 : d.x1 + 10)
-                        .attr("y", d => (d.y0 + d.y1) / 2)
-                        .attr("dy", "0.35em")
-                        .attr("text-anchor", d => d.x0 < width / 2 ? "end" : "start")
-                        .text(d => d.name);
-
-                    const bbox = text.node().getBBox();
-
-                    g.insert("rect", "text")
-                        .attr("x", bbox.x - 4)
-                        .attr("y", bbox.y - 2)
-                        .attr("width", bbox.width + 8)
-                        .attr("height", bbox.height + 4)
-                        .attr("fill", "#ffffff")
-                        .attr("opacity", 0.7);
-                });
-
-            // Add links to the chart
-            svg.append("g")
-                .attr("fill", "none")
-                .selectAll("path")
-                .data(graph.links)
-                .enter()
-                .append("path")
-                .attr("d", d3.sankeyLinkHorizontal())
-                .attr("stroke-width", d => Math.max(1, d.width))
-                .style("stroke", d => colorScale(d.source.name))
-                .style("opacity", 0.5)
-                .append("title")
-                .text(d => `${d.source.name} -> ${d.target.name}
-${d.value}`);
-
-            // Add value axis
-            const yAxisScale = d3.scaleLinear()
-                .domain([0, d3.max(graph.nodes, d => d.y1)])
-                .range([height, 0]);
-
-            const yAxis = d3.axisRight(yAxisScale)
-                .ticks(10, "s");
-
-            svg.append("g")
-                .attr("class", "axis")
-                .attr("transform", `translate(${width + margin.right + 80}, 0)`) // Move axis to the right side of the chart
-                .call(yAxis);
+        // Convert numerical values to number type
+        data.forEach(d => {
+            d["Annual CO₂ emissions including land-use change"] = +d["Annual CO₂ emissions including land-use change"];
         });
-    </script>
-    </div>
-    <script src="../js/base.js"></script>
-</body>
-</html>
+
+        // Filter top 5 countries for each continent
+        const topCountriesByContinent = d3.group(data, d => d.Continent);
+        const filteredData = [];
+
+        topCountriesByContinent.forEach((values, key) => {
+            const sortedValues = values.sort((a, b) => b["Annual CO₂ emissions including land-use change"] - a["Annual CO₂ emissions including land-use change"]);
+            filteredData.push(...sortedValues.slice(0, 5));
+        });
+
+        // Create unique nodes and map them to indices
+        const nodeMap = new Map();
+        let index = 0;
+        filteredData.forEach(d => {
+            if (!nodeMap.has(d.Continent)) {
+                nodeMap.set(d.Continent, { name: d.Continent, index: index++ });
+            }
+            if (!nodeMap.has(d.Entity)) {
+                nodeMap.set(d.Entity, { name: d.Entity, index: index++ });
+            }
+        });
+
+        const nodes = Array.from(nodeMap.values());
+
+        // Create links for each layer (Continent -> Entity)
+        const links = [];
+        filteredData.forEach(d => {
+            links.push({
+                source: nodeMap.get(d.Continent).index,
+                target: nodeMap.get(d.Entity).index,
+                value: d["Annual CO₂ emissions including land-use change"]
+            });
+        });
+
+        // Update the Sankey Generator to use the node and link arrays correctly
+        const sankey = d3.sankey()
+            .nodeWidth(15)
+            .nodePadding(15) // Adjusted node padding to balance spacing between nodes
+            .extent([[1, 1], [width - 1, height - 6]])
+            .nodes(nodes)
+            .links(links);
+
+        const graph = sankey();
+
+        // Define a color scale for better contrast
+        const colorScale = d3.scaleOrdinal(d3.schemeCategory10);
+
+        // Add nodes to the chart
+        svg.append("g")
+            .selectAll("rect")
+            .data(graph.nodes)
+            .enter()
+            .append("rect")
+            .attr("x", d => d.x0)
+            .attr("y", d => d.y0)
+            .attr("height", d => Math.max(d.y1 - d.y0, 10)) // Ensure minimum height for visibility
+            .attr("width", sankey.nodeWidth())
+            .style("fill", d => colorScale(d.name))
+            .append("title")
+            .text(d => `${d.name}
+${d.value}`);
+
+        // Add labels to nodes with background box
+        svg.append("g")
+            .selectAll("g.node-label")
+            .data(graph.nodes)
+            .enter()
+            .append("g")
+            .attr("class", "node-label")
+            .each(function (d) {
+                const g = d3.select(this);
+
+                // Add a background rectangle for the text
+                const text = g.append("text")
+                    .attr("x", d => d.x0 < width / 2 ? d.x0 - 10 : d.x1 + 10)
+                    .attr("y", d => (d.y0 + d.y1) / 2)
+                    .attr("dy", "0.35em")
+                    .attr("text-anchor", d => d.x0 < width / 2 ? "end" : "start")
+                    .text(d => d.name);
+
+                const bbox = text.node().getBBox();
+
+                g.insert("rect", "text")
+                    .attr("x", bbox.x - 4)
+                    .attr("y", bbox.y - 2)
+                    .attr("width", bbox.width + 8)
+                    .attr("height", bbox.height + 4)
+                    .attr("fill", "#ffffff")
+                    .attr("opacity", 0.7);
+            });
+
+        // Add links to the chart
+        svg.append("g")
+            .attr("fill", "none")
+            .selectAll("path")
+            .data(graph.links)
+            .enter()
+            .append("path")
+            .attr("d", d3.sankeyLinkHorizontal())
+            .attr("stroke-width", d => Math.max(1, d.width))
+            .style("stroke", d => colorScale(d.source.name))
+            .style("opacity", 0.5)
+            .append("title")
+            .text(d => `${d.source.name} -> ${d.target.name}
+${d.value}`);
+
+        // Add value axis
+        const yAxisScale = d3.scaleLinear()
+            .domain([0, d3.max(graph.nodes, d => d.y1)])
+            .range([height, 0]);
+
+        const yAxis = d3.axisRight(yAxisScale)
+            .ticks(10, "s");
+
+        svg.append("g")
+            .attr("class", "axis")
+            .attr("transform", `translate(${width + margin.right + 80}, 0)`) // Move axis to the right side of the chart
+            .call(yAxis);
+    });
+</script>
+</div>
+{% endblock %}

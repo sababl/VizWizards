@@ -4,8 +4,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Expandable Sidebar Navigation</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+    <script src="https://unpkg.com/d3-sankey@0.12.3/dist/d3-sankey.min.js"></script>
+    <title>{% block title %}VizWizards{% endblock %}</title>
     <link rel="stylesheet" href="/static/css/styles.css">
+    {% block extra_styles %}{% endblock %}
+
 </head>
 
 <body>
@@ -15,20 +20,20 @@
         </div>
         <div class="sidebar-content">
             <div class="accordion">
-                <a href="../index.html" class="accordion-btn" id="homelink">Home</a>
+                <a href="/" class="accordion-btn" id="homelink">Home</a>
 
                 <button class="accordion-btn" onclick="toggleDropdown('section2')">Comparing Categories</button>
                 <div class="dropdown-content" id="section2">
-                    <a href="../html/bar.html">Bar charts</a>
-                    <a href="../html/stacked.html">Stacked charts</a>
-                    <a href="../html/heatmap.html">Heatmap</a>
+                    <a href="/bar">Bar charts</a>
+                    <a href="/stacked">Stacked charts</a>
+                    <a href="heatmap">Heatmap</a>
                 </div>
-                <a href="../html/snakey.html" class="accordion-btn" id="snakey">Alluvial</a>
+                <a href="/snakey" class="accordion-btn" id="snakey">Alluvial</a>
 
                 <button class="accordion-btn" onclick="toggleDropdown('section3')">Maps</button>
                 <div class="dropdown-content" id="section3">
-                    <a href="../html/map.html">Choropleth map (1)</a>
-                    <a href="../html/choropleth2.html">Choropleth map (2)</a>
+                    <a href="/map1">Choropleth map (1)</a>
+                    <a href="/map2">Choropleth map (2)</a>
                 </div>
             </div>
         </div>

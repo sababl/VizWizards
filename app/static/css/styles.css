@@ -262,7 +262,7 @@ body {
 .hero-section {
   position: relative;
   height: 100vh;
-  background: url("../img/background.webp") center/cover;
+  background: url("/static/img/background.webp") center/cover;
   display: flex;
   align-items: center;
   justify-content: center;

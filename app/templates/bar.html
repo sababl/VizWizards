@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}Bar Chart{% endblock %}
+
+{% block content %}
+
+<h2>Annual CO2 Emmisions(per capita) of the year 1996</h2>
+<div class="inline-container">
+  <div id="chart-one-year"></div>
+  <div class="text-box">
+    <p>
+      This bar chart displays the annual CO₂ emissions per capita for
+      various countries, with Qatar reaching over 65 tons per capita.
+      Kuwait, the United Arab Emirates, and Curacao also have high
+      emissions, each with over 25 tons per capita. Belgia has the
+      lowest emissions per capita of all listed nations, emitting just
+      over 10 tons per person.
+    </p>
+  </div>
+</div>
+
+<div id="chart-one-year"></div>
+<div class="inline-container">
+  <div id="chart_decade"></div>
+  <div class="text-box">
+    <p>
+      This chart displays the average CO₂ emissions by country from 2001
+      to 2010, showing considerable variation across different nations.
+      Aruba and Bahrain stand out with notably high emissions, with
+      Aruba reaching the highest levels among the countries represented.
+      In contrast, many countries such as Afghanistan and Bangladesh
+      display minimal emissions, indicating lower industrial activity or
+      stricter environmental regulations. The data suggests a
+      significant disparity in CO₂ contributions, highlighting regions
+      with potential environmental impact challenges.
+    </p>
+  </div>
+</div>
+</div>
+<script src="/static/js/bar.js"></script>
+{% endblock %}

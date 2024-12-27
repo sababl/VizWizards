@@ -1,36 +1,54 @@
 {% extends "base.html" %}
 
-{% block title %}Radar{% endblock %}
-
 {% block content %}
-<div ng-controller="FormController">
-    <form ng-submit="generateSpiderPlot()">
-        <div>
-            <label for="state">Select a State:</label>
-            <select id="state" 
-                    ng-model="formData.state" 
-                    ng-options="state as state.name for state in stateList">
-                <option value="">-- Choose a State --</option>
-            </select>
-        </div>
-        
-        <div>
-            <label>Select Years (up to 10):</label>
-            <select multiple 
-                    ng-model="formData.years"
-                    ng-options="year for year in years">
-            </select>
-        </div>
 
-        <button type="submit">Generate Spider Plot</button>
-    </form>
+<!-- Modern Heading & Paragraph in a Material Card -->
+<div ng-controller="FormController" class="form-container">
+  <div class="form-header">
+    <h1 class="form-title">Exploring Climate Trends: A Web of Monthly Temperatures</h1>
+    <p class="form-description">
+    <p class="mat-body-1"></p>
+    Welcome to our Spider Plot Generator! This tool creates an intuitive visualization of monthly temperature patterns
+    across different years for your selected state. By choosing a state and up to 10 years from our database, you can
+    generate a radar chart (spider plot) that displays temperature variations throughout the months. Each axis
+    represents a month, and different years are shown as overlapping shapes, making it easy to compare temperature
+    patterns and identify seasonal trends.
+    </p>
+  </div>
 
-    <!-- Add debug info -->
-    <div>
-        <p>Selected State: {% raw %}{{formData.state.name}}{% endraw %}</p>
-        <p>Selected Years: {% raw %}{{formData.years}}{% endraw %}</p>
-    </div>
-</div>
-<script src="/static/js/radar_chart.js"></script> 
-<!-- Move script to head section in base.html instead -->
-{% endblock %}
+
+  <form ng-submit="generateSpiderPlot()" class="space-y-6">
+    <!-- State Selection -->
+    <md-input-container class="w-full">
+      <label>Select State</label>
+      <md-select ng-model="formData.state" placeholder="Choose a state">
+        <md-option ng-repeat="state in stateList" ng-value="state">
+          {% raw %}{{state.name}}{% endraw %}
+        </md-option>
+      </md-select>
+    </md-input-container>
+
+    <!-- Years Selection -->
+    <md-input-container class="w-full">
+      <label>Select Years (up to 10)</label>
+      <md-select ng-model="formData.years" multiple placeholder="Select years" md-on-close="validateYearSelection()">
+        <md-option ng-repeat="year in years" ng-value="year">
+          {% raw %}{{year}}{% endraw %}
+        </md-option>
+      </md-select>
+    </md-input-container>
+
+    <!-- Submit Button -->
+    <button mat-flat-button class="submit-button" type="submit">
+      <span class="flex items-center justify-center gap-2">
+        <i class="material-icons">timeline</i>
+        Generate Spider Plot
+      </span>
+    </button>
+  </form>
+  <div class="radar-chart-container">
+    <div id="radar-chart"></div>
+  </div>
+  <script src="/static/js/radar_chart.js"></script>
+
+  {% endblock %}

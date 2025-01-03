@@ -52,6 +52,10 @@ async def stacked(request: Request):
 async def radar(request: Request):
     return templates.TemplateResponse("radar_chart.html", {"request": request})
 
+@app.get("/line", response_class=HTMLResponse)
+async def radar(request: Request):
+    return templates.TemplateResponse("line.html", {"request": request})
+
 
 @app.get("/temperature")
 def get_temperature(state_code: str, years: List[str] = Query(..., min_items=1, max_items=10)):

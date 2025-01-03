@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<!-- Modern Heading & Paragraph in a Material Card -->
+<div ng-controller="FormController" class="form-container">
+  <div class="form-header">
+    <h1 class="form-title">Exploring Climate Trends: A Web of Monthly Temperatures</h1>
+    <p class="form-description">
+    <p class="mat-body-1"></p>
+    This is the line chart part where you can choose the years(up tp 10 years) and states of America.
+    You can see the linechart for the maximum and the minimumvof monthly temperature , also a scatter plot for 
+    the average temperature after choosing the years and the states.
+    
+    </p>
+  </div>
+
+
+  <form ng-submit="Line Chart()" class="space-y-6">
+    <!-- State Selection -->
+    <md-input-container class="w-full">
+      <label>Select State</label>
+      <md-select ng-model="formData.state" placeholder="Choose a state">
+        <md-option ng-repeat="state in stateList" ng-value="state">
+          {% raw %}{{state.name}}{% endraw %}
+        </md-option>
+      </md-select>
+    </md-input-container>
+
+    <!-- Years Selection -->
+    <md-input-container class="w-full">
+      <label>Select Years (up to 10)</label>
+      <md-select ng-model="formData.years" multiple placeholder="Select years" md-on-close="validateYearSelection()">
+        <md-option ng-repeat="year in years" ng-value="year">
+          {% raw %}{{year}}{% endraw %}
+        </md-option>
+      </md-select>
+    </md-input-container>
+
+    <!-- Submit Button -->
+    <button mat-flat-button class="submit-button" type="submit">
+      <span class="flex items-center justify-center gap-2">
+        <i class="material-icons">timeline</i>
+        Generate Line Chart
+      </span>
+    </button>
+  </form>
+  <div class="line-chart-container">
+    <div id="line-chart"></div>
+  </div>
+  <script src="/static/js/linechart.js"></script>
+
+  {% endblock %}

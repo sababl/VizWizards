@@ -53,8 +53,8 @@ async def radar(request: Request):
     return templates.TemplateResponse("radar_chart.html", {"request": request})
 
 @app.get("/line", response_class=HTMLResponse)
-async def radar(request: Request):
-    return templates.TemplateResponse("line.html", {"request": request})
+async def line(request: Request):
+    return templates.TemplateResponse("linechart.html", {"request": request})
 
 
 @app.get("/temperature")

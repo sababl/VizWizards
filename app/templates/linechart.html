@@ -6,8 +6,7 @@
 <div ng-controller="FormController" class="form-container">
   <div class="form-header">
     <h1 class="form-title">Exploring Climate Trends: A Web of Monthly Temperatures</h1>
-    <p class="form-description">
-    <p class="mat-body-1"></p>
+    <p class="form-description mat-body-1">
     This is the line chart part where you can choose the years(up tp 10 years) and states of America.
     You can see the linechart for the maximum and the minimumvof monthly temperature , also a scatter plot for 
     the average temperature after choosing the years and the states.
@@ -16,7 +15,7 @@
   </div>
 
 
-  <form ng-submit="Line Chart()" class="space-y-6">
+  <form ng-submit="generateLineChart()" class="space-y-6">
     <!-- State Selection -->
     <md-input-container class="w-full">
       <label>Select State</label>

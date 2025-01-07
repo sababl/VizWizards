@@ -1,6 +1,7 @@
 var app = angular.module('myApp', ['ngMaterial']);
 
 app.controller('FormController', ['$scope', '$http', '$mdToast', function ($scope, $http, $mdToast) {
+    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
     $scope.states = {
         "001": "Alabama",
@@ -202,36 +203,101 @@ app.controller('FormController', ['$scope', '$http', '$mdToast', function ($scop
             return;
         }
         
+        const whitespaceDelimiter = /\s+/; // Regular expression for whitespace
+
         Promise.all([
-            d3.csv('app/static/data/climdiv-tminst-v1.0.0-20241205'),
-            d3.csv('app/static/data/climdiv-tmaxst-v1.0.0-20241205'),
-            d3.csv('app/static/data/climdiv-tmpcst-v1.0.0-20241205')
+            d3.csv('/static/data/climdiv-tminst-v1.0.0-20241205', row => {
+                console.log('Row:', row);
+                return {
+                    Year: row[0].substring(5, 9),  // Extract year from the first column
+                    StateCode: row[0].substring(0, 3),  // Extract state code from the first column
+                    Jan: parseFloat(row[1]) || null,
+                    Feb: parseFloat(row[2]) || null,
+                    Mar: parseFloat(row[3]) || null,
+                    Apr: parseFloat(row[4]) || null,
+                    May: parseFloat(row[5]) || null,
+                    Jun: parseFloat(row[6]) || null,
+                    Jul: parseFloat(row[7]) || null,
+                    Aug: parseFloat(row[8]) || null,
+                    Sep: parseFloat(row[9]) || null,
+                    Oct: parseFloat(row[10]) || null,
+                    Nov: parseFloat(row[11]) || null,
+                    Dec: parseFloat(row[12]) || null
+                };
+            }),
+            d3.csv('/static/data/climdiv-tmaxst-v1.0.0-20241205', row => {
+                return {
+                    Year: row[0].substring(5, 9),
+                    StateCode: row[0].substring(0, 3),
+                    Jan: parseFloat(row[1]) || null,
+                    Feb: parseFloat(row[2]) || null,
+                    Mar: parseFloat(row[3]) || null,
+                    Apr: parseFloat(row[4]) || null,
+                    May: parseFloat(row[5]) || null,
+                    Jun: parseFloat(row[6]) || null,
+                    Jul: parseFloat(row[7]) || null,
+                    Aug: parseFloat(row[8]) || null,
+                    Sep: parseFloat(row[9]) || null,
+                    Oct: parseFloat(row[10]) || null,
+                    Nov: parseFloat(row[11]) || null,
+                    Dec: parseFloat(row[12]) || null
+                };
+            }),
+            d3.csv('/static/data/climdiv-tmpcst-v1.0.0-20241205', row => {
+                return {
+                    Year: row[0].substring(5, 9),
+                    StateCode: row[0].substring(0, 3),
+                    Jan: parseFloat(row[1]) || null,
+                    Feb: parseFloat(row[2]) || null,
+                    Mar: parseFloat(row[3]) || null,
+                    Apr: parseFloat(row[4]) || null,
+                    May: parseFloat(row[5]) || null,
+                    Jun: parseFloat(row[6]) || null,
+                    Jul: parseFloat(row[7]) || null,
+                    Aug: parseFloat(row[8]) || null,
+                    Sep: parseFloat(row[9]) || null,
+                    Oct: parseFloat(row[10]) || null,
+                    Nov: parseFloat(row[11]) || null,
+                    Dec: parseFloat(row[12]) || null
+                };
+            })
         ]).then(([minData, maxData, avgData]) => {
             const selectedYears = $scope.formData.years;
             const stateCode = $scope.formData.state.code;
-            
+        
             const processedData = selectedYears.map(year => {
-                const minYearData = minData.find(d => d.Year === year && d.StateCode === stateCode);
-                const maxYearData = maxData.find(d => d.Year === year && d.StateCode === stateCode);
-                const avgYearData = avgData.find(d => d.Year === year && d.StateCode === stateCode);
-    
+                const yearStr = year.toString();
+                const minYearData = minData.find(d => d.Year === yearStr && d.StateCode === stateCode);
+                const maxYearData = maxData.find(d => d.Year === yearStr && d.StateCode === stateCode);
+                const avgYearData = avgData.find(d => d.Year === yearStr && d.StateCode === stateCode);
+        
+                if (!minYearData || !maxYearData || !avgYearData) {
+                    console.error(`Missing data for year ${year}, state ${stateCode}`);
+                    return null;
+                }
+        
                 return {
                     year: year,
-                    min: months.map(m => parseFloat(minYearData[m])),
-                    max: months.map(m => parseFloat(maxYearData[m])),
-                    avg: months.map(m => parseFloat(avgYearData[m]))
+                    min: months.map(m => minYearData[m]),
+                    max: months.map(m => maxYearData[m]),
+                    avg: months.map(m => avgYearData[m])
                 };
-            });
+            }).filter(d => d !== null);
         
-            createLineAndScatterChart(response.data);
-        }).catch(function (error) {
-            console.error('Error:', error);
-            $mdToast.show(
-                $mdToast.simple()
-                    .textContent('Error generating plot')
-                    .position('top right')
-                    .hideDelay(3000)
-            );
-        });
+            if (processedData.length === 0) {
+                $mdToast.show(
+                    $mdToast.simple()
+                        .textContent('No valid data found for selected years and state.')
+                        .position('top right')
+                        .hideDelay(3000)
+                );
+                return;
+            }
+        
+            createLineAndScatterChart(processedData);
+        }).catch(error => {
+            console.error('Error loading data:', error);
+        });        
+        
     };
 }]);

@@ -1,3 +1,4 @@
+// Assuming d3 is already included in your project
 var app = angular.module('myApp', ['ngMaterial']);
 
 app.controller('FormController', ['$scope', '$http', '$mdToast', function ($scope, $http, $mdToast) {
@@ -92,7 +93,6 @@ app.controller('FormController', ['$scope', '$http', '$mdToast', function ($scop
         const data = Array.isArray(rawData) ? rawData : JSON.parse(rawData);
         console.log('Parsed data:', data);
 
-        const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
         const chartData = data.map(yearData => ({
             year: yearData.year,
             min: yearData.min,
@@ -202,102 +202,61 @@ app.controller('FormController', ['$scope', '$http', '$mdToast', function ($scop
             );
             return;
         }
-        
-        const whitespaceDelimiter = /\s+/; // Regular expression for whitespace
 
         Promise.all([
-            d3.csv('/static/data/climdiv-tminst-v1.0.0-20241205', row => {
-                console.log('Row:', row);
+            fetch('/static/data/climdiv-tminst-v1.0.0-20241205').then(res => res.text()),
+            fetch('/static/data/climdiv-tmaxst-v1.0.0-20241205').then(res => res.text()),
+            fetch('/static/data/climdiv-tmpcst-v1.0.0-20241205').then(res => res.text())
+        ]).then(([tminText, tmaxText, avgText]) => {
+            const parseData = (text) => text.trim().split('\n').map(row => {
+                const fields = row.trim().split(/\s+/);
                 return {
-                    Year: row[0].substring(5, 9),  // Extract year from the first column
-                    StateCode: row[0].substring(0, 3),  // Extract state code from the first column
-                    Jan: parseFloat(row[1]) || null,
-                    Feb: parseFloat(row[2]) || null,
-                    Mar: parseFloat(row[3]) || null,
-                    Apr: parseFloat(row[4]) || null,
-                    May: parseFloat(row[5]) || null,
-                    Jun: parseFloat(row[6]) || null,
-                    Jul: parseFloat(row[7]) || null,
-                    Aug: parseFloat(row[8]) || null,
-                    Sep: parseFloat(row[9]) || null,
-                    Oct: parseFloat(row[10]) || null,
-                    Nov: parseFloat(row[11]) || null,
-                    Dec: parseFloat(row[12]) || null
+                    Year: fields[0].substring(6, 10),
+                    StateCode: fields[0].substring(0, 3),
+                    Jan: parseFloat(fields[1]) || null,
+                    Feb: parseFloat(fields[2]) || null,
+                    Mar: parseFloat(fields[3]) || null,
+                    Apr: parseFloat(fields[4]) || null,
+                    May: parseFloat(fields[5]) || null,
+                    Jun: parseFloat(fields[6]) || null,
+                    Jul: parseFloat(fields[7]) || null,
+                    Aug: parseFloat(fields[8]) || null,
+                    Sep: parseFloat(fields[9]) || null,
+                    Oct: parseFloat(fields[10]) || null,
+                    Nov: parseFloat(fields[11]) || null,
+                    Dec: parseFloat(fields[12]) || null
                 };
-            }),
-            d3.csv('/static/data/climdiv-tmaxst-v1.0.0-20241205', row => {
-                return {
-                    Year: row[0].substring(5, 9),
-                    StateCode: row[0].substring(0, 3),
-                    Jan: parseFloat(row[1]) || null,
-                    Feb: parseFloat(row[2]) || null,
-                    Mar: parseFloat(row[3]) || null,
-                    Apr: parseFloat(row[4]) || null,
-                    May: parseFloat(row[5]) || null,
-                    Jun: parseFloat(row[6]) || null,
-                    Jul: parseFloat(row[7]) || null,
-                    Aug: parseFloat(row[8]) || null,
-                    Sep: parseFloat(row[9]) || null,
-                    Oct: parseFloat(row[10]) || null,
-                    Nov: parseFloat(row[11]) || null,
-                    Dec: parseFloat(row[12]) || null
-                };
-            }),
-            d3.csv('/static/data/climdiv-tmpcst-v1.0.0-20241205', row => {
-                return {
-                    Year: row[0].substring(5, 9),
-                    StateCode: row[0].substring(0, 3),
-                    Jan: parseFloat(row[1]) || null,
-                    Feb: parseFloat(row[2]) || null,
-                    Mar: parseFloat(row[3]) || null,
-                    Apr: parseFloat(row[4]) || null,
-                    May: parseFloat(row[5]) || null,
-                    Jun: parseFloat(row[6]) || null,
-                    Jul: parseFloat(row[7]) || null,
-                    Aug: parseFloat(row[8]) || null,
-                    Sep: parseFloat(row[9]) || null,
-                    Oct: parseFloat(row[10]) || null,
-                    Nov: parseFloat(row[11]) || null,
-                    Dec: parseFloat(row[12]) || null
-                };
-            })
-        ]).then(([minData, maxData, avgData]) => {
-            const selectedYears = $scope.formData.years;
-            const stateCode = $scope.formData.state.code;
-        
-            const processedData = selectedYears.map(year => {
+            });
+
+            const tminData = parseData(tminText);
+            const tmaxData = parseData(tmaxText);
+            const avgData = parseData(avgText);
+            console.log('Parsed data:', tminData);
+
+            const combinedData = $scope.formData.years.map(year => {
                 const yearStr = year.toString();
-                const minYearData = minData.find(d => d.Year === yearStr && d.StateCode === stateCode);
-                const maxYearData = maxData.find(d => d.Year === yearStr && d.StateCode === stateCode);
-                const avgYearData = avgData.find(d => d.Year === yearStr && d.StateCode === stateCode);
-        
-                if (!minYearData || !maxYearData || !avgYearData) {
+                const stateCode = $scope.formData.state.code;
+                console.log('Processing data for year', year, 'state', stateCode);
+                const tminRow = tminData.find(d => d.Year === yearStr && d.StateCode === stateCode);
+                const tmaxRow = tmaxData.find(d => d.Year === yearStr && d.StateCode === stateCode);
+                const avgRow = avgData.find(d => d.Year === yearStr && d.StateCode === stateCode);
+
+                if (!tminRow || !tmaxRow || !avgRow) {
                     console.error(`Missing data for year ${year}, state ${stateCode}`);
                     return null;
                 }
-        
+
                 return {
                     year: year,
-                    min: months.map(m => minYearData[m]),
-                    max: months.map(m => maxYearData[m]),
-                    avg: months.map(m => avgYearData[m])
+                    min: months.map(month => tminRow[month]),
+                    max: months.map(month => tmaxRow[month]),
+                    avg: months.map(month => avgRow[month])
                 };
             }).filter(d => d !== null);
-        
-            if (processedData.length === 0) {
-                $mdToast.show(
-                    $mdToast.simple()
-                        .textContent('No valid data found for selected years and state.')
-                        .position('top right')
-                        .hideDelay(3000)
-                );
-                return;
-            }
-        
-            createLineAndScatterChart(processedData);
+            console.log('Combined data:', combinedData);
+            createLineAndScatterChart(combinedData);
         }).catch(error => {
-            console.error('Error loading data:', error);
-        });        
-        
+            console.error('Error fetching or parsing data:', error);
+        });
     };
 }]);

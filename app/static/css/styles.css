@@ -698,3 +698,24 @@ md-option:hover {
   width: 100%;
   height: auto;
 }
+
+
+p.form-description {
+  font-family: 'Roboto', Arial, sans-serif;
+  font-size: 1rem; /* Adjust size for readability */
+  color: #4a4a4a; /* Neutral gray tone for the text */
+  line-height: 1.6; /* Improve readability with proper line spacing */
+  text-align: justify; /* Align text evenly on both sides */
+  margin: 1rem 0; /* Add some space around the paragraph */
+  padding: 0.5rem 1rem; /* Add padding for a comfortable layout */
+  border-left: 4px solid #4caf50; /* Add a decorative left border */
+  background-color: #f9f9f9; /* Subtle background for contrast */
+  border-radius: 5px; /* Smooth rounded corners */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Soft shadow for a floating effect */
+  transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transition for hover effects */
+}
+
+p.form-description:hover {
+  background-color: #e8f5e9; /* Slightly lighter green background on hover */
+  color: #333; /* Darker text color on hover */
+}

@@ -1,61 +1,77 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>D3 Bar Chart</title>
-    <script src="https://d3js.org/d3.v7.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
-    <link rel="stylesheet" href="/static/css/styles.css" />
-  </head>
-  <body>
-    <!-- Header Section with Blur Background -->
-    <header class="hero-section">
-      <div class="hero-content">
-        <h1>Data Visualization</h1>
-        <p>by VizWizards</p>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>D3 Bar Chart</title>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+  <link rel="stylesheet" href="/static/css/styles.css" />
+</head>
+
+<body>
+  <!-- Header Section with Blur Background -->
+  <header class="hero-section">
+    <div class="hero-content">
+      <h1>Data Visualization</h1>
+      <p>by VizWizards</p>
+    </div>
+  </header>
+
+  <!-- Main Content Section -->
+  <section class="info-section">
+    <div class="circle-container">
+      <a href="/bar">
+        <div class="circle-image">
+          <img src="/static/img/histogram-chart.png" alt="section-one" />
+        </div>
+      </a>
+      <div class="circle-text">
+        <h2>CO2 Emissions Comparison</h2>
+        <p class="form-description">Explore and compare per capita CO2 emissions across 20 countries.</p>
       </div>
-    </header>
+    </div>
 
-    <!-- Main Content Section -->
-      <section class="info-section">
-        <div class="circle-container">
-          <a href="/bar">
-            <div class="circle-image">
-              <img src="/static/img/bar_icon.gif" alt="section-one" />
-            </div>
-          </a>
-          <div class="circle-text">
-            <h2>Section One</h2>
-            <p>Comparing categories</p>
-          </div>
+    <div class="circle-container">
+      <a href="/snakey">
+        <div class="circle-image">
+          <img style="height: 70%; margin-top: 30px; width: 70%;" src="/static/img/alluvial-diagram.png"
+            alt="section-two" />
         </div>
+      </a>
+      <div class="circle-text">
+        <h2>Top Emitters Flow</h2>
+        <p class="form-description">Trace the top 5 per capita CO2 emitters in each continent and their contribution trends.</p>
+      </div>
+    </div>
 
-        <div class="circle-container">
-          <a href="/snakey">
-            <div class="circle-image">
-              <img style="height: 70%; margin-top: 30px; width: 70%;" src="/static/img/alluvial-diagram.png" alt="section-two" />
-            </div>
-          </a>
-          <div class="circle-text">
-            <h2>Section Two</h2>
-            <p>Alluvial</p>
-          </div>
+    <div class="circle-container">
+      <a href="/map1">
+        <div class="circle-image">
+          <img style="height: 70%; margin-top: 30px; width: 70%;" src="/static/img/map.png" alt="section-three" />
         </div>
+      </a>
+      <div class="circle-text">
+        <h2>Global CO2 Map</h2>
+        <p class="form-description">Visualize per capita CO2 emissions for all countries in a specific year.</p>
+      </div>
+    </div>
 
-        <div class="circle-container">
-          <a href="/map1">
-            <div class="circle-image">
-              <img style="height: 70%; margin-top: 30px; width: 70%;" src="/static/img/map.png" alt="section-three" />
-            </div>
-          </a>
-          <div class="circle-text">
-            <h2>Section Three</h2>
-            <p>Map</p>
-          </div>
+    <div class="circle-container">
+      <a href="/radar">
+        <div class="circle-image">
+          <img style="height: 70%; margin-top: 30px; width: 70%;" src="/static/img/line-chart.png" alt="section-four" />
         </div>
-      </section>
+      </a>
+      <div class="circle-text">
+        <h2>Climate insights</h2>
+        <p class="form-description">Analyze monthly max, min, and average temperatures across states and years.</p>
+      </div>
+    </div>
+  </section>
 
-    <a href="https://lordicon.com/">Icons by Lordicon.com</a>
-  </body>
+  <a href="https://lordicon.com/">Icons by Lordicon.com</a>
+</body>
+
 </html>

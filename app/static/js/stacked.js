@@ -1,14 +1,19 @@
-// Define color scales for continents
+// ============================
+// 1) Define color scales
+//    -- Note: Updated domain to [1,6] if you have 6 categories (5 countries + 'other')
+// ============================
 const colorScales = {
-  Oceania: d3.scaleLinear().domain([1, 5]).range(["#c6e5f5", "#08306b"]),
-  Africa: d3.scaleLinear().domain([1, 5]).range(["#fdd0a2", "#e6550d"]),
-  Europe: d3.scaleLinear().domain([1, 5]).range(["#e5f5e0", "#31a354"]),
-  Asia: d3.scaleLinear().domain([1, 5]).range(["#dadaeb", "#54278f"]),
-  "North America": d3.scaleLinear().domain([1, 5]).range(["#fee0d2", "#de2d26"]),
-  "South America": d3.scaleLinear().domain([1, 5]).range(["#fde0ef", "#c51b8a"]),
+  Oceania: d3.scaleLinear().domain([1, 6]).range(["#c6e5f5", "#08306b"]),
+  Africa: d3.scaleLinear().domain([1, 6]).range(["#fdd0a2", "#e6550d"]),
+  Europe: d3.scaleLinear().domain([1, 6]).range(["#e5f5e0", "#31a354"]),
+  Asia: d3.scaleLinear().domain([1, 6]).range(["#dadaeb", "#54278f"]),
+  "North America": d3.scaleLinear().domain([1, 6]).range(["#fee0d2", "#de2d26"]),
+  "South America": d3.scaleLinear().domain([1, 6]).range(["#fde0ef", "#c51b8a"]),
 };
 
-// Dimensions for the top stacked chart
+// ============================
+// 2) Dimensions for the top stacked chart
+// ============================
 const stackedMargin = { top: 60, right: 50, bottom: 150, left: 100 };
 const stackedWidth = 1000 - stackedMargin.left - stackedMargin.right;
 const stackedHeight = 800 - stackedMargin.top - stackedMargin.bottom;
@@ -31,6 +36,15 @@ const svgStackedMain = d3
   .append("g")
   .attr("transform", `translate(${stackedMargin.left},${stackedMargin.top})`);
 
+// Add a main title for clarity
+svgStackedMain
+  .append("text")
+  .attr("x", stackedWidth / 2)
+  .attr("y", -20) // slightly above the top margin
+  .attr("text-anchor", "middle")
+  .style("font-size", "18px")
+  .text("Annual CO₂ Emissions (per capita) by Continent – 1996");
+
 // Function to parse a country field value from the CSV (format: "{'CountryName': value}")
 function parseCountryField(field) {
   const parts = field.replace(/[{}']/g, "").split(":");
@@ -40,8 +54,16 @@ function parseCountryField(field) {
   };
 }
 
-// Draw the initial stacked chart of top countries per continent
+// ============================
+// 3) Draw the initial stacked chart
+//    -- Added y-axis label, legend, optional sort
+// ============================
 function drawInitialStackedChart(parsedData) {
+  // OPTIONAL: sort by largest total so bars appear from largest to smallest
+  parsedData.sort(
+    (a, b) => d3.sum(b.countries, c => c.value) - d3.sum(a.countries, c => c.value)
+  );
+
   // Create scales
   const xScale = d3
     .scaleBand()
@@ -62,7 +84,22 @@ function drawInitialStackedChart(parsedData) {
     .attr("transform", `translate(0,${stackedHeight})`)
     .call(d3.axisBottom(xScale));
 
-  svgStackedMain.append("g").attr("class", "y-axis").call(d3.axisLeft(yScale));
+  const yAxis = svgStackedMain
+    .append("g")
+    .attr("class", "y-axis")
+    .call(d3.axisLeft(yScale));
+
+  // Add a y-axis label
+  svgStackedMain
+    .append("text")
+    .attr("class", "y-axis-label")
+    .attr("transform", "rotate(-90)")
+    .attr("y", -stackedMargin.left + 20)
+    .attr("x", -stackedHeight / 2)
+    .attr("dy", "1em")
+    .style("text-anchor", "middle")
+    .style("font-size", "14px")
+    .text("CO₂ Emissions (tonnes per capita)");
 
   // Draw stacked bars
   svgStackedMain
@@ -88,23 +125,57 @@ function drawInitialStackedChart(parsedData) {
           .attr("width", xScale.bandwidth())
           .attr("height", stackedHeight - yScale(country.value))
           .attr("fill", continentColorScale(index + 1))
-          .on("mouseover", function(event) {
+          .on("mouseover", function (event) {
             tooltip.transition().duration(200).style("opacity", 0.9);
             tooltip
               .html(`Country: ${country.name}<br/>Value: ${country.value}`)
               .style("left", event.pageX + "px")
               .style("top", event.pageY - 28 + "px");
           })
-          .on("mouseout", function() {
+          .on("mouseout", function () {
             tooltip.transition().duration(500).style("opacity", 0);
           });
 
         yOffset += country.value;
       });
     });
+
+  // =========================
+  // 4) Add a simple legend to clarify the color index => "top countries" mapping
+  //    You may want a more robust legend that uses actual country names. 
+  //    Below is a generic example for 6 segments:
+  // =========================
+  const legendContainer = svgStackedMain.append("g")
+    .attr("class", "legend")
+    .attr("transform", `translate(${stackedWidth - 120}, 20)`);
+
+  const legendLabels = ["1st highest", "2nd highest", "3rd", "4th", "5th", "Other"];
+  
+  legendLabels.forEach((label, i) => {
+    legendContainer
+      .append("rect")
+      .attr("x", 0)
+      .attr("y", i * 20)
+      .attr("width", 14)
+      .attr("height", 14)
+      .attr("fill", colorScales["Asia"](i + 1)); 
+      // ^ Example only: picks one continent’s scale. 
+      // If you want a single “universal” scale, 
+      // define it above or show each continent’s color scale separately.
+
+    legendContainer
+      .append("text")
+      .attr("x", 20)
+      .attr("y", i * 20 + 12)
+      .style("font-size", "12px")
+      .text(label);
+  });
 }
 
+// ============================
 // Draw individual continent charts for each country key
+// (minimal changes here—just ensure axis labels, etc. are clear)
+// ============================
 function drawIndividualCharts(processedData) {
   const smallChartWidth = 500;
   const smallChartHeight = 300;
@@ -113,7 +184,8 @@ function drawIndividualCharts(processedData) {
 
   // Determine a common domain for x-scale based on max value in processedData
   const maxVal = d3.max(processedData, d =>
-    d3.max(["country_1", "country_2", "country_3", "country_4", "country_5", "other"], key => d[key].value)
+    d3.max(["country_1", "country_2", "country_3", "country_4", "country_5", "other"], 
+           key => d[key].value)
   );
 
   const xScale = d3
@@ -127,15 +199,13 @@ function drawIndividualCharts(processedData) {
     .range([0, smallChartHeight - smallChartMargin.top - smallChartMargin.bottom])
     .padding(0.1);
 
-  // Draw a single chart for a given country key
   function drawChart(containerId, dataKey, title) {
-    // Create a container for the chart
     const container = chartContainer
       .append("div")
       .attr("class", "chart")
       .style("width", `${smallChartWidth}px`);
 
-    // Add title
+    // Add chart title
     container.append("div").attr("class", "chart-title").text(title);
 
     // Create the SVG container
@@ -144,12 +214,11 @@ function drawIndividualCharts(processedData) {
       .attr("width", smallChartWidth)
       .attr("height", smallChartHeight);
 
-    // Create the chart group
     const chart = svg
       .append("g")
       .attr("transform", `translate(${smallChartMargin.left}, ${smallChartMargin.top})`);
 
-    // Draw the bars with tooltip showing country name and value
+    // Draw bars
     chart
       .selectAll(".bar")
       .data(processedData)
@@ -158,16 +227,16 @@ function drawIndividualCharts(processedData) {
       .attr("class", "bar")
       .attr("y", d => yScale(d.continent))
       .attr("height", yScale.bandwidth())
-      .attr("width", d => xScale(d[dataKey].value) * 0.5)
-      .attr("fill", d => colorScales[d.continent](5))
-      .on("mouseover", function(event, d) {
+      .attr("width", d => xScale(d[dataKey].value) * 0.5) // scale factor
+      .attr("fill", d => colorScales[d.continent](6)) // pick a darker shade for each continent
+      .on("mouseover", function (event, d) {
         tooltip.transition().duration(200).style("opacity", 0.9);
         tooltip
           .html(`Country: ${d[dataKey].name}<br/>Value: ${d[dataKey].value}`)
           .style("left", event.pageX + "px")
           .style("top", event.pageY - 28 + "px");
       })
-      .on("mouseout", function() {
+      .on("mouseout", function () {
         tooltip.transition().duration(500).style("opacity", 0);
       });
 
@@ -177,9 +246,16 @@ function drawIndividualCharts(processedData) {
       .attr("transform", `translate(0, ${smallChartHeight - smallChartMargin.top - smallChartMargin.bottom})`)
       .call(d3.axisBottom(xScale));
 
+    // (Optional) Add label for x-axis or a note to show "tonnes/capita"
+    chart.append("text")
+      .attr("class", "x-axis-label")
+      .attr("x", (smallChartWidth - smallChartMargin.left - smallChartMargin.right) / 2)
+      .attr("y", smallChartHeight - smallChartMargin.bottom + 15)
+      .style("text-anchor", "middle")
+      .text("CO₂ Emissions (tonnes/capita)");
+
     // Add y-axis
     chart.append("g").call(d3.axisLeft(yScale));
-
   }
 
   // Generate a chart for each country key
@@ -188,7 +264,10 @@ function drawIndividualCharts(processedData) {
   });
 }
 
+// ============================
 // Draw the normalized stacked chart
+//    -- Add axis labels for clarity, e.g., "Percentage (%)" on x-axis
+// ============================
 function drawStackedChart(processedData) {
   const countries = ["country_1", "country_2", "country_3", "country_4", "country_5", "other"];
   const nStackedWidth = 600;
@@ -220,7 +299,6 @@ function drawStackedChart(processedData) {
     };
   });
 
-  // Define x and y scales
   const xStackedScale = d3
     .scaleLinear()
     .domain([0, 100])
@@ -244,7 +322,7 @@ function drawStackedChart(processedData) {
     .append("g")
     .attr("transform", `translate(${nStackedMargin.left}, ${nStackedMargin.top})`);
 
-  // Draw stacked bars with tooltip
+  // Draw stacked bars
   normalizedData.forEach(d => {
     chartStacked
       .selectAll(`.bar-${d.continent}`)
@@ -257,19 +335,19 @@ function drawStackedChart(processedData) {
       .attr("x", seg => xStackedScale(seg.x0))
       .attr("width", seg => xStackedScale(seg.x1) - xStackedScale(seg.x0))
       .attr("fill", seg => seg.color)
-      .on("mouseover", function(event, seg) {
+      .on("mouseover", function (event, seg) {
         tooltip.transition().duration(200).style("opacity", 0.9);
         tooltip
           .html(`Country: ${seg.country}<br/>Percentage: ${seg.percentage.toFixed(2)}%`)
           .style("left", event.pageX + "px")
           .style("top", event.pageY - 28 + "px");
       })
-      .on("mouseout", function() {
+      .on("mouseout", function () {
         tooltip.transition().duration(500).style("opacity", 0);
       });
   });
 
-  // Add x-axis
+  // Add x-axis with percentage label
   chartStacked
     .append("g")
     .attr("transform", `translate(0, ${nStackedHeight - nStackedMargin.top - nStackedMargin.bottom})`)
@@ -280,11 +358,33 @@ function drawStackedChart(processedData) {
         .tickFormat(d => d + "%")
     );
 
-  // Add y-axis
+  // Label for x-axis
+  chartStacked
+    .append("text")
+    .attr("class", "x-axis-label")
+    .attr("x", (nStackedWidth - nStackedMargin.left - nStackedMargin.right) / 2)
+    .attr("y", nStackedHeight - nStackedMargin.top - nStackedMargin.bottom + 35)
+    .style("text-anchor", "middle")
+    .style("font-size", "12px")
+    .text("Percentage of Total Emissions (%)");
+
+  // Add y-axis with "continent" label
   chartStacked.append("g").call(d3.axisLeft(yStackedScale));
+  chartStacked
+    .append("text")
+    .attr("class", "y-axis-label")
+    .attr("transform", "rotate(-90)")
+    .attr("y", -nStackedMargin.left + 20)
+    .attr("x", - (nStackedHeight - nStackedMargin.top - nStackedMargin.bottom) / 2)
+    .attr("dy", "1em")
+    .style("text-anchor", "middle")
+    .style("font-size", "12px")
+    .text("Continent");
 }
 
+// ============================
 // Load data and render charts
+// ============================
 d3.csv("/static/data/continent_summary_1996.csv").then(data => {
   // Parse countries to include names and values
   const parsedData = data.map(d => {
@@ -296,15 +396,16 @@ d3.csv("/static/data/continent_summary_1996.csv").then(data => {
         parseCountryField(d.country_3),
         parseCountryField(d.country_4),
         parseCountryField(d.country_5),
-        parseCountryField(d.other.replace(",", ":")), // 'other' field seems to be "otherCountryName,value"
+        // 'other' field seems to be "otherCountryName,value" => we replace comma with colon
+        parseCountryField(d.other.replace(",", ":")),
       ].sort((a, b) => b.value - a.value),
     };
   });
 
-  // Draw the initial stacked chart of top countries
+  // 1) Draw the initial stacked chart
   drawInitialStackedChart(parsedData);
 
-  // Prepare processedData with country names and values for each field
+  // Prepare processedData for the other charts
   const processedData = data.map(d => {
     return {
       continent: d.Continent,
@@ -317,9 +418,9 @@ d3.csv("/static/data/continent_summary_1996.csv").then(data => {
     };
   });
 
-  // Draw the individual charts
+  // 2) Draw the individual charts
   drawIndividualCharts(processedData);
 
-  // Draw the normalized stacked chart
+  // 3) Draw the normalized stacked chart
   drawStackedChart(processedData);
 });

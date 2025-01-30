@@ -5,12 +5,49 @@ from fastapi.templating import Jinja2Templates
 from typing import List
 import pandas as pd
 import json
+from typing import List, Optional
 
 app = FastAPI()
 
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
 templates = Jinja2Templates(directory="app/templates")
+
+def init_data():
+    """Initialize data at startup"""
+    le_file = "app/static/data/le.csv"
+    hle_file = "app/static/data/hle.csv"
+    df_le = pd.read_csv(
+        le_file,
+        dtype={
+            'Period': str,
+            'Location': str, 
+            'Dim1': str,
+            'ParentLocation': str,
+            'FactValueNumeric': float
+        }
+    )
+    # Clean up column names and values for easier filtering
+    df_le['Sex'] = df_le['Dim1'].str.lower()
+    df_le['Location'] = df_le['Location'].str.lower()
+    df_le['ParentLocation'] = df_le['ParentLocation'].str.lower()
+
+    df_hle = pd.read_csv(
+        hle_file,
+        dtype={
+            'Period': str,
+            'Location': str, 
+            'Dim1': str,
+            'ParentLocation': str,
+            'FactValueNumeric': float
+        }
+    )
+    # Clean up column names and values for easier filtering
+    df_hle['Sex'] = df_hle['Dim1'].str.lower()
+    df_hle['Location'] = df_hle['Location'].str.lower()
+    df_hle['ParentLocation'] = df_hle['ParentLocation'].str.lower()
+
+    return df_le, df_hle
 
 
 @app.get("/", response_class=HTMLResponse)
@@ -58,10 +95,8 @@ async def line(request: Request):
 
 
 @app.get("/temperature")
-def get_temperature(state_code: str, years: List[str] = Query(..., min_items=1, max_items=10)):
-    print(state_code)
+async def get_temperature(state_code: str, years: List[str] = Query(..., min_items=1, max_items=10)):
     years = years[0].split(',')
-    print(years)
     mean_df = pd.read_csv(
         "app/static/data/climdiv-tmpcst-v1.0.0-20241205",
         delim_whitespace=True,
@@ -81,3 +116,78 @@ def get_temperature(state_code: str, years: List[str] = Query(..., min_items=1, 
 
     json_data = filtered_df.to_json(orient="values")
     return JSONResponse(content=json_data)
+
+
+@app.get("/life")
+async def get_life_data(
+    years: str = Query(..., description="Comma separated years e.g. 2020,2021"),
+    metric: str = Query(..., description="HLE or LE or BOTH"),
+    sex: str = Query(..., description="MALE, FEMALE or BOTH SEXES"),
+    country: Optional[str] = Query(None, description="Country name"),
+    continent: Optional[str] = Query(None, description="Continent/Region name")
+
+):
+    try:
+        df_le, df_hle = init_data()
+        if metric.lower() == "both":
+            df_dict = {"le": df_le, "hle": df_hle}
+        else:
+            df_dict = {"le": df_le} if metric.lower() == "le" else {"hle": df_hle}
+        
+        response = {'le': None, 'hle': None}
+        years = years.split(',')
+        
+        for df_key in df_dict:
+            df = df_dict[df_key]
+            # Filter data
+            mask = (
+                df['Period'].isin(years) &
+                (df['Sex'].str.lower() == sex.lower())
+            )
+            if country:
+                mask &= (df['Location'] == country.lower())
+            if continent:
+                mask &= (df['ParentLocation'].str.lower() == continent.lower())
+                
+            df = df[mask]
+            
+            # Select and rename relevant columns
+            result = df[[
+                'Period',
+                'Location',
+                'ParentLocation',
+                'Sex',
+                'FactValueNumeric'
+            ]].copy()
+            
+            # Convert to more readable format
+            formatted_data = result.groupby('Period').apply(
+                lambda x: x.drop('Period', axis=1).to_dict('records')
+            ).to_dict()
+            
+            response[df_key] = formatted_data
+        print(response)
+        return JSONResponse(content=response)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/countries")
+async def get_countries():
+    """Get list of all available countries"""
+    df_le, df_hle = init_data()
+    
+    # Combine unique countries from both datasets
+    countries = sorted(set(df_le['Location'].unique()) | set(df_hle['Location'].unique()))
+    
+    return JSONResponse(content={"countries": countries})
+
+
+@app.get("/continents")
+async def get_continents():
+    """Get list of all available continents/regions"""
+    df_le, df_hle = init_data()
+    
+    # Combine unique continents from both datasets
+    continents = sorted(set(df_le['ParentLocation'].unique()) | set(df_hle['ParentLocation'].unique()))
+    
+    return JSONResponse(content={"continents": continents})

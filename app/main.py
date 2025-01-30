@@ -118,32 +118,49 @@ async def get_temperature(state_code: str, years: List[str] = Query(..., min_ite
     return JSONResponse(content=json_data)
 
 
+# Add age mapping constants
+AGE_INDICATORS = {
+    'birth': 'Life expectancy at birth (years)',
+    '60': 'Life expectancy at age 60 (years)',
+    'both': None  # For both ages
+}
+
 @app.get("/life")
 async def get_life_data(
     years: str = Query(..., description="Comma separated years e.g. 2020,2021"),
     metric: str = Query(..., description="HLE or LE or BOTH"),
     sex: str = Query(..., description="MALE, FEMALE or BOTH SEXES"),
+    age: str = Query(..., description="BIRTH, 60, BOTH"),
     country: Optional[str] = Query(None, description="Country name"),
     continent: Optional[str] = Query(None, description="Continent/Region name")
-
 ):
     try:
+        year_list = years.split(',')
         df_le, df_hle = init_data()
+        
+        # Validate age parameter
+        age = age.lower()
+        if age not in AGE_INDICATORS:
+            raise HTTPException(status_code=400, detail="Invalid age parameter")
+        
+        response = {'le': None, 'hle': None}
+        
         if metric.lower() == "both":
             df_dict = {"le": df_le, "hle": df_hle}
         else:
             df_dict = {"le": df_le} if metric.lower() == "le" else {"hle": df_hle}
-        
-        response = {'le': None, 'hle': None}
-        years = years.split(',')
-        
+            
         for df_key in df_dict:
             df = df_dict[df_key]
-            # Filter data
             mask = (
-                df['Period'].isin(years) &
+                df['Period'].isin(year_list) &
                 (df['Sex'].str.lower() == sex.lower())
             )
+            
+            # Apply age filter
+            if age != 'both':
+                mask &= (df['Indicator'] == AGE_INDICATORS[age])
+                
             if country:
                 mask &= (df['Location'] == country.lower())
             if continent:
@@ -151,23 +168,15 @@ async def get_life_data(
                 
             df = df[mask]
             
-            # Select and rename relevant columns
-            result = df[[
-                'Period',
-                'Location',
-                'ParentLocation',
-                'Sex',
-                'FactValueNumeric'
-            ]].copy()
-            
-            # Convert to more readable format
-            formatted_data = result.groupby('Period').apply(
-                lambda x: x.drop('Period', axis=1).to_dict('records')
+            # Group by year for response format
+            result = df.groupby('Period').apply(
+                lambda x: x[['Location', 'ParentLocation', 'Sex', 'FactValueNumeric', 'Indicator']].to_dict('records')
             ).to_dict()
             
-            response[df_key] = formatted_data
-        print(response)
+            response[df_key] = result
+            
         return JSONResponse(content=response)
+        
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

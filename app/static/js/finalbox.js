@@ -24,8 +24,8 @@ d3.csv("/static/data/box_life_expectancy_by_region.csv").then(data => {
         .padding(0.4);
 
     const y = d3.scaleLinear()
-        .domain([d3.min(data, d => d.AverageLifeExpectancy) - 5, d3.max(data, d => d.AverageLifeExpectancy) + 5])
-        .range([height, 0]);
+    .domain([50, d3.max(data, d => d.AverageLifeExpectancy) + 5])
+    .range([height, 0]);
 
     g.append("g")
         .attr("class", "x-axis")
@@ -43,7 +43,7 @@ d3.csv("/static/data/box_life_expectancy_by_region.csv").then(data => {
         .style("font-size", "16px")
         .text("Regions");
 
-    // Add y-axis label
+    
     g.append("text")
         .attr("transform", "rotate(-90)")
         .attr("x", -height / 2)
@@ -58,7 +58,7 @@ d3.csv("/static/data/box_life_expectancy_by_region.csv").then(data => {
         const q1 = d.AverageLifeExpectancy - 3;
         const median = d.AverageLifeExpectancy;
         const q3 = d.AverageLifeExpectancy + 3;
-        const min = q1 - 5;
+        const min = Math.max(50, q1 - 5);
         const max = q3 + 5;
         const boxWidth = x.bandwidth();
 

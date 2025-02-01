@@ -93,6 +93,9 @@ async def radar(request: Request):
 async def line(request: Request):
     return templates.TemplateResponse("linechart.html", {"request": request})
 
+@app.get("/le-bee", response_class=HTMLResponse)
+async def le_beeswarm(request: Request):
+    return templates.TemplateResponse("le_beeswarm.html", {"request": request})
 
 @app.get("/temperature")
 async def get_temperature(state_code: str, years: List[str] = Query(..., min_items=1, max_items=10)):

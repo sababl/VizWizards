@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block content %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Female Life Expectancy</title>
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .chart-container {
+            width: 110%;
+            margin: 0 auto;
+
+        }
+        .axis-label {
+            font-size: 14px;
+        }
+        .line {
+            fill: none;
+            stroke-width: 2px;
+            stroke: darkgreen;
+        }
+        .tooltip {
+            position: absolute;
+            background: #fff;
+            padding: 5px;
+            border: 1px solid #ddd;
+            font-size: 14px;
+            pointer-events: none;
+            display: none;
+        }
+        .select-container {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        label {
+            font-size: 20px;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        select {
+            padding: 8px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            outline: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="chart-container">
+        <h1 style="text-align: center;">Female Life Expectancy (2000-2021)</h1>
+
+        <div class="select-container">
+            <label for="country-select">Select Country:</label>
+            <select id="country-select"></select>
+        </div>
+
+        <div id="tooltip" class="tooltip"></div>
+        <svg width="800" height="500"></svg>
+    </div>
+    <script src="/static/js/finalline.js"></script>
+</body>
+</html>
+{% endblock %}

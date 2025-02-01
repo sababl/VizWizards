@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<html>
+<head>
+    <h1>Countries with the lowest Life Expectancy of males at birth (2000-2021)</h1>
+    <title>Interactive Life Expectancy Scatter Plot</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+    <style>
+        .chart-container {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        
+        .axis-label {
+            font-size: 12px;
+        }
+        
+        .dot {
+            opacity: 0.6;
+        }
+        
+        .dot:hover {
+            opacity: 1;
+        }
+        
+        .tooltip {
+            position: absolute;
+            padding: 8px;
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            pointer-events: none;
+            font-size: 12px;
+        }
+
+        .year-buttons {
+            margin: 20px;
+            max-width: 800px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+
+        button {
+            margin: 2px;
+            padding: 5px 10px;
+            cursor: pointer;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background: white;
+        }
+
+        button.active {
+            background-color: #007bff;
+            color: white;
+            border: 1px solid #0056b3;
+        }
+
+        button:hover:not(.active) {
+            background-color: #f0f0f0;
+        }
+    </style>
+</head>
+<body>
+    <div class="year-buttons"></div>
+    <div class="chart-container"></div>
+
+ 
+    <script src="/static/js/finalscatter.js"></script>
+</body>
+</html>
+{% endblock %}

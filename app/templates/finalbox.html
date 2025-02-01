@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block content %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Life Expectancy Box Plot by Region</title>
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .box {
+            fill: steelblue;
+            opacity: 0.6;
+            cursor: pointer;
+        }
+        .median {
+            stroke: black;
+            stroke-width: 2px;
+        }
+        .whisker {
+            stroke: black;
+            stroke-width: 1px;
+        }
+        .tooltip {
+            position: absolute;
+            background: white;
+            border: 1px solid black;
+            padding: 5px;
+            font-size: 14px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <h2>Average Life Expectancy at birth years by Region during 2000-2021</h2>
+    <div class="tooltip" id="tooltip"></div>
+    <svg width="800" height="500"></svg>
+    <script src="/static/js/finalbox.js"></script>
+
+</body>
+</html>
+{% endblock %}

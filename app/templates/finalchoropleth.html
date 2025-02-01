@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block content %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sex Ratio in Life Expectancy</title>
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+    <style>
+        .map-container {
+            width: 100%;
+            height: 600px;
+        }
+        .legend {
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            margin-top: 20px;
+        }
+        .legend rect {
+            stroke: #ccc;
+        }
+        .legend-labels {
+            display: flex;
+            justify-content: space-between;
+            width: 150px;
+        }
+        .no-data {
+            display: flex;
+            align-items: center;
+            margin-right: 15px;
+        }
+        .no-data rect {
+            width: 20px;
+            height: 10px;
+            fill: #ccc;
+            stroke: #999;
+            stroke-dasharray: 4;
+        }
+    </style>
+</head>
+<body>
+    <h2>Female Ratio in Healthy Life Expectancy than Male</h2>
+    <div class="controls">
+        <label for="yearSelector">Select Year: </label>
+        <select id="yearSelector"></select>
+    </div>
+    <div class="map-container" id="map"></div>
+    <div class="legend" id="legend"></div>
+    <script src="/static/js/finalchoropleth.js"></script>
+
+</body>
+</html>
+{% endblock %}

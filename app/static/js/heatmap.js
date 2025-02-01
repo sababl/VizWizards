@@ -1,3 +1,7 @@
+var app = angular.module('myApp', ['ngMaterial']);
+app.controller('FormController', ['$scope', '$http', '$mdToast', function ($scope, $http, $mdToast) {
+
+
 type="text/javascript">anychart.onDocumentReady(function () {
   
     // create a heatmap
@@ -122,3 +126,4 @@ type="text/javascript">anychart.onDocumentReady(function () {
   
     ];
   }
+}]);

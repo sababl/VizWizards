@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %}Life Expectancy Spider Chart{% endblock %}
+
+{% block content %}
+<div>
+    <div ng-controller="FormController" class="form-container">
+        <div class="form-header">
+            <h1 class="form-title">Life Expectancy Analysis</h1>
+            <p class="form-description mat-body-1">
+                Explore life expectancy patterns using our spider plot visualization. Select sex and year to generate
+                the chart.
+            </p>
+        </div>
+
+        <form ng-submit="generateSpiderPlot()" class="space-y-6">
+            <!-- Countries Selection -->
+            <md-input-container class="w-full">
+                <label>Select Countries (max 10)</label>
+                <md-select ng-model="selectedCountries" multiple placeholder="Choose countries" required>
+                    <md-option ng-repeat="country in countries" ng-value="country">
+                        {% raw %}{{country}}{% endraw %}
+                    </md-option>
+                </md-select>
+            </md-input-container>
+            <!-- Sex Selection -->
+            <md-input-container class="w-full">
+                <label>Select Sex</label>
+                <md-select ng-model="formData.sex" placeholder="Choose sex" required>
+                    <md-option value="Male">Male</md-option>
+                    <md-option value="Female">Female</md-option>
+                    <md-option value="Both">Both sexes</md-option>
+                </md-select>
+            </md-input-container>
+
+            <!-- Year Selection -->
+            <md-input-container class="w-full">
+                <label>Select Year</label>
+                <md-select ng-model="formData.year" placeholder="Select year" required>
+                    <md-option ng-repeat="year in years" ng-value="year">
+                        {% raw %}{{year}}{% endraw %}
+                    </md-option>
+                </md-select>
+            </md-input-container>
+
+            <!-- Submit Button -->
+            <button mat-flat-button class="submit-button" type="submit">
+                <span class="flex items-center justify-center gap-2">
+                    <i class="material-icons">radar</i>
+                    Generate Spider Plot
+                </span>
+            </button>
+        </form>
+
+        <div class="radar-chart-container">
+            <div id="radar-chart"></div>
+        </div>
+    </div>
+</div>
+<script src="/static/js/le_radar.js"></script>
+
+{% endblock %}

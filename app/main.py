@@ -97,6 +97,11 @@ async def line(request: Request):
 async def le_beeswarm(request: Request):
     return templates.TemplateResponse("le_beeswarm.html", {"request": request})
 
+@app.get("/le-radar", response_class=HTMLResponse)
+async def le_radar(request: Request):
+    return templates.TemplateResponse("le_radar.html", {"request": request})
+
+
 @app.get("/temperature")
 async def get_temperature(state_code: str, years: List[str] = Query(..., min_items=1, max_items=10)):
     years = years[0].split(',')
@@ -132,7 +137,7 @@ AGE_INDICATORS = {
 async def get_life_data(
     years: str = Query(..., description="Comma separated years e.g. 2020,2021"),
     metric: str = Query(..., description="HLE or LE or BOTH"),
-    sex: str = Query(..., description="MALE, FEMALE or BOTH SEXES"),
+    sex: str = Query(..., description="MALE, FEMALE or BOTH"),
     age: str = Query(..., description="BIRTH, 60, BOTH"),
     country: Optional[str] = Query(None, description="Country name"),
     continent: Optional[str] = Query(None, description="Continent/Region name")
@@ -152,7 +157,9 @@ async def get_life_data(
             df_dict = {"le": df_le, "hle": df_hle}
         else:
             df_dict = {"le": df_le} if metric.lower() == "le" else {"hle": df_hle}
-            
+        
+        if sex.lower() == 'both':
+            sex = "Both sexes"
         for df_key in df_dict:
             df = df_dict[df_key]
             mask = (
@@ -177,7 +184,7 @@ async def get_life_data(
             ).to_dict()
             
             response[df_key] = result
-            
+            print(response)
         return JSONResponse(content=response)
         
     except Exception as e:
@@ -186,12 +193,10 @@ async def get_life_data(
 @app.get("/countries")
 async def get_countries():
     """Get list of all available countries"""
-    df_le, df_hle = init_data()
-    
-    # Combine unique countries from both datasets
-    countries = sorted(set(df_le['Location'].unique()) | set(df_hle['Location'].unique()))
-    
-    return JSONResponse(content={"countries": countries})
+    df_le = pd.read_csv('app/static/data/le.csv')
+    le_countries = df_le['Location'].unique().tolist()
+    # Combine unique countries from both datasets    
+    return JSONResponse(content={"countries": le_countries} )
 
 
 @app.get("/continents")
@@ -203,3 +208,11 @@ async def get_continents():
     continents = sorted(set(df_le['ParentLocation'].unique()) | set(df_hle['ParentLocation'].unique()))
     
     return JSONResponse(content={"continents": continents})
+
+@app.get("/years")
+async def get_years():
+    """Get list of all available years"""
+    df_le = pd.read_csv('app/static/data/le.csv')
+    le_years = df_le['Period'].unique().tolist()
+    # Combine unique countries from both datasets    
+    return JSONResponse(content={"years": le_years} )

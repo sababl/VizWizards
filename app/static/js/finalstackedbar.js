@@ -1,7 +1,7 @@
     // D3.js bar chart to visualize life expectancy at age 60 by region and year
 
     // Set up the chart dimensions and margins
-    const margin = { top: 50, right: 200, bottom: 100, left: 500 },
+    const margin = { top: 50, right: 200, bottom: 100, left: 440 },
           width =1500 - margin.left - margin.right,
           height = 600 - margin.top - margin.bottom;
 
@@ -66,13 +66,15 @@
       // Add Y axis
       svg.append("g").call(d3.axisLeft(y));
 
-      // Add Y axis label
       svg.append("text")
-        .attr("transform", "rotate(-90)")
-        .attr("y", -margin.left + 40)
-        .attr("x", -height / 2)
-        .style("text-anchor", "middle")
-        .text("Life Expectancy");
+         .attr("transform", "rotate(-90)") // Rotate text for Y-axis
+         .attr("y", -margin.left + 40 ) // Position away from axis
+         .attr("x", -height / 2) // Center vertically
+         .attr("dy", "1em") // Small offset for readability
+         .style("text-anchor", "middle") // Center align text
+         .style("font-size", "16px") // Adjust font size
+         .style("fill", "#174c3c") // Dark green for readability
+         .text("Life Expectancy (Years)");
 
       // Tooltip
       const tooltip = d3.select("body").append("div")

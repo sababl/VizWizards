@@ -59,7 +59,7 @@ Promise.all([
 
     // Initialize with the first available year
     updateMap(yearSelector.property("value"));
-
+    
     // Add legend
     const legend = d3.select("#legend");
     legend.append("div").attr("class", "no-data")

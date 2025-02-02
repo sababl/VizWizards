@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}beeswarm{% endblock %}
+
+
+{% block content %}
+<div ng-controller="FormController" class="form-container">
+    <div class="form-header">
+        <h1 class="form-title">Exploring the Global Gap in Men’s and Women’s Life Expectancy</h1>
+        <p class="form-description mat-body-1">
+            This interactive bubble chart reveals how men’s and women’s lifespans differ across regions of the
+            world—each circle represents a country, color-coded by continent and sized according to population. Notice
+            how most bubbles drift toward higher values on the horizontal (women) axis, demonstrating that females
+            generally outlive males in virtually every region. Large nations like China, India, and Mexico stand out as
+            bigger circles, highlighting their vast populations. By comparing these bubbles’ positions, viewers can
+            quickly see patterns of health disparities, cultural influences, and socio-economic factors that shape
+            longevity worldwide
+        </p>
+    </div>
+
+    <form ng-submit="generateBeeswarmChart()" class="space-y-6">
+        <!-- Year Selection -->
+        <md-input-container class="w-full">
+            <label>Select Year</label>
+            <md-select ng-model="formData.year" placeholder="Select year" required>
+                <md-option ng-repeat="year in years" ng-value="year">
+                    {% raw %}{{year}}{% endraw %}
+                </md-option>
+            </md-select>
+        </md-input-container>
+
+        <!-- Submit Button -->
+        <button mat-flat-button class="submit-button" type="submit">
+            <span class="flex items-center justify-center gap-2">
+                <i class="material-icons">circle</i>
+                Generate Plot
+            </span>
+        </button>
+    </form>
+    <div id="chart-beeswarm"></div>
+    <script src="/static/js/le_beeswarm.js"></script>
+</div>
+
+
+{% endblock %}

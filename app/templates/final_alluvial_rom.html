@@ -4,14 +4,15 @@
 
 {% block content %}
 
-    <h2 style="text-align:center; font-size:20px;">Alluvial Chart - Life Expectancy</h2>
+    <h1 style="text-align:center; font-size:20px;">Alluvial Chart - Life Expectancy (2021)</h1>
     
-    <p style="text-align:center; max-width:800px; margin:auto; font-size:16px;">
-        This alluvial chart visualizes the relationship between countries, life expectancy, and healthy life expectancy.
-        It shows how long people are expected to live and how many of those years they can expect to be healthy.
-        The width of the links represents the values of life expectancy and healthy life expectancy, allowing us to compare
-        differences between countries.
-    </p>
+    <h3 style="text-align:center; max-width:800px; margin:auto; font-size:16px;">
+        This alluvial chart provides a visual representation of life expectancy and healthy life expectancy across different countries.
+        The chart illustrates how long people are expected to live (Life Expectancy) and how many of those years they can expect to be
+        in good health (Healthy Life Expectancy). The width of the flows represents the number of years, allowing for an intuitive 
+        comparison between countries. A significant gap between life expectancy and healthy life expectancy indicates that people 
+        may be living longer but not necessarily in good health. This visualization helps identify disparities between different This visualization is based on the most recent available data from the year 2021.
+    </h3>
     
     <svg width="1500" height="800"></svg>
 
@@ -93,7 +94,7 @@
 
         // Ensure Life Expectancy and Healthy Life Expectancy have explicit labels
         svg.append("text") 
-            .attr("x", width - 100)
+            .attr("x", width - 145)
             .attr("y", 40)
             .attr("text-anchor", "middle")
             .style("font-size", "18px")

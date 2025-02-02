@@ -43,14 +43,16 @@ d3.csv("/static/data/box_life_expectancy_by_region.csv").then(data => {
         .style("font-size", "16px")
         .text("Regions");
 
-    
     g.append("text")
+        .attr("class", "y-axis-label")  // Assign a class to prevent duplicates
         .attr("transform", "rotate(-90)")
         .attr("x", -height / 2)
-        .attr("y", -30)
+        .attr("y", -50) // Adjust spacing if needed
         .attr("text-anchor", "middle")
         .style("font-size", "16px")
-        .text("years");    
+        .style("font-weight", "bold")
+        .text("Life Expectancy (years)");  
+
 
     const tooltip = d3.select("#tooltip");
 

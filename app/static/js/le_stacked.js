@@ -113,14 +113,25 @@ app.controller('FormController', ['$scope', '$http', '$mdToast', function ($scop
                 .attr("d", area)
                 .style("fill", d => color(d.key))
                 .on("mouseover", function (event, d) {
+                    const [mouseX, mouseY] = d3.pointer(event);
+                    const xValue = x.invert(mouseX);
+                    const yearData = processedData.find(item => 
+                        Math.abs(item.year - xValue) < 0.5
+                    );
+                    
                     tooltip.transition()
                         .duration(200)
-                        .style("opacity", 0.9);
-                    tooltip.html(`<strong>Indicator:</strong> ${d.key}`)
-                        .style("left", (event.pageX + 5) + "px")
-                        .style("top", (event.pageY - 28) + "px");
+                        .style("opacity", .9);
+                    
+                    tooltip.html(`
+                        Indicator: ${d.key}<br/>
+                        Year: ${Math.round(xValue)}<br/>
+                        Value: ${yearData ? yearData[d.key].toFixed(2) : "N/A"}
+                    `)
+                    .style("left", (event.pageX + 10) + "px")
+                    .style("top", (event.pageY - 28) + "px");
                 })
-                .on("mouseout", function () {
+                .on("mouseout", function() {
                     tooltip.transition()
                         .duration(500)
                         .style("opacity", 0);
@@ -136,6 +147,30 @@ app.controller('FormController', ['$scope', '$http', '$mdToast', function ($scop
             svg.append("g")
                 .attr("class", "y-axis")
                 .call(d3.axisLeft(y));
+
+            // Add X axis and label
+            svg.append("g")
+                .attr("transform", `translate(0,${height})`)
+                .call(d3.axisBottom(x))
+                .append("text")
+                .attr("x", width / 2)
+                .attr("y", 40)
+                .attr("fill", "black")
+                .attr("text-anchor", "middle")
+                .style("font-size", "14px")
+                .text("Years");
+
+            // Add Y axis and label
+            svg.append("g")
+                .call(d3.axisLeft(y))
+                .append("text")
+                .attr("transform", "rotate(-90)")
+                .attr("y", -40)
+                .attr("x", -(height / 2))
+                .attr("fill", "black")
+                .attr("text-anchor", "middle")
+                .style("font-size", "14px")
+                .text("Sex Ratio (Female/Male)");
 
             // Append a legend to the right of the chart.
             const legend = svg.selectAll(".legend")

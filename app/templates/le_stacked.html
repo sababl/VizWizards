@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}Stacked Area Chart{% endblock %}
+
+
+{% block content %}
+<div ng-controller="FormController" class="form-container">
+    <div class="form-header">
+        <h1 class="form-title">Exploring the Global Gap in Men’s and Women’s Life Expectancy</h1>
+        <p class="form-description mat-body-1">
+            This interactive bubble chart reveals how men’s and women’s lifespans differ across regions of the
+            world—each circle represents a country, color-coded by continent and sized according to population. Notice
+            how most bubbles drift toward higher values on the horizontal (women) axis, demonstrating that females
+            generally outlive males in virtually every region. Large nations like China, India, and Mexico stand out as
+            bigger circles, highlighting their vast populations. By comparing these bubbles’ positions, viewers can
+            quickly see patterns of health disparities, cultural influences, and socio-economic factors that shape
+            longevity worldwide
+        </p>
+    </div>
+    <div id="stacked-area-plot"></div>
+    <script src="/static/js/le_stacked.js"></script>
+</div>
+
+
+{% endblock %}

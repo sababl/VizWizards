@@ -101,6 +101,10 @@ async def le_beeswarm(request: Request):
 async def le_radar(request: Request):
     return templates.TemplateResponse("le_radar.html", {"request": request})
 
+@app.get("/le-stacked", response_class=HTMLResponse)
+async def le_stacked(request: Request):
+    return templates.TemplateResponse("le_stacked.html", {"request": request})
+
 
 @app.get("/temperature")
 async def get_temperature(state_code: str, years: List[str] = Query(..., min_items=1, max_items=10)):

@@ -56,19 +56,19 @@ async def radar(request: Request):
 async def line(request: Request):
     return templates.TemplateResponse("linechart.html", {"request": request})
 @app.get("/finalstackedbar", response_class=HTMLResponse)
-async def line(request: Request):
+async def finalstackedbar(request: Request):
     return templates.TemplateResponse("finalstackedbar.html", {"request": request})
 @app.get("/finalscatter", response_class=HTMLResponse)
-async def line(request: Request):
+async def finalscatter(request: Request):
     return templates.TemplateResponse("finalscatter.html", {"request": request})
 @app.get("/finalline", response_class=HTMLResponse)
-async def line(request: Request):
+async def finalline(request: Request):
     return templates.TemplateResponse("finalline.html", {"request": request})
 @app.get("/finalchoropleth", response_class=HTMLResponse)
-async def line(request: Request):
+async def finalchoropleth(request: Request):
     return templates.TemplateResponse("finalchoropleth.html", {"request": request})
 @app.get("/finalbox", response_class=HTMLResponse)
-async def line(request: Request):
+async def finalbox(request: Request):
     return templates.TemplateResponse("finalbox.html", {"request": request})
 
 @app.get("/temperature")

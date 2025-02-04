@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+
+{% block title %}Alluvial Chart{% endblock %}
+
+{% block content %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Slope Chart - Life Expectancy</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <h2 style="text-align:center;">Changes in Life Expectancy vs. Healthy Life Expectancy (2000-2021)</h2>
+    
+    <div style="text-align:center;">
+        <label for="country1">Select Country 1:</label>
+        <select id="country1">
+            <option value="Germany">Germany</option>
+            <option value="India">India</option>
+        </select>
+        
+        <label for="country2">Select Country 2:</label>
+        <select id="country2">
+            <option value="India">India</option>
+            <option value="Germany">Germany</option>
+        </select>
+        
+        <button onclick="updateChart()">Update Chart</button>
+    </div>
+    
+    <canvas id="slopeChart" width="800" height="400"></canvas>
+    
+    <script>
+        const fullData = {
+            "Germany": { lifeExp: [78.1, 80.2, 81.3], healthyLifeExp: [68.3, 70.1, 72.8] },
+            "India": { lifeExp: [63.5, 67.0, 70.8], healthyLifeExp: [55.4, 58.8, 62.5] }
+        };
+        
+        function getChartData(country1, country2) {
+            return {
+                labels: ["2000", "2010", "2021"],
+                datasets: [
+                    {
+                        label: `${country1} - Life Expectancy`,
+                        data: fullData[country1].lifeExp,
+                        borderColor: "blue",
+                        backgroundColor: "blue",
+                        fill: false,
+                        tension: 0.4
+                    },
+                    {
+                        label: `${country1} - Healthy Life Expectancy`,
+                        data: fullData[country1].healthyLifeExp,
+                        borderColor: "lightblue",
+                        backgroundColor: "lightblue",
+                        fill: false,
+                        borderDash: [5, 5],
+                        tension: 0.4
+                    },
+                    {
+                        label: `${country2} - Life Expectancy`,
+                        data: fullData[country2].lifeExp,
+                        borderColor: "green",
+                        backgroundColor: "green",
+                        fill: false,
+                        tension: 0.4
+                    },
+                    {
+                        label: `${country2} - Healthy Life Expectancy`,
+                        data: fullData[country2].healthyLifeExp,
+                        borderColor: "lightgreen",
+                        backgroundColor: "lightgreen",
+                        fill: false,
+                        borderDash: [5, 5],
+                        tension: 0.4
+                    }
+                ]
+            };
+        }
+        
+        const ctx = document.getElementById('slopeChart').getContext('2d');
+        let chart = new Chart(ctx, {
+            type: 'line',
+            data: getChartData("Germany", "India"),
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    }
+                },
+                scales: {
+                    y: {
+                        title: {
+                            display: true,
+                            text: "Years"
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: "Year"
+                        }
+                    }
+                }
+            }
+        });
+        
+        function updateChart() {
+            const country1 = document.getElementById("country1").value;
+            const country2 = document.getElementById("country2").value;
+            chart.data = getChartData(country1, country2);
+            chart.update();
+        }
+    </script>
+</body>
+</html>
+
+
+
+
+{% endblock %}

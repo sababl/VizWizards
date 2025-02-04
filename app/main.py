@@ -26,6 +26,10 @@ async def map1(request: Request):
 async def map1(request: Request):
     return templates.TemplateResponse("final_alluvial_rom.html", {"request": request})
 
+@app.get("/map2_r_slope", response_class=HTMLResponse)
+async def map1(request: Request):
+    return templates.TemplateResponse("final_slope_rom.html", {"request": request})
+
 
 @app.get("/bar", response_class=HTMLResponse)
 async def bar(request: Request):

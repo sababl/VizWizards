@@ -1,10 +1,44 @@
 var app = angular.module('myApp', ['ngMaterial']);
 
 app.controller('FormController', ['$scope', '$http', '$mdToast', function ($scope, $http, $mdToast) {
-    $scope.countryName = "Fiji";
-    generateStackedAreaChart($scope.countryName);
+    $scope.countries = [];
+    
+    $scope.formData = {
+        country: ''
+    };
+    // Load countries
+    $http.get('/countries').then(function(response) {
+        $scope.countries = response.data.countries
+        .toString()
+        .split(',')
+        .map(country => country.trim())
+        .filter(country => country.length > 0);
+
+    });
+    $scope.updateCountry = function() {
+        $scope.selectedCountry = $scope.formData.country;
+
+        if (!$scope.selectedCountry) {
+            $mdToast.show(
+                $mdToast.simple()
+                    .textContent('Please select a country')
+                    .position('top right')
+                    .hideDelay(3000)
+            );
+            return;
+        }
+        
+        // Clear previous chart
+        d3.select("#stacked-area-plot").selectAll("*").remove();
+        
+        // Generate new chart
+        generateStackedAreaChart($scope.selectedCountry);
+    };
+
     function generateStackedAreaChart(countryName) {
-        // Define dimensions and margins for the SVG canvas.
+        // Clear previous tooltips
+        d3.selectAll('.tooltip').remove();
+
         const margin = { top: 50, right: 150, bottom: 50, left: 50 },
             width = 960 - margin.left - margin.right,
             height = 500 - margin.top - margin.bottom;
@@ -35,6 +69,7 @@ app.controller('FormController', ['$scope', '$http', '$mdToast', function ($scop
             countryName = countryName.trim().toLowerCase();
             // Filter the combined data to only include rows for the selected country.
             const filteredData = combinedData.filter(d => d.Location === countryName);
+            console.log(countryName);
             if (filteredData.length === 0) {
                 alert("No data found for country: " + countryName);
                 return;
@@ -55,9 +90,7 @@ app.controller('FormController', ['$scope', '$http', '$mdToast', function ($scop
                 let yearObj = { year: +year };
                 indicators.forEach(ind => {
                     // Filter rows for the current indicator.
-                    console.log("values",values);
                     let rows = values.filter(d => d.Indicator === ind.trim().toLowerCase());
-                    console.log("rows",rows);
                     let maleVal = null, femaleVal = null;
                     rows.forEach(d => {
                         if (d.Dim1 === "male") {
@@ -66,7 +99,6 @@ app.controller('FormController', ['$scope', '$http', '$mdToast', function ($scop
                             femaleVal = d.FactValueNumeric;
                         }
                     });
-                    console.log("male , female",maleVal, femaleVal);
                     // Compute the sex ratio as female/male (if both values exist; otherwise, 0).
                     yearObj[ind] = (maleVal && femaleVal) ? (femaleVal / maleVal) : 0;
                 });
@@ -75,7 +107,6 @@ app.controller('FormController', ['$scope', '$http', '$mdToast', function ($scop
 
             // Sort the processed data by year.
             processedData.sort((a, b) => a.year - b.year);
-            console.log(processedData);
             // Remove any previous chart elements.
             svg.selectAll("*").remove();
 
@@ -137,6 +168,74 @@ app.controller('FormController', ['$scope', '$http', '$mdToast', function ($scop
                         .style("opacity", 0);
                 });
 
+            // Create axes
+            const xAxis = svg.append("g")
+                .attr("class", "x-axis")
+                .attr("transform", `translate(0,${height})`)
+                .call(d3.axisBottom(x).tickFormat(d3.format("d")));
+
+            const yAxis = svg.append("g")
+                .attr("class", "y-axis")
+                .call(d3.axisLeft(y));
+
+            // Add chart title
+            svg.append("text")
+                .attr("class", "chart-title")
+                .attr("x", width / 2)
+                .attr("y", -20)
+                .attr("text-anchor", "middle")
+                .style("font-size", "16px")
+                .style("font-weight", "bold")
+                .text(`Sex Ratio Trends Over Time in ${countryName}`);
+
+            // Add axis labels
+            const xLabel = xAxis.append("text")
+                .attr("class", "axis-label")
+                .attr("x", width / 2)
+                .attr("y", 40)
+                .attr("fill", "black")
+                .attr("text-anchor", "middle")
+                .style("font-size", "14px")
+                .text("Years");
+
+            const yLabel = yAxis.append("text")
+                .attr("class", "axis-label")
+                .attr("transform", "rotate(-90)")
+                .attr("y", -40)
+                .attr("x", -(height / 2))
+                .attr("fill", "black")
+                .attr("text-anchor", "middle")
+                .style("font-size", "14px")
+                .text("Sex Ratio (Female/Male)");
+
+            // Create and position legend
+            const legendGroup = svg.append("g")
+                .attr("class", "legend-group")
+                .attr("transform", `translate(${width + 40}, 20)`);
+
+            const legend = legendGroup.selectAll(".legend")
+                .data(indicators)
+                .enter()
+                .append("g")
+                .attr("class", "legend")
+                .attr("transform", (d, i) => `translate(0, ${i * 25})`);
+
+            // Add legend rectangles
+            legend.append("rect")
+                .attr("width", 18)
+                .attr("height", 18)
+                .attr("rx", 2)
+                .attr("ry", 2)
+                .style("fill", d => color(d));
+
+            // Add legend text
+            legend.append("text")
+                .attr("x", 24)
+                .attr("y", 9)
+                .attr("dy", ".35em")
+                .style("font-size", "12px")
+                .text(d => d);
+
             // Append the x-axis.
             svg.append("g")
                 .attr("class", "x-axis")
@@ -148,7 +247,19 @@ app.controller('FormController', ['$scope', '$http', '$mdToast', function ($scop
                 .attr("class", "y-axis")
                 .call(d3.axisLeft(y));
 
-            // Add X axis and label
+            // Add X axis with grid lines
+            svg.append("g")
+                .attr("class", "grid-lines")
+                .attr("transform", `translate(0,${height})`)
+                .call(
+                    d3.axisBottom(x)
+                        .tickFormat("")
+                        .tickSize(-height)
+                )
+                .style("stroke-dasharray", "2,2")
+                .style("stroke-opacity", 0.2);
+
+            // Add X axis and label (keep existing code but move it after grid lines)
             svg.append("g")
                 .attr("transform", `translate(0,${height})`)
                 .call(d3.axisBottom(x))
@@ -172,25 +283,6 @@ app.controller('FormController', ['$scope', '$http', '$mdToast', function ($scop
                 .style("font-size", "14px")
                 .text("Sex Ratio (Female/Male)");
 
-            // Append a legend to the right of the chart.
-            const legend = svg.selectAll(".legend")
-                .data(indicators)
-                .enter().append("g")
-                .attr("class", "legend")
-                .attr("transform", (d, i) => `translate(${width + 20}, ${i * 20})`);
-
-            legend.append("rect")
-                .attr("x", 0)
-                .attr("y", 0)
-                .attr("width", 18)
-                .attr("height", 18)
-                .style("fill", d => color(d));
-
-            legend.append("text")
-                .attr("x", 24)
-                .attr("y", 9)
-                .attr("dy", ".35em")
-                .text(d => d);
         }
 
         // Load the two CSV files in parallel.
@@ -221,7 +313,7 @@ app.controller('FormController', ['$scope', '$http', '$mdToast', function ($scop
             // Combine both datasets.
             combinedData = leData.concat(hleData);
 
-            updateChart("Fiji");
+            updateChart($scope.formData.country);
         }).catch(function (error) {
             console.error("Error loading CSV data: ", error);
         });

@@ -266,6 +266,15 @@ body {
   font-size: 14px;
 }
 
+.legend text {
+  font-family: Arial, sans-serif;
+}
+
+.legend rect {
+  stroke: #ccc;
+  stroke-width: 0.5;
+}
+
 /* Chart Container */
 #chart-container {
   display: flex;
@@ -277,6 +286,7 @@ body {
   text-align: center;
   font-size: 16px;
   margin-bottom: 10px;
+  font-family: Arial, sans-serif;
 }
 
 /* Hero Section */
@@ -695,6 +705,7 @@ md-option:hover {
 .axis-label {
   font-size: 12px;
   fill: #333;
+  font-family: Arial, sans-serif;
 }
 
 .temp-label {
@@ -732,4 +743,15 @@ p.form-description {
 p.form-description:hover {
   background-color: #e8f5e9; /* Slightly lighter green background on hover */
   color: #333; /* Darker text color on hover */
+}
+
+.form-controls {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.md-button.md-raised.md-primary {
+  margin: 0;
 }

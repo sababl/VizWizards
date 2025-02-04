@@ -6,20 +6,31 @@
 {% block content %}
 <div ng-controller="FormController" class="form-container">
     <div class="form-header">
-        <h1 class="form-title">Exploring the Global Gap in Men’s and Women’s Life Expectancy</h1>
+        <h1 class="form-title">Exploring Global Demographics: Sex Ratio & Life Expectancy Trends (2000-2021)</h1>
         <p class="form-description mat-body-1">
-            This interactive bubble chart reveals how men’s and women’s lifespans differ across regions of the
-            world—each circle represents a country, color-coded by continent and sized according to population. Notice
-            how most bubbles drift toward higher values on the horizontal (women) axis, demonstrating that females
-            generally outlive males in virtually every region. Large nations like China, India, and Mexico stand out as
-            bigger circles, highlighting their vast populations. By comparing these bubbles’ positions, viewers can
-            quickly see patterns of health disparities, cultural influences, and socio-economic factors that shape
-            longevity worldwide
+            This interactive chart allows you to explore sex ratio trends and life expectancy across different
+            countries over the past two decades. By selecting a country, you can visualize how the female-to-male
+            ratio, life expectancy, and healthy life expectancy have evolved over time.
         </p>
+    </div>
+    <div class="form-controls">
+        <md-input-container class="w-full">
+            <label>Select Country</label>
+            <md-select ng-model="formData.country" placeholder="Select Country" required>
+                <md-option ng-repeat="country in countries" ng-value="country">
+                    {% raw %}{{country}}{% endraw %}
+                </md-option>
+            </md-select>
+        </md-input-container>
+
+        <button mat-flat-button class="submit-button" type="submit" ng-click="updateCountry()">
+            <span class="flex items-center justify-center gap-2">
+                Generate Plot
+            </span>
+        </button>
     </div>
     <div id="stacked-area-plot"></div>
     <script src="/static/js/le_stacked.js"></script>
 </div>
-
 
 {% endblock %}

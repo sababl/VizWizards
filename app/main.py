@@ -38,6 +38,11 @@ async def map1(request: Request):
 async def map1(request: Request):
     return templates.TemplateResponse("final_heatmap_rom.html", {"request": request})
 
+@app.get("/map5_r_bubblemap", response_class=HTMLResponse)
+async def map1(request: Request):
+    return templates.TemplateResponse("final_bubblemap_rom.html", {"request": request})
+
+
 @app.get("/bar", response_class=HTMLResponse)
 async def bar(request: Request):
     return templates.TemplateResponse("bar.html", {"request": request})

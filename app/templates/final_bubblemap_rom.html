@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block title %}Alluvial Chart{% endblock %}
+
+{% block content %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Life Expectancy Bubble Map</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+    <h2 style="text-align: center;">Life Expectancy Across Countries</h2>
+    <p style="text-align: center; width: 80%; margin: auto;">
+        This bubble map visualizes life expectancy across different countries. The size of each bubble represents 
+        the population of the country, while the color indicates life expectancy. Larger bubbles correspond to 
+        more populous countries, and darker colors represent higher life expectancy.
+    </p>
+    <p style="text-align: center; width: 80%; margin: auto; font-weight: bold;">
+        The visualization highlights the relationship between population size and life expectancy. Countries with 
+        larger populations and lower life expectancy may face significant public health challenges, whereas 
+        smaller countries with high life expectancy often have well-developed healthcare systems. By analyzing 
+        both metrics together, this map helps identify global disparities in health and longevity, guiding 
+        potential improvements in healthcare policies.
+    </p>
+
+    <div id="bubble-map" style="width:100%; height:600px;"></div>
+
+    <script>
+        let data = [{
+            type: "scattergeo",
+            mode: "markers",
+            lat: [37.0902, 51.5074, 51.1657, 48.8566, 20.5937, 35.8617, -14.2350, 36.2048, 56.1304, -25.2744],
+            lon: [-95.7129, -0.1278, 10.4515, 2.3522, 78.9629, 104.1954, -51.9253, 138.2529, -106.3468, 133.7751],
+            text: [
+                "USA: Life Expectancy 78 yrs, Population 330M",
+                "UK: Life Expectancy 80 yrs, Population 67M",
+                "Germany: Life Expectancy 81 yrs, Population 83M",
+                "France: Life Expectancy 82 yrs, Population 65M",
+                "India: Life Expectancy 69 yrs, Population 1380M",
+                "China: Life Expectancy 76 yrs, Population 1441M",
+                "Brazil: Life Expectancy 74 yrs, Population 212M",
+                "Japan: Life Expectancy 85 yrs, Population 126M",
+                "Canada: Life Expectancy 83 yrs, Population 38M",
+                "Australia: Life Expectancy 84 yrs, Population 25M"
+            ],
+            marker: {
+                size: [50, 20, 25, 20, 60, 65, 30, 25, 15, 10], // Adjusted sizes for better visualization
+                color: [78, 80, 81, 82, 69, 76, 74, 85, 83, 84], // Life Expectancy
+                colorscale: "Viridis",
+                showscale: true,
+                colorbar: { title: "Life Expectancy (years)" },
+                line: { color: "black" }
+            }
+        }];
+
+        let layout = {
+            title: "Life Expectancy Across Countries (Bubble Size = Population)",
+            geo: {
+                projection: { type: "natural earth" },
+                showland: true
+            }
+        };
+
+        Plotly.newPlot("bubble-map", data, layout);
+    </script>
+</body>
+</html>
+
+
+
+
+
+{% endblock %}

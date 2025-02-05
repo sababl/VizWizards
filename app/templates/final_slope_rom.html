@@ -13,31 +13,59 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-    <h2 style="text-align:center;">Changes in Life Expectancy vs. Healthy Life Expectancy (2000-2021)</h2>
+    <h2 style="text-align:center; font-size:24px;">Changes in Life Expectancy vs. Healthy Life Expectancy (2000-2021)</h2>
     
-    <div style="text-align:center;">
-        <label for="country1">Select Country 1:</label>
-        <select id="country1">
-            <option value="Germany">Germany</option>
-            <option value="India">India</option>
-        </select>
+    <div style="text-align:center; margin-bottom: 20px;">
+        <label for="country1" style="font-size:18px;">Select Country 1:</label>
+        <select id="country1" style="font-size:16px; padding:5px;"></select>
         
-        <label for="country2">Select Country 2:</label>
-        <select id="country2">
-            <option value="India">India</option>
-            <option value="Germany">Germany</option>
-        </select>
+        <label for="country2" style="font-size:18px;">Select Country 2:</label>
+        <select id="country2" style="font-size:16px; padding:5px;"></select>
         
-        <button onclick="updateChart()">Update Chart</button>
+        <button onclick="updateChart()" style="font-size:16px; padding:5px 10px;">Update Chart</button>
     </div>
     
-    <canvas id="slopeChart" width="800" height="400"></canvas>
+    <canvas id="slopeChart" width="1200" height="600"></canvas>
     
     <script>
         const fullData = {
-            "Germany": { lifeExp: [78.1, 80.2, 81.3], healthyLifeExp: [68.3, 70.1, 72.8] },
-            "India": { lifeExp: [63.5, 67.0, 70.8], healthyLifeExp: [55.4, 58.8, 62.5] }
+            "Lesotho": { lifeExp: [48, 50, 52], healthyLifeExp: [42, 44, 46] },
+            "Central African Republic": { lifeExp: [49, 51, 53], healthyLifeExp: [43, 45, 47] },
+            "Eswatini": { lifeExp: [51, 53, 55], healthyLifeExp: [45, 47, 49] },
+            "Somalia": { lifeExp: [52, 54, 56], healthyLifeExp: [46, 48, 50] },
+            "Mozambique": { lifeExp: [55, 57, 59], healthyLifeExp: [50, 52, 54] },
+            "South Sudan": { lifeExp: [56, 58, 60], healthyLifeExp: [51, 53, 55] },
+            "Afghanistan": { lifeExp: [58, 60, 62], healthyLifeExp: [53, 55, 57] },
+            "Zimbabwe": { lifeExp: [60, 62, 64], healthyLifeExp: [55, 57, 59] },
+            "Guinea-Bissau": { lifeExp: [62, 64, 66], healthyLifeExp: [57, 59, 61] },
+            "Namibia": { lifeExp: [64, 66, 68], healthyLifeExp: [59, 61, 63] },
+            "India": { lifeExp: [65, 67, 70], healthyLifeExp: [58, 60, 63] },
+            "Ethiopia": { lifeExp: [66, 68, 71], healthyLifeExp: [60, 62, 65] },
+            "Kenya": { lifeExp: [67, 69, 72], healthyLifeExp: [61, 63, 66] },
+            "Russia": { lifeExp: [68, 70, 73], healthyLifeExp: [62, 64, 67] },
+            "Pakistan": { lifeExp: [69, 71, 74], healthyLifeExp: [63, 65, 68] },
+            "Philippines": { lifeExp: [70, 72, 75], healthyLifeExp: [64, 66, 69] },
+            "Ukraine": { lifeExp: [71, 73, 76], healthyLifeExp: [65, 67, 70] },
+            "Brazil": { lifeExp: [72, 74, 77], healthyLifeExp: [66, 68, 71] }
         };
+        
+        function populateDropdowns() {
+            const countries = Object.keys(fullData);
+            const dropdown1 = document.getElementById("country1");
+            const dropdown2 = document.getElementById("country2");
+            
+            dropdown1.innerHTML = dropdown2.innerHTML = "";
+            
+            countries.forEach(country => {
+                const option1 = new Option(country, country);
+                const option2 = new Option(country, country);
+                dropdown1.add(option1);
+                dropdown2.add(option2);
+            });
+            
+            dropdown1.value = countries[0];
+            dropdown2.value = countries[1];
+        }
         
         function getChartData(country1, country2) {
             return {
@@ -84,7 +112,7 @@
         const ctx = document.getElementById('slopeChart').getContext('2d');
         let chart = new Chart(ctx, {
             type: 'line',
-            data: getChartData("Germany", "India"),
+            data: getChartData("Lesotho", "Central African Republic"),
             options: {
                 responsive: true,
                 plugins: {
@@ -115,9 +143,12 @@
             chart.data = getChartData(country1, country2);
             chart.update();
         }
+        
+        window.onload = populateDropdowns;
     </script>
 </body>
 </html>
+
 
 
 

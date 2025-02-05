@@ -11,6 +11,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Life Expectancy Bubble Map</title>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <style>
+        p {
+            line-height: 3;
+        }
+    </style>
 </head>
 <body>
     <h2 style="text-align: center;">Life Expectancy Across Countries</h2>
@@ -65,12 +70,14 @@
             }
         };
 
-        Plotly.newPlot("bubble-map", data, layout);
+        let config = {
+            displayModeBar: false // Removes toolbar options
+        };
+
+        Plotly.newPlot("bubble-map", data, layout, config);
     </script>
 </body>
 </html>
-
-
 
 
 

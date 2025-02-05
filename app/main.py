@@ -34,6 +34,10 @@ async def map1(request: Request):
 async def map1(request: Request):
     return templates.TemplateResponse("final_flowplot_rom.html", {"request": request})
 
+@app.get("/map4_r_heatmap", response_class=HTMLResponse)
+async def map1(request: Request):
+    return templates.TemplateResponse("final_heatmap_rom.html", {"request": request})
+
 @app.get("/bar", response_class=HTMLResponse)
 async def bar(request: Request):
     return templates.TemplateResponse("bar.html", {"request": request})

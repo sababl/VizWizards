@@ -4,6 +4,8 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from typing import List
 import pandas as pd
+import numpy as np
+
 import json
 from typing import List, Optional
 
@@ -126,7 +128,6 @@ async def get_temperature(state_code: str, years: List[str] = Query(..., min_ite
             mean_df.iloc[:, 0].str[-4:].isin(years)
         )
     ]
-    print(filtered_df.head(5))
     filtered_df = filtered_df.reset_index(drop=True)
     filtered_df.iloc[:, 0] = filtered_df.iloc[:, 0].str[-4:]
 
@@ -188,14 +189,19 @@ async def get_life_data(
             
             # Group by year for response format
             result = df.groupby('Period').apply(
-                lambda x: x[['Location', 'ParentLocation', 'Sex', 'FactValueNumeric','FactValueNumericLow','FactValueNumericHigh', 'Indicator']].to_dict('records')
+                lambda x: x[['Location', 'ParentLocation', 'Sex', 'FactValueNumeric',
+                               'FactValueNumericLow', 'FactValueNumericHigh', 'Indicator']]
+                          .replace(np.nan, None)
+                          .to_dict('records')
             ).to_dict()
-            
+                     
             response[df_key] = result
-            print(response)
         return JSONResponse(content=response)
         
     except Exception as e:
+        print(f"Error occurred: {str(e)}")  # Debug print
+        import traceback
+        print(traceback.format_exc())  # Print full traceback
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/countries")

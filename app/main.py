@@ -105,6 +105,10 @@ async def le_radar(request: Request):
 async def le_stacked(request: Request):
     return templates.TemplateResponse("le_stacked.html", {"request": request})
 
+@app.get("/le-error", response_class=HTMLResponse)
+async def le_error(request: Request):
+    return templates.TemplateResponse("le_error.html", {"request": request})
+
 
 @app.get("/temperature")
 async def get_temperature(state_code: str, years: List[str] = Query(..., min_items=1, max_items=10)):
@@ -184,7 +188,7 @@ async def get_life_data(
             
             # Group by year for response format
             result = df.groupby('Period').apply(
-                lambda x: x[['Location', 'ParentLocation', 'Sex', 'FactValueNumeric', 'Indicator']].to_dict('records')
+                lambda x: x[['Location', 'ParentLocation', 'Sex', 'FactValueNumeric','FactValueNumericLow','FactValueNumericHigh', 'Indicator']].to_dict('records')
             ).to_dict()
             
             response[df_key] = result
@@ -220,3 +224,11 @@ async def get_years():
     le_years = df_le['Period'].unique().tolist()
     # Combine unique countries from both datasets    
     return JSONResponse(content={"years": le_years} )
+
+@app.get("/regions")
+async def get_regions():
+    """Get list of all available regions"""
+    df_le = pd.read_csv('app/static/data/le.csv')
+    le_regions = df_le['ParentLocation'].unique().tolist()
+    # Combine unique countries from both datasets    
+    return JSONResponse(content={"regions": le_regions} )

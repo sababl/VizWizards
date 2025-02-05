@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %}beeswarm{% endblock %}
+
+{% block content %}
+
+<div>
+    <div ng-controller="FormController" class="form-container">
+        <div class="form-header">
+            <h1 class="form-title">The Lifespan Spectrum: Insights into Regional Well-Being</h1>
+            <p class="form-description mat-body-1">
+                This visualization opens a window into the diverse health narratives of countries within your selected
+                region. Each error bar not only captures the range of life expectancy at birth but also hints at the
+                underlying stories of progress, challenges, and resilience. The red marker pinpoints the average life
+                expectancy, offering a focal point amidst the variability—a symbol of the collective journey towards
+                improved well-being. Dive in and explore how each country's unique experiences contribute to the broader
+                story of life and longevity
+            </p>
+        </div>
+
+        <form ng-submit="generateErroPlot()" class="space-y-6">
+
+            <!-- Region Selection -->
+            <md-input-container class="w-full">
+                <label>Select Region</label>
+                <md-select ng-model="formData.region" placeholder="Select Region" required>
+                    <md-option ng-repeat="region in regions" ng-value="region">
+                        {% raw %}{{region}}{% endraw %}
+                    </md-option>
+                </md-select>
+            </md-input-container>
+
+
+            <!-- Year Selection -->
+            <md-input-container class="w-full">
+                <label>Select Year</label>
+                <md-select ng-model="formData.year" placeholder="Select year" required>
+                    <md-option ng-repeat="year in years" ng-value="year">
+                        {% raw %}{{year}}{% endraw %}
+                    </md-option>
+                </md-select>
+            </md-input-container>
+
+            <!-- Submit Button -->
+            <button mat-flat-button class="submit-button" type="submit">
+                <span class="flex items-center justify-center gap-2">
+                    <i class="material-icons">bar</i>
+                    Generate Plot
+                </span>
+            </button>
+        </form>
+
+        <div class="error-chart-container">
+            <div id="error-chart"></div>
+        </div>
+    </div>
+</div>
+<script src="/static/js/le_error.js"></script>
+
+{% endblock %}

@@ -15,37 +15,30 @@
         p {
             line-height: 3;
         }
-    </style>
-    <style>
-        body {
+        .info-box {
+            background-color: #f0f0f0;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
+            max-width: 1000px;
+            text-align: justify;
+            margin: 20px auto;
             display: flex;
-            flex-direction: column;
-            align-items: center;
             justify-content: center;
-            height: 100vh;
-            margin: 0;
-            text-align: center;
-        }
-        #flowmap-container {
-            display: flex;
-            justify-content: flex-end;
-            width: 100%; /* Ensures full width so we can push it right */
-            padding-right: 15%; /* Moves the plot further to the right */
-        }
-        #flowmap {
-            width: 80%;
-            height: 700px;
+            align-items: center;
         }
     </style>
 </head>
 <body>
-    <h2>Healthy Life Expectancy Flow Between Regions</h2>
-    <p>
-        This flow map visualizes the Healthy Life Expectancy (HALE) differences between global regions.
-        Each vertical bar represents a WHO region (Africa, Americas, Asia, Europe, Oceania). The curved lines
-        between regions show the HALE gaps between them. Thicker lines indicate larger HALE differences.
-        Colors help distinguish whether HALE is increasing (green) or decreasing (red) as we move between regions.
-    </p>
+    <h2 style="text-align: center;">Life Expectancy Flow Map</h2>
+    <div class="info-box">
+        <p>
+            This flow map visualizes the connections between different regions and their life expectancy rates. 
+            The lines represent the flow of data between geographical points, with line thickness indicating the 
+            strength of the relationship. This visualization helps identify patterns and disparities in life 
+            expectancy across different regions and how they might influence each other.
+        </p>
+    </div>
     
     <div id="flowmap-container">
         <div id="flowmap"></div>

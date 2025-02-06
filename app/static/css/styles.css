@@ -249,14 +249,14 @@ body {
 
 .tooltip {
   position: absolute;
-  text-align: center;
-  padding: 6px;
-  font: 12px sans-serif;
-  background: lightsteelblue;
-  border: 1px solid #999;
+  padding: 8px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid #ddd;
   border-radius: 4px;
   pointer-events: none;
-  color: #000;
+  font-size: 12px;
+  z-index: 100;  /* Ensure tooltip appears above other elements */
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .bar {

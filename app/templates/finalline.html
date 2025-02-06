@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block content %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Female Life Expectancy</title>
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .chart-container {
+            width: 110%;
+            margin: 0 auto;
+
+        }
+        .axis-label {
+            font-size: 14px;
+        }
+        .line {
+            fill: none;
+            stroke-width: 2px;
+            stroke: darkgreen;
+        }
+        .tooltip {
+            position: absolute;
+            background: #fff;
+            padding: 5px;
+            border: 1px solid #ddd;
+            font-size: 14px;
+            pointer-events: none;
+            display: none;
+        }
+        .select-container {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        label {
+            font-size: 20px;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        select {
+            padding: 8px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            outline: none;
+            justify-content: center;
+    align-items: center;
+        }
+        .text-box {
+    background-color: #f0f0f0; /* Light gray background */
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
+    max-width: 800px; /* Adjust width */
+    text-align: justify; /* Justify the paragraph text */
+    margin: 20px auto; /* Center the frame horizontally */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+    </style>
+</head>
+<body>
+    <div class="chart-container">
+        <h1 style="text-align: center;">Female Life Expectancy (2000-2021)</h1>
+
+        <div class="select-container">
+            <label for="country-select">Select Country:</label>
+            <select id="country-select"></select>
+        </div>
+        <div class="inline-container">
+            
+            <div class="text-box">
+              <p>
+                From 2000 to 2010, a steady upward trend was observed in most countries. Nations with initially lower life expectancies showed incremental growth, indicating gradual improvements in factors contributing to longer lifespans. By 2010, several countries had gained an additional 1 to 2 years in female life expectancy, marking a period of continued progress.
+                Between 2010 and 2019, female life expectancy continued its positive trajectory, with some countries reaching their highest recorded values.
+            
+                In contrast, countries with lower values experienced slower but steady improvements, reflecting ongoing development.
+                By 2021, while many countries maintained their upward trends, some exhibited stagnation or slight declines in life expectancy. This indicates that while progress was made, there were still regional differences in how life expectancy evolved.
+              </p>
+            </div>
+          </div>
+
+        <div id="tooltip" class="tooltip"></div>
+        <svg width="800" height="500"></svg>
+    </div>
+    <script src="/static/js/finalline.js"></script>
+</body>
+</html>
+{% endblock %}

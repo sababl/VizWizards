@@ -115,6 +115,21 @@ async def le_error(request: Request):
 async def le_violin(request: Request):
     return templates.TemplateResponse("le_violin.html", {"request": request})
 
+@app.get("/finalstackedbar", response_class=HTMLResponse)
+async def finalstackedbar(request: Request):
+    return templates.TemplateResponse("finalstackedbar.html", {"request": request})
+@app.get("/finalscatter", response_class=HTMLResponse)
+async def finalscatter(request: Request):
+    return templates.TemplateResponse("finalscatter.html", {"request": request})
+@app.get("/finalline", response_class=HTMLResponse)
+async def finalline(request: Request):
+    return templates.TemplateResponse("finalline.html", {"request": request})
+@app.get("/finalchoropleth", response_class=HTMLResponse)
+async def finalchoropleth(request: Request):
+    return templates.TemplateResponse("finalchoropleth.html", {"request": request})
+@app.get("/finalbox", response_class=HTMLResponse)
+async def finalbox(request: Request):
+    return templates.TemplateResponse("finalbox.html", {"request": request})
 
 @app.get("/temperature")
 async def get_temperature(state_code: str, years: List[str] = Query(..., min_items=1, max_items=10)):

@@ -265,9 +265,12 @@ body {
 .legend {
   font-size: 14px;
 }
-
+.legend-group {
+  font-size: 12px;
+}
 .legend text {
   font-family: Arial, sans-serif;
+  fill: #333;
 }
 
 .legend rect {
@@ -793,4 +796,44 @@ svg {
   justify-content: center;
   position: relative;
   margin: 20px 0;
+}
+
+#stacked-area-plot {
+  width: 100%;
+  height: auto;
+  min-width: 960px; /* Match the width from your JS */
+  overflow: visible; /* Ensure legend remains visible */
+  position: relative; /* Add position relative */
+}
+
+#stacked-area-plot svg {
+  width: 100%;
+  height: auto;
+  min-width: 960px;
+  display: block;
+}
+
+.stacked-chart-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  margin-top: 2rem;
+}
+
+
+.info-box {
+  background-color: #f0f0f0;
+  /* Light gray background */
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
+  max-width: 800px;
+  /* Adjust width */
+  text-align: justify;
+  /* Justify the paragraph text */
+  margin: 20px auto;
+  /* Center the frame horizontally */
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }

@@ -23,6 +23,8 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  font-size: 16px;
+  line-height: 1.5;
 }
 
 .sidebar {
@@ -515,6 +517,10 @@ body {
   padding: 20px;
   gap: 20px;
   width: 75%;
+  width: 100%;
+  padding: 15px;
+  margin: 0 auto;
+  box-sizing: border-box;
 }
 
 
@@ -570,6 +576,9 @@ body {
   border: none;
   /* margin-right: 10%; */
   overflow-x: auto;
+  width: 100%;
+  max-width: 100%;
+  -webkit-overflow-scrolling: touch;
 }
 
 .submit-button {
@@ -836,4 +845,74 @@ svg {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+/* Media Queries */
+@media screen and (max-width: 1200px) {
+  .content {
+    margin: 30px 30px 30px 220px;
+    width: calc(100% - 250px);
+  }
+}
+
+@media screen and (max-width: 992px) {
+  .sidebar {
+    width: 200px;
+  }
+  
+  .content {
+    margin: 20px 20px 20px 200px;
+    width: calc(100% - 220px);
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .sidebar {
+    width: 100%;
+    height: auto;
+    position: relative;
+    transform: translateX(-100%);
+  }
+  
+  .content {
+    margin: 15px;
+    width: calc(100% - 30px);
+  }
+  
+  .circle-container {
+    width: 100%;
+  }
+  
+  .circle-image {
+    width: 150px;
+    height: 150px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  body {
+    font-size: 14px;
+  }
+  
+  .hero-section h1 {
+    font-size: 24px;
+  }
+  
+  .text-box {
+    min-width: 100%;
+    padding: 10px 15px;
+  }
+  
+  .submit-button {
+    width: 100%;
+  }
+}
+
+/* Make plots responsive */
+.js-plotly-plot {
+  width: 100% !important;
+}
+
+.js-plotly-plot .plotly {
+  width: 100% !important;
 }

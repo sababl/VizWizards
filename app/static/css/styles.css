@@ -755,3 +755,21 @@ p.form-description:hover {
 .md-button.md-raised.md-primary {
   margin: 0;
 }
+
+.chart-container {
+    width: 100%;
+    height: 80vh;
+    padding: 20px;
+    margin-top: 20px;
+}
+
+.violin-chart-wrapper {
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+}
+
+#violin-chart svg {
+    display: block;
+    margin: auto;
+}

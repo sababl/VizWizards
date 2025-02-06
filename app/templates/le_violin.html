@@ -1,24 +1,24 @@
 {% extends "base.html" %}
 
-{% block title %}error chart{% endblock %}
+{% block title %}violin chart{% endblock %}
 
 {% block content %}
 
 <div>
     <div ng-controller="FormController" class="form-container">
         <div class="form-header">
-            <h1 class="form-title">The Lifespan Spectrum: Insights into Regional Well-Being</h1>
+            <h1 class="form-title">Unveiling Global Life Expectancy: A Visual Journey Through Regions</h1>
             <p class="form-description mat-body-1">
-                This visualization opens a window into the diverse health narratives of countries within your selected
-                region. Each error bar not only captures the range of life expectancy at birth but also hints at the
-                underlying stories of progress, challenges, and resilience. The red marker pinpoints the average life
-                expectancy, offering a focal point amidst the variability—a symbol of the collective journey towards
-                improved well-being. Dive in and explore how each country's unique experiences contribute to the broader
-                story of life and longevity
+                This violin plot provides a compelling visualization of life expectancy distributions across different
+                regions or countries. Each violin shape illustrates the density of life expectancy values, highlighting
+                variations within each group. The plot also features extreme values—minimum and maximum
+                estimates—offering insight into disparities and outliers. By comparing regions side by side, we can
+                uncover patterns, anomalies, and trends that shape global health outcomes. Explore how life expectancy
+                varies across the world and discover the stories hidden within the data!
             </p>
         </div>
 
-        <form ng-submit="generateErroPlot()" class="space-y-6">
+        <form ng-submit="generateViolinPlot()" class="space-y-6">
 
             <!-- Region Selection -->
             <md-input-container class="w-full">
@@ -49,10 +49,13 @@
                 </span>
             </button>
         </form>
+        <div class="chart-container">
 
-            <div id="error-chart"></div>
+            <div id="violin-chart" class="violin-chart-wrapper"></div>
+        </div>
+
     </div>
 </div>
-<script src="/static/js/le_error.js"></script>
+<script src="/static/js/le_violin.js"></script>
 
 {% endblock %}

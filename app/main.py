@@ -111,6 +111,10 @@ async def le_stacked(request: Request):
 async def le_error(request: Request):
     return templates.TemplateResponse("le_error.html", {"request": request})
 
+@app.get("/le-violin", response_class=HTMLResponse)
+async def le_violin(request: Request):
+    return templates.TemplateResponse("le_violin.html", {"request": request})
+
 
 @app.get("/temperature")
 async def get_temperature(state_code: str, years: List[str] = Query(..., min_items=1, max_items=10)):

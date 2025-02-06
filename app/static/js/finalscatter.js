@@ -66,47 +66,37 @@ const colorScale = d3.scaleOrdinal()
         .attr("class", "tooltip")
         .style("opacity", 0);
 
-    function updateChart(selectedYear) {
-        const yearData = data.filter(d => d.Period === selectedYear);
-        svg.selectAll(".dot").remove();
-        
-        svg.selectAll(".dot")
-        .data(yearData, d => d.Location)
-        .enter()
-        .append("circle")
-        .attr("class", "dot")
-        .attr("r", 10) 
-        .attr("cx", d => xScale(d.Period))
-        .attr("cy", d => yScale(d.FactValueNumeric))
-        .style("fill", d => colorScale(d.Location))
-        .on("mouseover", function(event, d) {
-            d3.select(this)
-                .transition()
-                .duration(200)
-                .attr("r", 16); 
-            tooltip.transition()
-                .duration(200)
-                .style("opacity", .9);
-            tooltip.html(`Country: ${d.Location}<br/>Year: ${d.Period}<br/>Life Expectancy: ${d.FactValueNumeric.toFixed(2)} years`)
-                .style("left", (event.pageX + 10) + "px")
-                .style("top", (event.pageY - 28) + "px");
-        })
-        .on("mouseout", function() {
-            d3.select(this)
-                .transition()
-                .duration(200)
-                .attr("r", 10); 
-            tooltip.transition()
-                .duration(500)
-                .style("opacity", 0);
-            });
-    }
-    
-    years.forEach(year => {
-        const button = document.createElement("button");
-        button.textContent = year;
-        button.addEventListener("click", () => updateChart(year));
-        document.querySelector(".year-buttons").appendChild(button);
+    const slider = d3.select("#year-slider");
+    const yearDisplay = d3.select("#year-display");
+
+    slider.on("input", function() {
+        const selectedYear = +this.value;
+        yearDisplay.text(selectedYear);
+        updateChart(selectedYear);
     });
-    updateChart(years[0]);
+
+    function updateChart(year) {
+        // Filter data for selected year
+        const yearData = data.filter(d => d.Period === year);
+
+        // Update or create dots
+        const dots = svg.selectAll(".dot")
+            .data(yearData, d => d.Location);
+
+        // Remove old dots
+        dots.exit().remove();
+
+        // Add new dots
+        dots.enter()
+            .append("circle")
+            .attr("class", "dot")
+            .merge(dots)
+            .attr("cx", d => xScale(d.Period))
+            .attr("cy", d => yScale(d.FactValueNumeric))
+            .attr("r", 6)
+            .style("fill", d => colorScale(d.Location));
+    }
+
+    // Initial chart render
+    updateChart(2000);
 });

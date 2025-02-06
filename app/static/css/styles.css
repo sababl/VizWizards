@@ -521,19 +521,16 @@ body {
   background-color: #ffffff;
   border-radius: 50px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  flex: auto;
-  margin-top: 50px;
-  margin-bottom: 50px;
-  margin-right: 50px;
-  margin-left: 18%;
-  padding-left: 2%;
-  padding-top: 2%;
-  width: 80%;
-  /* display: flex;   */
-  justify-content: center;
+  margin: 50px 50px 50px 18%;
+  padding: 2%;
+  width: calc(82% - 100px); /* Adjust width accounting for sidebar and margins */
+  min-height: calc(100vh - 100px); /* Minimum height to fill viewport */
+  display: flex;
+  flex-direction: column;
   align-items: center;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
-
 .content form {
   display: flex;
   flex-direction: column;
@@ -757,12 +754,14 @@ p.form-description:hover {
 }
 
 .chart-container {
-    width: 100%;
-    height: 80vh;
-    padding: 20px;
-    margin-top: 20px;
+  width: 100%;
+  max-width: 1200px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  flex: 1;
 }
-
 .violin-chart-wrapper {
     width: 100%;
     height: 100%;
@@ -772,4 +771,26 @@ p.form-description:hover {
 #violin-chart svg {
     display: block;
     margin: auto;
+}
+
+.content-wrapper {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  flex: 1;
+}
+
+svg {
+  max-width: 100%;
+  height: auto;
+}
+
+.visualization-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  position: relative;
+  margin: 20px 0;
 }

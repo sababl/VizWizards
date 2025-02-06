@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block title %}Alluvial Chart{% endblock %}
+
+{% block content %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Life Expectancy vs. Health Indicators Heat Map</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <style>
+        p {
+            line-height: 3;
+        }
+    </style>
+</head>
+<body>
+    <h2 style="text-align: center;">Life Expectancy vs. Health Indicators</h2>
+    <p style="text-align: center; width: 80%; margin: auto;">
+        This heat map visualizes the relationship between life expectancy and various health and economic indicators 
+        (e.g., GDP per capita, healthcare spending, smoking rate, obesity rate) across different countries.
+        Darker colors represent higher life expectancy, revealing patterns in public health.
+    </p>
+    <p style="text-align: center; width: 80%; margin: auto; font-weight: bold;">
+        The plot shows that countries with higher GDP per capita and greater healthcare spending generally have 
+        higher life expectancy. Conversely, countries with higher smoking and obesity rates tend to have lower 
+        life expectancy. The visualization helps identify trends and disparities in global health outcomes, 
+        allowing for a better understanding of which factors contribute to longer, healthier lives.
+    </p>
+    <div id="heatmap" style="width:90%; height:600px; margin: auto;"></div>
+
+    <script>
+        let countries = ["USA", "UK", "Germany", "France", "India", "China", "Brazil", "Japan", "Canada", "Australia"];
+        let indicators = ["GDP per capita", "Healthcare Spending", "Smoking Rate", "Obesity Rate"];
+        let life_expectancy_values = [
+            [78, 74, 68, 72],  // USA
+            [80, 75, 65, 70],  // UK
+            [81, 76, 60, 68],  // Germany
+            [82, 77, 59, 66],  // France
+            [69, 55, 80, 50],  // India
+            [76, 60, 75, 55],  // China
+            [74, 65, 72, 60],  // Brazil
+            [85, 78, 45, 50],  // Japan
+            [83, 79, 50, 55],  // Canada
+            [84, 80, 52, 57]   // Australia
+        ];
+
+        let data = [{
+            z: life_expectancy_values,
+            x: indicators,
+            y: countries,
+            type: 'heatmap',
+            colorscale: 'Viridis',
+            hoverongaps: false
+        }];
+
+        let layout = {
+            title: "Life Expectancy vs. Health Indicators",
+            xaxis: { title: "Health & Economic Indicators" },
+            yaxis: { title: "Country" },
+            margin: { l: 150, r: 20, t: 50, b: 50 }
+        };
+
+        Plotly.newPlot('heatmap', data, layout);
+    </script>
+</body>
+</html>
+
+
+
+
+{% endblock %}

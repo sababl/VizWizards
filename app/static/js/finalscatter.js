@@ -64,7 +64,9 @@ const colorScale = d3.scaleOrdinal()
     const tooltip = d3.select("body")
         .append("div")
         .attr("class", "tooltip")
-        .style("opacity", 0);
+        .style("opacity", 0)
+        .style("position", "absolute")
+        .style("pointer-events", "none");
 
     const slider = d3.select("#year-slider");
     const yearDisplay = d3.select("#year-display");
@@ -94,7 +96,21 @@ const colorScale = d3.scaleOrdinal()
             .attr("cx", d => xScale(d.Period))
             .attr("cy", d => yScale(d.FactValueNumeric))
             .attr("r", 6)
-            .style("fill", d => colorScale(d.Location));
+            .style("fill", d => colorScale(d.Location))
+            .on("mouseover", function(event, d) {
+                tooltip.transition()
+                    .duration(200)
+                    .style("opacity", .9);
+                tooltip.html(`Country: ${d.Location}<br/>` +
+                            `Life Expectancy: ${d.FactValueNumeric.toFixed(1)}`)
+                    .style("left", (event.pageX + 10) + "px")
+                    .style("top", (event.pageY - 28) + "px");
+            })
+            .on("mouseout", function() {
+                tooltip.transition()
+                    .duration(500)
+                    .style("opacity", 0);
+            });
     }
 
     // Initial chart render

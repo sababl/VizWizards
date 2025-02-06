@@ -39,7 +39,7 @@ app.controller('FormController', ['$scope', '$http', '$mdToast', function ($scop
         // Clear previous tooltips
         d3.selectAll('.tooltip').remove();
 
-        const margin = { top: 50, right: 150, bottom: 50, left: 50 },
+        const margin = { top: 80, right: 150, bottom: 50, left: 50 },
             width = 960 - margin.left - margin.right,
             height = 500 - margin.top - margin.bottom;
 
@@ -180,13 +180,13 @@ app.controller('FormController', ['$scope', '$http', '$mdToast', function ($scop
 
             // Add chart title
             svg.append("text")
-                .attr("class", "chart-title")
-                .attr("x", width / 2)
-                .attr("y", -20)
-                .attr("text-anchor", "middle")
-                .style("font-size", "16px")
-                .style("font-weight", "bold")
-                .text(`Sex Ratio Trends Over Time in ${countryName}`);
+            .attr("class", "chart-title")
+            .attr("x", width / 2)
+            .attr("y", -40) // Move title higher up
+            .attr("text-anchor", "middle")
+            .style("font-size", "16px")
+            .style("font-weight", "bold")
+            .text(`Sex Ratio Trends Over Time in ${countryName}`);
 
             // Add axis labels
             const xLabel = xAxis.append("text")
@@ -208,17 +208,17 @@ app.controller('FormController', ['$scope', '$http', '$mdToast', function ($scop
                 .style("font-size", "14px")
                 .text("Sex Ratio (Female/Male)");
 
-            // Create and position legend
+            // Create and position legend at the top
             const legendGroup = svg.append("g")
-                .attr("class", "legend-group")
-                .attr("transform", `translate(${width + 40}, 20)`);
-
+            .attr("class", "legend-group")
+            .attr("transform", `translate(0, -80)`); // Move legend higher up
+                    
             const legend = legendGroup.selectAll(".legend")
                 .data(indicators)
                 .enter()
                 .append("g")
                 .attr("class", "legend")
-                .attr("transform", (d, i) => `translate(0, ${i * 25})`);
+                .attr("transform", (d, i) => `translate(${i * 240}, 0)`); // Spread items horizontally
 
             // Add legend rectangles
             legend.append("rect")
@@ -229,12 +229,20 @@ app.controller('FormController', ['$scope', '$http', '$mdToast', function ($scop
                 .style("fill", d => color(d));
 
             // Add legend text
+            const indicatorLabels = {
+                "Life expectancy at birth (years)": "LE (Birth)",
+                "Life expectancy at age 60 (years)": "LE (60)",
+                "Healthy life expectancy (HALE) at birth (years)": "HALE (Birth)",
+                "Healthy life expectancy (HALE) at age 60 (years)": "HALE (60)"
+            };
+            
+            // Update the legend text part
             legend.append("text")
                 .attr("x", 24)
                 .attr("y", 9)
                 .attr("dy", ".35em")
                 .style("font-size", "12px")
-                .text(d => d);
+                .text(d => indicatorLabels[d] || d);
 
             // Append the x-axis.
             svg.append("g")

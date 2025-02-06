@@ -152,12 +152,12 @@ app.controller('FormController', ['$scope', '$http', '$mdToast', function($scope
                 const yearKeyHle = Object.keys(data[country].hle || {})[0];
               
                 // Determine the lookup label: if it's one of the HALE metrics, swap if necessary
-                let lookupLabel = indicator;
-                if (indicator === "Healthy life expectancy (HALE) at birth (years)") {
-                  lookupLabel = "Healthy life expectancy (HALE) at age 60 (years)";
-                } else if (indicator === "Healthy life expectancy (HALE) at age 60 (years)") {
-                  lookupLabel = "Healthy life expectancy (HALE) at birth (years)";
-                }
+                // let lookupLabel = indicator;
+                // if (indicator === "Healthy life expectancy (HALE) at birth (years)") {
+                //   lookupLabel = "Healthy life expectancy (HALE) at age 60 (years)";
+                // } else if (indicator === "Healthy life expectancy (HALE) at age 60 (years)") {
+                //   lookupLabel = "Healthy life expectancy (HALE) at birth (years)";
+                // }
               
                 // Try to find the value in the 'le' data first
                 if (yearKeyLe && data[country].le[yearKeyLe]) {
@@ -169,7 +169,7 @@ app.controller('FormController', ['$scope', '$http', '$mdToast', function($scope
               
                 // If not found or still zero, look in the 'hle' data with the (possibly swapped) label
                 if (!value && yearKeyHle && data[country].hle[yearKeyHle]) {
-                  const foundHle = data[country].hle[yearKeyHle].find(d => d.Indicator === lookupLabel);
+                  const foundHle = data[country].hle[yearKeyHle].find(d => d.Indicator === indicator);
                   if (foundHle) {
                     value = foundHle.FactValueNumeric;
                   }

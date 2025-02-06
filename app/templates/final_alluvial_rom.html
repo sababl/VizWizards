@@ -5,16 +5,54 @@
 {% block content %}
 
     <h1 style="text-align:center; font-size:20px;">Alluvial Chart - Life Expectancy (2021)</h1>
+    <style>
+        .info-box {
+            background-color: #f0f0f0;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
+            max-width: 800px;
+            text-align: justify;
+            margin: 20px auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .chart-container {
+            width: 100%;
+            max-width: 1200px;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: auto;
+        }
+        
+        svg {
+            width: 100%;
+            height: auto;
+            max-height: 800px;
+        }
+        
+        text {
+            font-size: 14px;
+        }
+    </style>
     
-    <h3 style="text-align:center; max-width:800px; margin:auto; font-size:16px;">
-        This alluvial chart provides a visual representation of life expectancy and healthy life expectancy across different countries.
-        The chart illustrates how long people are expected to live (Life Expectancy) and how many of those years they can expect to be
-        in good health (Healthy Life Expectancy). The width of the flows represents the number of years, allowing for an intuitive 
-        comparison between countries. A significant gap between life expectancy and healthy life expectancy indicates that people 
-        may be living longer but not necessarily in good health. This visualization helps identify disparities between different This visualization is based on the most recent available data from the year 2021.
-    </h3>
-    
-    <svg width="1500" height="800"></svg>
+    <div class="info-box">
+        <p>
+            This alluvial chart provides a visual representation of life expectancy and healthy life expectancy across different countries.
+            The chart illustrates how long people are expected to live (Life Expectancy) and how many of those years they can expect to be
+            in good health (Healthy Life Expectancy). The width of the flows represents the number of years, allowing for an intuitive 
+            comparison between countries. A significant gap between life expectancy and healthy life expectancy indicates that people 
+            may be living longer but not necessarily in good health. This visualization is based on the most recent available data from the year 2021.
+        </p>
+    </div>
+  
+    <div class="chart-container">
+        <svg></svg>
+    </div>
 
     <script src="https://d3js.org/d3.v5.min.js"></script>
     <script src="https://unpkg.com/d3-sankey@0.12.3"></script>
@@ -42,8 +80,10 @@
             { source: nodes.findIndex(n => n.name === "Life Expectancy (years)"), target: nodes.findIndex(n => n.name === "Healthy Life Expectancy (years)"), value: d.healthy_life_exp }
         ]);
 
-        const width = 1500, height = 800;
-        const svg = d3.select("svg");
+        const width = 1200, height = 800;
+        const svg = d3.select("svg")
+            .attr("viewBox", `0 0 ${width} ${height}`)
+            .attr("preserveAspectRatio", "xMidYMid meet");
 
         const sankey = d3.sankey()
             .nodeWidth(20)
@@ -66,7 +106,7 @@
             .attr("d", d3.sankeyLinkHorizontal())
             .style("stroke-width", d => Math.max(2, d.width))
             .style("fill", "none")
-            .style("stroke", d => "rgba(150, 150, 150, 0.5)") // Light gray
+            .style("stroke", "rgba(150, 150, 150, 0.5)") // Light gray
             .style("opacity", 0.6);
 
         // Draw nodes (rectangles)
@@ -89,17 +129,9 @@
             .attr("dy", "0.35em")
             .attr("text-anchor", "start")
             .text(d => d.name)
-            .style("font-size", "16px")
+            .style("font-size", "14px")
             .style("font-weight", "bold");
 
-        // Ensure Life Expectancy and Healthy Life Expectancy have explicit labels
-        svg.append("text") 
-            .attr("x", width - 145)
-            .attr("y", 40)
-            .attr("text-anchor", "middle")
-            .style("font-size", "18px")
-            .style("font-weight", "bold")
-            .text("Healthy Life Expectancy (years)");
     </script>
 
 {% endblock %}

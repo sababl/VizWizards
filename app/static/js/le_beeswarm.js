@@ -1,12 +1,12 @@
 var app = angular.module('myApp', ['ngMaterial']);
 
 const PARENT_LOCATION_COLORS = {
-  'Africa': '#2989CEFF',
-  'Eastern Mediterranean': '#FFA95EFF',
-  'Americas': '#07105EFF',
-  'Western Pacific': '#DB4B4BFF',
-  'South-East Asia': '#9467bd',
-  'Europe': '#00AC86FF'
+  "Africa": "#143642",
+  "Eastern Mediterranean": "#741C28",
+  "Western Pacific": "#877765",
+  "Americas": "#E7DECD",
+  "South-East Asia": "#A1A8BE",
+  "Europe": "#BB8C94"
 };
 
 app.controller('FormController', ['$scope', '$http', '$mdToast', function ($scope, $http, $mdToast) {

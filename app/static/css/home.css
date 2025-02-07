@@ -1,0 +1,146 @@
+/* Global Styles */
+* {
+    box-sizing: border-box;
+  }
+  
+  body {
+    margin: 0;
+    font-family: sans-serif;
+    background-color: #fff;
+    color: #111;
+  }
+  
+  /* Hero Section */
+  .hero-section {
+    text-align: center;
+    padding: 60px 20px;
+  }
+  
+  .hero-title {
+    font-size: 2.4rem;
+    margin-bottom: 12px;
+    font-weight: 700;
+  }
+  
+  .hero-subtitle {
+    font-size: 1rem;
+    font-weight: 400;
+    color: #555;
+  }
+  
+  /* Cards Section */
+  .cards-section {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+    padding: 40px 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  .card {
+    background-color: #fff;
+    width: 260px;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    text-align: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+    padding: 20px;
+  }
+  
+  .card-icon {
+    width: 48px;
+    height: 48px;
+    margin: 0 auto 16px auto;
+    border-radius: 50%;
+    background-color: #eef9f9; /* Light teal background */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #0aa49c; /* Teal icon color */
+  }
+  
+  .card-title {
+    font-size: 1.1rem;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #111;
+  }
+  
+  .card-desc {
+    font-size: 0.95rem;
+    line-height: 1.4;
+    color: #555;
+    margin-bottom: 20px;
+  }
+  
+  .card-btn {
+    background-color: #fff;
+    border: 1px solid #ccc;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    color: #333;
+    transition: background-color 0.3s, border-color 0.3s;
+  }
+  
+  .card-btn:hover {
+    background-color: #f5f5f5;
+    border-color: #999;
+  }
+  
+  /* Final Project Section */
+  .final-project-section {
+    text-align: center;
+    padding: 40px 20px;
+    max-width: 700px;
+    margin: 0 auto;
+  }
+  
+  .final-project-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 16px;
+  }
+  
+  .final-project-desc {
+    font-size: 1rem;
+    line-height: 1.6;
+    color: #555;
+    margin-bottom: 24px;
+  }
+  
+  .final-project-btn {
+    background-color: #2ba977; /* Green color */
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: 12px 24px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .final-project-btn:hover {
+    background-color: #249168;
+  }
+  
+  /* Responsive Adjustments */
+  @media (max-width: 600px) {
+    .cards-section {
+      flex-direction: column;
+      align-items: center;
+    }
+  
+    .card {
+      width: 100%;
+      max-width: 340px;
+    }
+  
+    .hero-title {
+      font-size: 2rem;
+    }
+  }
+  

@@ -62,23 +62,23 @@ async def map1(request: Request):
     return templates.TemplateResponse("map.html", {"request": request})
 
 @app.get("/map1_r_all", response_class=HTMLResponse)
-async def map1(request: Request):
+async def map7(request: Request):
     return templates.TemplateResponse("final_alluvial_rom.html", {"request": request})
 
 @app.get("/map2_r_slope", response_class=HTMLResponse)
-async def map1(request: Request):
+async def map3(request: Request):
     return templates.TemplateResponse("final_slope_rom.html", {"request": request})
 
 @app.get("/map3_r_flowplot", response_class=HTMLResponse)
-async def map1(request: Request):
+async def map4(request: Request):
     return templates.TemplateResponse("final_flowplot_rom.html", {"request": request})
 
 @app.get("/map4_r_heatmap", response_class=HTMLResponse)
-async def map1(request: Request):
+async def map5(request: Request):
     return templates.TemplateResponse("final_heatmap_rom.html", {"request": request})
 
 @app.get("/map5_r_bubblemap", response_class=HTMLResponse)
-async def map1(request: Request):
+async def map6(request: Request):
     return templates.TemplateResponse("final_bubblemap_rom.html", {"request": request})
 
 

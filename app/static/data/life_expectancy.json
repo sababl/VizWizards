@@ -1,0 +1,12 @@
+[
+    {"Location": "Lesotho", "LifeExpectancy": 47.8, "HealthyLifeExpectancy": 42.2},
+    {"Location": "Eswatini", "LifeExpectancy": 50.7, "HealthyLifeExpectancy": 44.8},
+    {"Location": "Somalia", "LifeExpectancy": 51.7, "HealthyLifeExpectancy": 46.2},
+    {"Location": "Central African Republic", "LifeExpectancy": 49.6, "HealthyLifeExpectancy": 43.8},
+    {"Location": "Australia", "LifeExpectancy": 83.07, "HealthyLifeExpectancy": 70.31},
+    {"Location": "Norway", "LifeExpectancy": 82.85, "HealthyLifeExpectancy": 70.57},
+    {"Location": "Switzerland", "LifeExpectancy": 83.3, "HealthyLifeExpectancy": 70.48},
+    {"Location": "Singapore", "LifeExpectancy": 83.82, "HealthyLifeExpectancy": 74.24},
+    {"Location": "Japan", "LifeExpectancy": 84.46, "HealthyLifeExpectancy": 72.66},
+    {"Location": "Israel", "LifeExpectancy": 82.05, "HealthyLifeExpectancy": 70.07}
+]

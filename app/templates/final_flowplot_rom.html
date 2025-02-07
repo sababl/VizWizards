@@ -1,19 +1,13 @@
 {% extends "base.html" %}
 
-{% block title %}Alluvial Chart{% endblock %}
+{% block title %}HALE Flow Map{% endblock %}
 
 {% block content %}
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HALE Flow Map</title>
-    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <h2 style="text-align: center;">Life Expectancy Flow Map</h2>
     <style>
         p {
-            line-height: 3;
+            line-height: 1.8;
         }
         .info-box {
             background-color: #f0f0f0;
@@ -21,16 +15,37 @@
             border-radius: 8px;
             box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
             max-width: 1000px;
+            width: 90%;
             text-align: justify;
             margin: 20px auto;
             display: flex;
             justify-content: center;
             align-items: center;
+            box-sizing: border-box;
+        }
+        .chart-container {
+            width: 100%;
+            max-width: 1200px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: auto;
+            overflow: hidden;
+        }
+        #flowmap-container {
+            width: 100%;
+            max-width: 1100px;
+            height: auto;
+            max-height: 700px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            padding: 10px;
+            box-sizing: border-box;
         }
     </style>
-</head>
-<body>
-    <h2 style="text-align: center;">Life Expectancy Flow Map</h2>
+
     <div class="info-box">
         <p>
             This flow map visualizes the connections between different regions and their life expectancy rates. 
@@ -40,10 +55,13 @@
         </p>
     </div>
     
-    <div id="flowmap-container">
-        <div id="flowmap"></div>
+    <div class="chart-container">
+        <div id="flowmap-container">
+            <div id="flowmap"></div>
+        </div>
     </div>
 
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <script>
         let regions = ["Africa", "Americas", "Asia", "Europe", "Oceania"];
         let hale_values = [55, 73, 68, 79, 75]; // Sample HALE values in years
@@ -79,7 +97,7 @@
         let layout = {
             title: "Healthy Life Expectancy Flow Between Regions",
             font: { size: 14 },
-            width: 1200
+            width: 1100
         };
 
         let config = {
@@ -88,9 +106,5 @@
 
         Plotly.newPlot("flowmap", data, layout, config);
     </script>
-</body>
-</html>
-
-
 
 {% endblock %}

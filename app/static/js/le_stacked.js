@@ -128,7 +128,7 @@ app.controller('FormController', ['$scope', '$http', '$mdToast', function ($scop
             // Define a color scale.
             const color = d3.scaleOrdinal()
                 .domain(indicators)
-                .range(d3.schemeCategory10);
+                .range(["#143642", "#741C28", "#E7DECD", "#A1A8BE"]);
 
             // Define the area generator.
             const area = d3.area()

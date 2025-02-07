@@ -525,20 +525,44 @@ body {
 
 
 /* Content Area */
-
 .content {
   background-color: #ffffff;
   border-radius: 50px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   margin: 50px 50px 50px 18%;
-  padding: 2%;
-  width: calc(82% - 100px); /* Adjust width accounting for sidebar and margins */
-  min-height: calc(100vh - 100px); /* Minimum height to fill viewport */
+  padding: 2rem;
+  width: calc(82% - 100px);
+  min-height: calc(100vh - 100px);
   display: flex;
   flex-direction: column;
   align-items: center;
   overflow-x: hidden;
   overflow-y: auto;
+}
+/* .content {
+  background-color: #ffffff;
+  border-radius: 50px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin: 50px 50px 50px 18%;
+  padding: 2%;
+  width: calc(82% - 100px); 
+  min-height: calc(100vh - 100px); 
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow-x: hidden;
+  overflow-y: auto;
+} */
+@media screen and (max-width: 1200px) {
+  .content {
+      margin: 30px;
+      width: calc(100% - 60px);
+  }
+  
+  .form-container {
+      width: 95%;
+      padding: 1rem;
+  }
 }
 .content form {
   display: flex;
@@ -620,13 +644,21 @@ md-select {
   /* ~672px */
 }
 
-.form-container {
+/* .form-container {
   @apply max-w-4xl mx-auto p-8 bg-white rounded-2xl shadow-lg;
   width: 70%;
   margin: 0 auto;
   padding: 2rem;
+} */
+.form-container {
+  width: 90%;
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background-color: #f9f9f9;
+  border-radius: 1rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
-
 .form-header {
   text-align: center;
   margin-bottom: 2.5rem;
@@ -724,13 +756,21 @@ md-option:hover {
 
 .radar-chart-container {
   width: 100%;
-  max-width: 800px;
+  max-width: 900px;
   margin: 20px auto;
+  padding: 20px;
 }
 
 #radar-chart {
   width: 100%;
+  position: relative;
+  overflow: visible;
+}
+
+#radar-chart svg {
+  width: 100%;
   height: auto;
+  display: block;
 }
 
 

@@ -31,16 +31,19 @@ app.controller('FormController', ['$scope', '$http', '$mdToast', function($scope
     function createRadarChart(data) {
         // Clear previous chart
         d3.select("#radar-chart").html("");
-    
-        const width = 800;
-        const height = 800;
-        const margin = 100;
+        
+        // Make dimensions responsive
+        const container = document.getElementById("radar-chart");
+        const containerWidth = container.clientWidth;
+        const width = Math.min(containerWidth, 600); // Max width of 800px
+        const height = width; // Keep it square
+        const margin = width * 0.125; // Proportional margin (10% of width)
         const radius = Math.min(width, height) / 2 - margin;
     
         const svg = d3.select("#radar-chart")
             .append("svg")
-            .attr("width", width)
-            .attr("height", height)
+            .attr("viewBox", `0 0 ${width} ${height}`) // Add viewBox for responsiveness
+            .attr("preserveAspectRatio", "xMidYMid meet")
             .append("g")
             .attr("transform", `translate(${width/2},${height/2})`);
     

@@ -1,14 +1,14 @@
 // D3.js bar chart to visualize life expectancy at age 60 by region and year
 
 // Update chart dimensions
-const margin = { top: 50, right: 200, bottom: 100, left: 440 },
-    width = 1200 - margin.left - margin.right,  // Reduced width
+const margin = { top: 50, right: 200, bottom: 100, left: 120 },
+    width = 800 - margin.left - margin.right,  // Reduced width
     height = 600 - margin.top - margin.bottom;
 
 // Update SVG container
 const svg = d3.select(".chart-container")
     .append("svg")
-    .attr("width", "100%")  // Make SVG responsive
+    .attr("width", "150%")  // Make SVG responsive
     .attr("height", height + margin.top + margin.bottom)
     .attr("viewBox", `0 0 ${width + margin.left + margin.right} ${height + margin.top + margin.bottom}`)
     .attr("preserveAspectRatio", "xMidYMid meet")
@@ -39,7 +39,11 @@ d3.csv("/static/data/hle_processed_bar.csv").then(function (data) {
   const finalData = years.map(year => ({ Period: year, ...transformedData[year] }));
 
   // Set up scales
-  const x = d3.scaleBand().domain(years).range([0, width]).padding(0.2);
+  const x = d3.scaleBand()
+  .domain(years)
+  .range([0, width - 10]) // Prevent overflow
+  .padding(0.1);  // Balance between spacing and width
+
   const y = d3.scaleLinear().domain([0, d3.max(finalData, d => d3.sum(allRegions, key => d[key] || 0))]).nice().range([height, 0]);
   const colorPalette = ["#143642", "#741C28", "#877765", "#E7DECD", "#A1A8BE", "#BB8C94"];
   const color = d3.scaleOrdinal(colorPalette).domain(allRegions);
@@ -59,6 +63,13 @@ d3.csv("/static/data/hle_processed_bar.csv").then(function (data) {
     .attr("dx", "-0.8em")
     .attr("dy", "0.15em")
     .attr("transform", "rotate(-45)");
+    // Add Y axis with a proper class and ensure it's visible
+svg.append("g")
+.attr("class", "y-axis")  // Add a class for easy debugging
+.call(d3.axisLeft(y))
+.attr("transform", `translate(0, 0)`)  // Ensure correct positioning
+.style("font-size", "14px");  // Adjust font size if needed
+
 
   // Add X axis label
   svg.append("text")
@@ -67,17 +78,18 @@ d3.csv("/static/data/hle_processed_bar.csv").then(function (data) {
     .text("Years");
 
   // Add Y axis
-  svg.append("g").call(d3.axisLeft(y));
-
   svg.append("text")
-    .attr("transform", "rotate(-90)") // Rotate text for Y-axis
-    .attr("y", -margin.left + 40) // Position away from axis
-    .attr("x", -height / 2) // Center vertically
-    .attr("dy", "1em") // Small offset for readability
-    .style("text-anchor", "middle") // Center align text
-    .style("font-size", "16px") // Adjust font size
-    .style("fill", "#174c3c") // Dark green for readability
+    .attr("class", "y-axis-label")
+    .attr("transform", "rotate(-90)")  // Rotate for Y-axis
+    .attr("y", -margin.left + 30)  // Adjusted to bring it closer
+    .attr("x", -height / 2)  // Center the label
+    .attr("dy", "1em")
+    .style("text-anchor", "middle")
+    .style("font-size", "16px")
+    .style("fill", "#174c3c")
     .text("Life Expectancy (Years)");
+
+
 
   // Tooltip
   const tooltip = d3.select("body").append("div")

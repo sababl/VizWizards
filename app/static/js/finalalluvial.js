@@ -1,104 +1,124 @@
-console.log("D3 script loaded!");
+// Set dimensions for the chart to ensure full visibility at 100% zoom
+const margin = {top: 20, right: 50, bottom: 50, left: 60};
+const width = Math.min(1100, window.innerWidth - margin.left - margin.right);
+const height = Math.min(600, window.innerHeight - margin.top - margin.bottom);
 
-// ✅ Load Data from JSON File
+const svg = d3.select("#alluvial-chart")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+    .attr("transform", `translate(${margin.left},${margin.top})`);
+
+// ✅ Load data from JSON file
 d3.json("../static/data/life_expectancy.json").then(function(data) {
     
-    console.log("Data Loaded Successfully:", data);
+    console.log("✅ Data Loaded Successfully:", data);
 
     if (!data || data.length === 0) {
-        throw new Error("Data is empty!");
+        throw new Error("❌ Data is empty!");
     }
 
-    // ✅ Verify individual elements
-    console.log("First Data Entry:", data[0]);
+    // ✅ Filter data to get highest and lowest Life Expectancy per continent
+    let filteredData = [];
+    let continents = Array.from(new Set(data.map(d => d.ParentLocation)));
 
-    if (!data[0].Location || !data[0].LifeExpectancy || !data[0].HealthyLifeExpectancy) {
-        throw new Error("Data format issue: Missing required fields.");
-    }
+    continents.forEach(continent => {
+        let continentData = data.filter(d => d.ParentLocation === continent);
+        let highestLE = continentData.reduce((prev, curr) => (curr.LifeExpectancy > prev.LifeExpectancy ? curr : prev), continentData[0]);
+        let lowestLE = continentData.reduce((prev, curr) => (curr.LifeExpectancy < prev.LifeExpectancy ? curr : prev), continentData[0]);
+        filteredData.push(highestLE, lowestLE);
+    });
 
-    const margin = {top: 20, right: 30, bottom: 30, left: 200},
-          width = 900 - margin.left - margin.right,
-          height = 600 - margin.top - margin.bottom;
+    console.log("✅ Filtered Data:", filteredData);
 
-    const svg = d3.select("#chart")
-        .append("svg")
-        .attr("width", width + margin.left + margin.right)
-        .attr("height", height + margin.top + margin.bottom)
-        .append("g")
-        .attr("transform", `translate(${margin.left},${margin.top})`);
-
-    // ✅ Convert Data into an Alluvial Format
+    // ✅ Extract all unique countries
     let nodes = [];
     let links = [];
     let nodeMap = {};
 
-    data.forEach(d => {
-        let leNode = { name: d.Location + "_LE", label: d.Location, category: "Life Expectancy", value: d.LifeExpectancy };
-        let hleNode = { name: d.Location + "_HLE", label: d.Location, category: "Healthy Life Expectancy", value: d.HealthyLifeExpectancy };
+    // Define color scale for different countries
+    const colorScale = d3.scaleOrdinal(d3.schemeCategory10);
 
-        if (!nodeMap[leNode.name]) {
-            nodeMap[leNode.name] = nodes.length;
-            nodes.push(leNode);
+    filteredData.forEach((d, i) => {
+        let countryNode = { name: d.Location, color: colorScale(i) };
+        let lifeExpNode = { name: "LE(years)", color: "#bcbd22" };
+        let healthyExpNode = { name: "HLE(years)", color: "#17becf" };
+
+        if (!nodeMap[d.Location]) {
+            nodeMap[d.Location] = nodes.length;
+            nodes.push(countryNode);
         }
-        if (!nodeMap[hleNode.name]) {
-            nodeMap[hleNode.name] = nodes.length;
-            nodes.push(hleNode);
+        if (!nodeMap["LE(years)"]) {
+            nodeMap["LE(years)"] = nodes.length;
+            nodes.push(lifeExpNode);
+        }
+        if (!nodeMap["HLE(years)"]) {
+            nodeMap["HLE(years)"] = nodes.length;
+            nodes.push(healthyExpNode);
         }
 
         links.push({
-            source: nodeMap[leNode.name],
-            target: nodeMap[hleNode.name],
-            value: d.LifeExpectancy - d.HealthyLifeExpectancy
+            source: nodeMap[d.Location],
+            target: nodeMap["LE(years)"],
+            value: d.LifeExpectancy
+        });
+
+        links.push({
+            source: nodeMap["LE(years)"],
+            target: nodeMap["HLE(years)"],
+            value: d.HealthyLifeExpectancy
         });
     });
 
-    // ✅ Initialize the Sankey Layout (Modified for Alluvial)
+    console.log("✅ Nodes:", nodes);
+    console.log("✅ Links:", links);
+
+    // ✅ Initialize Sankey Layout
     const sankey = d3.sankey()
-        .nodeWidth(30)  // Wider nodes for better flow visibility
-        .nodePadding(15) // More space between nodes
-        .size([width, height])
-        .nodeAlign(d3.sankeyCenter); // Ensures nodes align properly
+        .nodeWidth(30)
+        .nodePadding(15)
+        .size([width * 0.65, height * 0.65]);
 
     const graph = sankey({ nodes: nodes.map(d => Object.assign({}, d)), links: links });
+
+    console.log("✅ Graph Generated:", graph);
 
     // ✅ Draw Links (Flows)
     svg.append("g")
         .selectAll(".link")
         .data(graph.links)
-        .enter()
-        .append("path")
-        .attr("class", "link")
+        .enter().append("path")
         .attr("d", d3.sankeyLinkHorizontal())
-        .attr("stroke", "#69b3a2")
-        .attr("stroke-opacity", 0.7)
-        .attr("stroke-width", d => Math.max(1, d.value))
-        .attr("fill", "none");
+        .style("stroke-width", d => Math.max(1, d.width))
+        .style("fill", "none")
+        .style("stroke", "rgba(150, 150, 150, 0.5)")
+        .style("opacity", 0.6);
+
+    console.log("✅ Links drawn.");
 
     // ✅ Draw Nodes
     const node = svg.append("g")
         .selectAll(".node")
         .data(graph.nodes)
-        .enter()
-        .append("g")
-        .attr("class", "node")
-        .attr("transform", d => `translate(${d.x0},${d.y0})`);
+        .enter().append("g");
 
     node.append("rect")
+        .attr("x", d => d.x0)
+        .attr("y", d => d.y0)
         .attr("height", d => d.y1 - d.y0)
-        .attr("width", sankey.nodeWidth())
-        .attr("fill", d => d.category === "Life Expectancy" ? "steelblue" : "orange")
-        .attr("stroke", "#000");
+        .attr("width", d => d.x1 - d.x0)
+        .attr("fill", d => d.color);
 
-    // ✅ Add Node Labels
     node.append("text")
-        .attr("x", d => (d.category === "Life Expectancy" ? -6 : 6))
-        .attr("y", d => (d.y1 - d.y0) / 2)
+        .attr("x", d => d.x1 + 10)
+        .attr("y", d => (d.y1 + d.y0) / 2)
         .attr("dy", "0.35em")
-        .attr("text-anchor", d => (d.category === "Life Expectancy" ? "end" : "start"))
-        .text(d => d.label);
+        .attr("text-anchor", "start")
+        .text(d => d.name)
+        .style("font-size", "10px")
+        .style("font-weight", "bold");
 
-    console.log("Alluvial plot should be visible now.");
-
+    console.log("✅ Alluvial plot should be visible now.");
 }).catch(error => {
-    console.error("Error loading the data:", error);
+    console.error("❌ Error loading the data:", error);
 });

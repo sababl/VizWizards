@@ -2,13 +2,13 @@
 
 // Update chart dimensions
 const margin = { top: 50, right: 200, bottom: 100, left: 120 },
-    width = 800 - margin.left - margin.right,  // Reduced width
-    height = 600 - margin.top - margin.bottom;
+    width = 1200 - margin.left - margin.right,  // Reduced width
+    height = 700 - margin.top - margin.bottom;
 
 // Update SVG container
 const svg = d3.select(".chart-container")
     .append("svg")
-    .attr("width", "150%")  // Make SVG responsive
+    .attr("width", "200%")  // Make SVG responsive
     .attr("height", height + margin.top + margin.bottom)
     .attr("viewBox", `0 0 ${width + margin.left + margin.right} ${height + margin.top + margin.bottom}`)
     .attr("preserveAspectRatio", "xMidYMid meet")
@@ -41,7 +41,7 @@ d3.csv("/static/data/hle_processed_bar.csv").then(function (data) {
   // Set up scales
   const x = d3.scaleBand()
   .domain(years)
-  .range([0, width - 10]) // Prevent overflow
+  .range([0, width - 20]) // Prevent overflow
   .padding(0.1);  // Balance between spacing and width
 
   const y = d3.scaleLinear().domain([0, d3.max(finalData, d => d3.sum(allRegions, key => d[key] || 0))]).nice().range([height, 0]);

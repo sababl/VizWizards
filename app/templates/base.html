@@ -56,11 +56,7 @@
                 <div class="dropdown-content" id="section4">
                     <a href="/line">Yearly Line Chart</a>
                     <a href="/radar">Yearly Spider Plot</a>
-                    <a href="/finalstackedbar"> bar Plot</a>
-                    <a href="/finalscatter">Scatter Plot</a>
-                    <a href="/finalline">Line Chart</a>
-                    <a href="/finalchoropleth">Choropleth Map</a>
-                    <a href="/finalbox">Box Plot</a>
+                    
                 </div>
 
                 <button class="accordion-btn" onclick="toggleDropdown('life-expectancy')">Life Expectancy</button>
@@ -68,30 +64,27 @@
                     
                     <button class="accordion-btn sub-menu-btn" onclick="toggleDropdown('global-evolution')">How Life Expectancy Evolved</button>
                     <div class="dropdown-content" id="global-evolution">
-                        <a href="/finalline">Line:Historical Change</a>
-                        <a href="/le-stacked">Sex Ratio & Life Expectancy Trends</a>
+                        <a href="/finalstackedbar">Stackedbar:Trends across regions</a>
+                        <a href="/le-radar">Radar:A comparison between LE and HLE</a>
+                        <a href="/le-stacked">Stacked:Sex ratio trends</a>
                     </div>
                 
-                    <button class="accordion-btn sub-menu-btn" onclick="toggleDropdown('distributions')">Distributions & Differences</button>
+                    <button class="accordion-btn sub-menu-btn" onclick="toggleDropdown('distributions')">Regional Perspective</button>
                     <div class="dropdown-content" id="distributions">
-                        <a href="/le-violin">Violin Plot: Distributions</a>
-                        <a href="/finalbox">Box Plot: Regional Averages</a>
-                        <a href="/le-radar">Radar Plot: Distributions along indicators</a>
-                        
+                        <a href="/le-violin">Violin Plot: Life expectancy distributions</a>
+                        <a href="/finalbox">Box Plot: Regional averages</a>
+                        <a href="/le-bee">Bubble:Male vs Female life expectancy</a>
+                        <a href="/le-error">Error: Range of life expectancy</a>
                     </div>
                 
                     <button class="accordion-btn sub-menu-btn" onclick="toggleDropdown('gender')">Gender Analysis</button>
                     <div class="dropdown-content" id="gender">
-                        <a href="/le-bee">Male vs. Female Expectancy</a>
-                        <a href="/finalline">Female Life Expectancy at 60</a>
+                        <a href="/finalscatter">Lowest male life expectancy</a>
+                        <a href="/finalline">Female life expectancy at 60</a>
                         <a href="/finalchoropleth">Female Healthy Life Ratio Map</a>
                     </div>
                 
-                    <button class="accordion-btn sub-menu-btn" onclick="toggleDropdown('extreme-cases')">Extreme Cases & Uncertainty</button>
-                    <div class="dropdown-content" id="extreme-cases">
-                        <a href="/finalstackedbar">Lowest Male Life Expectancy</a>
-                        <a href="/le-error">Life Expectancy Ranges</a>
-                    </div>
+                 
                 </div>
             </div>
         </div>

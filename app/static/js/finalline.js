@@ -45,6 +45,14 @@ d3.csv("/static/data/finalline_females_life_expectancy.csv").then(function(data)
         .x(d => x(d.Period))
         .y(d => y(d.LifeExpectancy));
 
+    let tooltip = d3.select("body").append("div")
+        .attr("id", "tooltip")
+        .style("position", "absolute")
+        .style("background", "lightgray")
+        .style("padding", "5px")
+        .style("border-radius", "5px")
+        .style("display", "none");
+
     function update(country) {
         let filteredData = data.filter(d => d.Location === country);
         y.domain([d3.min(filteredData, d => d.LifeExpectancy) - 1, d3.max(filteredData, d => d.LifeExpectancy) + 1]);
@@ -57,7 +65,9 @@ d3.csv("/static/data/finalline_females_life_expectancy.csv").then(function(data)
             .merge(path)
             .transition().duration(1000)
             .attr("d", line)
-            .attr("fill", "none");
+            .attr("fill", "none")
+            .attr("stroke", "steelblue")
+            .attr("stroke-width", 2);
 
         path.exit().remove();
 
@@ -70,13 +80,16 @@ d3.csv("/static/data/finalline_females_life_expectancy.csv").then(function(data)
             .attr("r", 4)
             .attr("fill", "darkgreen")
             .on("mouseover", (event, d) => {
-                d3.select("#tooltip")
-                    .style("left", (event.pageX + 10) + "px")
+                tooltip.style("left", (event.pageX + 10) + "px")
                     .style("top", (event.pageY - 20) + "px")
                     .style("display", "block")
                     .html(`Year: ${d.Period} <br> Life Expectancy: ${d.LifeExpectancy.toFixed(1)}`);
             })
-            .on("mouseout", () => d3.select("#tooltip").style("display", "none"));
+            .on("mousemove", (event) => {
+                tooltip.style("left", (event.pageX + 10) + "px")
+                    .style("top", (event.pageY - 20) + "px");
+            })
+            .on("mouseout", () => tooltip.style("display", "none"));
 
         circles.exit().remove();
     }

@@ -1,81 +1,76 @@
 {% extends "base.html" %}
 
-{% block title %}Heat Map{% endblock %}
+{% block title %}Alluvial Chart{% endblock %}
 
 {% block content %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Women's Life Expectancy Heatmap</title>
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+    <link rel="stylesheet" href="styles.css">
     <style>
-        
-        .container {
-            width: 95%;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        .title {
-            text-align: center;
-            font-size: 24px;
-            margin-bottom: 30px;
-            color: #333;
-        }
-
-       
-
-        #heatmap-container {
-            width: 100%;
-            height: 700px;
+        .info-box {
+            background-color: #f0f0f0;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
+            max-width: 1000px;
+            text-align: justify;
             margin: 20px auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        .tooltip {
+            position: absolute;
+            text-align: center;
+            padding: 8px;
+            font-size: 12px;
+            background: lightgray;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            visibility: hidden;
+        }
+        .heatmap-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+        }
+        .legend {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 10px;
+        }
+        .legend div {
+            width: 30px;
+            height: 10px;
+            display: inline-block;
         }
     </style>
+</head>
+<body>
+    <h1>Women's Life Expectancy at Age 60 by Continent</h1>
+    <p class="info-box">This heatmap visualizes **women's life expectancy at age 60** across continents over different years.  
+       Darker colors indicate higher life expectancy, while lighter colors represent lower life expectancy.</p>
 
-    <div class="container">
-        <h1 class="title">Life Expectancy vs. Health Indicators Heat Map</h1>
-        
-        <div>
-            <p>
-                This heat map visualizes the relationship between life expectancy and various health indicators across different countries.
-                The color intensity represents the strength of correlation between variables, helping identify which health factors have
-                the strongest impact on life expectancy. Darker colors indicate stronger relationships, while lighter colors show weaker
-                correlations. This visualization aids in understanding which health indicators might be most crucial for improving life expectancy.
-            </p>
-        </div>
-
-        <div id="heatmap-container"></div>
+    <div class="heatmap-container">
+        <svg id="heatmap"></svg>
     </div>
 
-    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-    <script>
-        let countries = ["USA", "UK", "Germany", "France", "India", "China", "Brazil", "Japan", "Canada", "Australia"];
-        let indicators = ["GDP per capita", "Healthcare Spending", "Smoking Rate", "Obesity Rate"];
-        let life_expectancy_values = [
-            [78, 74, 68, 72],  // USA
-            [80, 75, 65, 70],  // UK
-            [81, 76, 60, 68],  // Germany
-            [82, 77, 59, 66],  // France
-            [69, 55, 80, 50],  // India
-            [76, 60, 75, 55],  // China
-            [74, 65, 72, 60],  // Brazil
-            [85, 78, 45, 50],  // Japan
-            [83, 79, 50, 55],  // Canada
-            [84, 80, 52, 57]   // Australia
-        ];
+    <script src="../static/js/finalheatmap.js"></script>
+</body>
+</html>
 
-        let data = [{
-            z: life_expectancy_values,
-            x: indicators,
-            y: countries,
-            type: 'heatmap',
-            colorscale: 'Viridis',
-            hoverongaps: false
-        }];
 
-        let layout = {
-            title: "Life Expectancy vs. Health Indicators",
-            xaxis: { title: "Health & Economic Indicators" },
-            yaxis: { title: "Country" },
-            margin: { l: 150, r: 20, t: 50, b: 50 }
-        };
 
-        Plotly.newPlot('heatmap-container', data, layout);
-    </script>
 {% endblock %}

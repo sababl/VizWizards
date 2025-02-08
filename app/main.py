@@ -69,9 +69,9 @@ async def map7(request: Request):
 async def map3(request: Request):
     return templates.TemplateResponse("final_slope_rom.html", {"request": request})
 
-@app.get("/map3_r_flowplot", response_class=HTMLResponse)
+@app.get("/map3_r_splitplot", response_class=HTMLResponse)
 async def map4(request: Request):
-    return templates.TemplateResponse("final_flowplot_rom.html", {"request": request})
+    return templates.TemplateResponse("final_splitplot_rom.html", {"request": request})
 
 @app.get("/map4_r_heatmap", response_class=HTMLResponse)
 async def map5(request: Request):

@@ -87,7 +87,7 @@ svg.append("g")
     .style("text-anchor", "middle")
     .style("font-size", "16px")
     .style("fill", "#174c3c")
-    .text("Life Expectancy (Years)");
+    .text("Healthy Life Expectancy (Years)");
 
 
 

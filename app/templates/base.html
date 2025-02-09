@@ -2,29 +2,34 @@
 <html lang="en">
 
 <head>
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+
     <title>{% block title %}VizWizards{% endblock %}</title>
 
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-animate.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-aria.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-messages.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-material/1.2.5/angular-material.min.js"></script><script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.7/angular-resource.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-material/1.2.5/angular-material.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.7/angular-resource.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.7/angular-resource.min.js"></script>
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <script src="https://unpkg.com/d3-sankey@0.12.3/dist/d3-sankey.min.js"></script>
 
     <link rel="stylesheet" href="/static/css/styles.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/angular-material/1.1.24/angular-material.min.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Roboto:wght@300;400;500&display=swap">
-    
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/angular-material/1.1.24/angular-material.min.css">
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Roboto:wght@300;400;500&display=swap">
+
     {% block extra_styles %}{% endblock %}
 
 </head>
 
 <body ng-app="myApp">
-    
+
     <div class="sidebar" id="sidebar">
         <div class="sidebar-header">
             <h2>Menu</h2>
@@ -51,14 +56,36 @@
                 <div class="dropdown-content" id="section4">
                     <a href="/line">Yearly Line Chart</a>
                     <a href="/radar">Yearly Spider Plot</a>
-                    <a href="/finalstackedbar"> bar Plot</a>
-                    <a href="/finalscatter">Scatter Plot</a>
-                    <a href="/finalline">Line Chart</a>
-                    <a href="/finalchoropleth">Choropleth Map</a>
-                    <a href="/finalbox">Box Plot</a>
+                    
                 </div>
 
-
+                <button class="accordion-btn" onclick="toggleDropdown('life-expectancy')">Life Expectancy</button>
+                <div class="dropdown-content" id="life-expectancy">
+                    
+                    <button class="accordion-btn sub-menu-btn" onclick="toggleDropdown('global-evolution')">How Life Expectancy Evolved</button>
+                    <div class="dropdown-content" id="global-evolution">
+                        <a href="/finalstackedbar">Stackedbar:Trends across regions</a>
+                        <a href="/le-radar">Radar:A comparison between LE and HLE</a>
+                        <a href="/le-stacked">Stacked:Sex ratio trends</a>
+                    </div>
+                
+                    <button class="accordion-btn sub-menu-btn" onclick="toggleDropdown('distributions')">Regional Perspective</button>
+                    <div class="dropdown-content" id="distributions">
+                        <a href="/le-violin">Violin Plot: Life expectancy distributions</a>
+                        <a href="/finalbox">Box Plot: Regional averages</a>
+                        <a href="/le-bee">Bubble:Male vs Female life expectancy</a>
+                        <a href="/le-error">Error: Range of life expectancy</a>
+                    </div>
+                
+                    <button class="accordion-btn sub-menu-btn" onclick="toggleDropdown('gender')">Gender Analysis</button>
+                    <div class="dropdown-content" id="gender">
+                        <a href="/finalscatter">Lowest male life expectancy</a>
+                        <a href="/finalline">Female life expectancy at 60</a>
+                        <a href="/finalchoropleth">Female Healthy Life Ratio Map</a>
+                    </div>
+                
+                 
+                </div>
             </div>
         </div>
     </div>
@@ -67,8 +94,8 @@
             {% block content %}{% endblock %}
         </main>
     </div>
-   
-<script src="/static/js/base.js"></script>
+
+    <script src="/static/js/base.js"></script>
 </body>
 
 </html>

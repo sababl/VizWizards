@@ -3,75 +3,95 @@
 
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>D3 Bar Chart</title>
-  <script src="https://d3js.org/d3.v7.min.js"></script>
-  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
-  <link rel="stylesheet" href="/static/css/styles.css" />
+  <title>Climate Data Visualization</title>
+  <!-- Link to the external CSS file -->
+  <link rel="stylesheet" href="static/css/home.css" />
 </head>
 
 <body>
-  <!-- Header Section with Blur Background -->
+  <!-- Hero Section -->
   <header class="hero-section">
-    <div class="hero-content">
-      <h1>Data Visualization</h1>
-      <p>by VizWizards</p>
-    </div>
+    <h1 class="hero-title">Discover the Stories in Your Data</h1>
+    <p class="hero-subtitle">
+      Welcome to VizWizards, where interactive visualizations bring numbers to life. Dive in to explore trends, compare
+      insights, and transform complex datasets into actionable understanding. </p>
   </header>
 
-  <!-- Main Content Section -->
-  <section class="info-section">
-    <div class="circle-container">
-      <a href="/bar">
-        <div class="circle-image">
-          <img src="/static/img/histogram-chart.png" alt="section-one" />
-        </div>
-      </a>
-      <div class="circle-text">
-        <h2>CO2 Emissions Comparison</h2>
-        <p class="form-description">Explore and compare per capita CO2 emissions across 20 countries.</p>
+  <!-- Cards Section -->
+  <section class="cards-section">
+    <div class="card">
+      <div class="card-icon">
+        <!-- Replace this placeholder SVG with your own icon if desired -->
+        <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+          stroke-linejoin="round" viewBox="0 0 24 24">
+          <path d="M4 6H20M4 12H20M4 18H11"></path>
+        </svg>
       </div>
+      <h2 class="card-title">CO2 Emissions</h2>
+      <p class="card-desc">
+        Compare per capita CO2 emissions across 20 countries
+      </p>
+      <button class="card-btn" onclick="window.location.href='/bar'">Explore Data</button>
     </div>
 
-    <div class="circle-container">
-      <a href="/snakey">
-        <div class="circle-image">
-          <img style="height: 70%; margin-top: 30px; width: 70%;" src="/static/img/alluvial-diagram.png"
-            alt="section-two" />
-        </div>
-      </a>
-      <div class="circle-text">
-        <h2>Top Emitters Flow</h2>
-        <p class="form-description">Trace the top 5 per capita CO2 emitters in each continent and their contribution trends.</p>
+    <div class="card">
+      <div class="card-icon">
+        <!-- Placeholder SVG -->
+        <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+          stroke-linejoin="round" viewBox="0 0 24 24">
+          <path d="M3 6h18M3 12h18M3 18h18"></path>
+        </svg>
       </div>
+      <h2 class="card-title">Top Emitters</h2>
+      <p class="card-desc">
+        Track top 5 per capita CO2 emitters by continent
+      </p>
+      <button class="card-btn" onclick="window.location.href='/stacked'">Explore Data</button>
     </div>
 
-    <div class="circle-container">
-      <a href="/map1">
-        <div class="circle-image">
-          <img style="height: 70%; margin-top: 30px; width: 70%;" src="/static/img/map.png" alt="section-three" />
-        </div>
-      </a>
-      <div class="circle-text">
-        <h2>Global CO2 Map</h2>
-        <p class="form-description">Visualize per capita CO2 emissions for all countries in a specific year.</p>
+    <div class="card">
+      <div class="card-icon">
+        <!-- Placeholder SVG -->
+        <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+          stroke-linejoin="round" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="10"></circle>
+          <path d="M2 12l10-2 4 6 2-1 4 5"></path>
+        </svg>
       </div>
+      <h2 class="card-title">Global Map</h2>
+      <p class="card-desc">
+        Visualize worldwide CO2 emissions data
+      </p>
+      <button class="card-btn" onclick="window.location.href='/map1'">Explore Data</button>
     </div>
 
-    <div class="circle-container">
-      <a href="/radar">
-        <div class="circle-image">
-          <img style="height: 70%; margin-top: 30px; width: 70%;" src="/static/img/line-chart.png" alt="section-four" />
-        </div>
-      </a>
-      <div class="circle-text">
-        <h2>Climate insights</h2>
-        <p class="form-description">Analyze monthly max, min, and average temperatures across states and years.</p>
+    <div class="card">
+      <div class="card-icon">
+        <!-- Placeholder SVG -->
+        <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+          stroke-linejoin="round" viewBox="0 0 24 24">
+          <path d="M3 3v18h18"></path>
+          <path d="M20 9l-5 5-4-4-3 3"></path>
+        </svg>
       </div>
+      <h2 class="card-title">Temperature Trends</h2>
+      <p class="card-desc">
+        Analyze global temperature changes over time
+      </p>
+      <button class="card-btn" onclick="window.location.href='/line'">Explore Data</button>
     </div>
   </section>
 
-  <a href="https://lordicon.com/">Icons by Lordicon.com</a>
+  <!-- Final Project Section -->
+  <section class="final-project-section">
+    <h2 class="final-project-title">Life Expectancy Journey</h2>
+    <p class="final-project-desc">
+      Bringing together insights from multiple visualizations, this project presents an
+      interactive dashboard that explores climate data, CO2 emissions, temperature trends, and more.
+      Dive in to explore comprehensive data and uncover trends.
+    </p>
+    <button class="final-project-btn" onclick="window.location.href='/finalstackedbar'">Explore the Final Project</button>
+  </section>
 </body>
 
 </html>

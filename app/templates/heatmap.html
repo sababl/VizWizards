@@ -2,6 +2,7 @@
 {% block content %}
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,10 +12,12 @@
         .heatmap rect {
             stroke: #fff;
         }
+
         .axis-label {
             font-size: 14px;
             font-weight: bold;
         }
+
         .tooltip {
             position: absolute;
             background-color: white;
@@ -23,34 +26,50 @@
             font-size: 12px;
             display: none;
         }
+
         .legend {
             font-size: 12px;
         }
+
         .info-box {
-    background-color: #f0f0f0; /* Light gray background */
-    padding: 15px;
-    border-radius: 8px;
-    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
-    max-width: 800px; /* Adjust width */
-    text-align: justify; /* Justify the paragraph text */
-    margin: 20px auto; /* Center the frame horizontally */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
+            background-color: #f0f0f0;
+            /* Light gray background */
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
+            max-width: 800px;
+            /* Adjust width */
+            text-align: justify;
+            /* Justify the paragraph text */
+            margin: 20px auto;
+            /* Center the frame horizontally */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
     </style>
 </head>
+
 <body>
     <h2>CO₂ Emissions Heatmap (Top 10 Countries)</h2>
     <svg width="700" height="700"></svg>
     <div class="tooltip"></div>
     <div id="legend" class="legend"></div>
     <div class="info-box">
-    <p>
-      The CO₂ Emissions Heatmap visualizes the top 10 countries with the highest carbon dioxide emissions, categorized into three major types: Total CO₂ emissions, Land-use Change emissions, and Fossil Fuel emissions. The intensity of the color represents the magnitude of emissions, where darker shades indicate higher emissions and lighter shades indicate lower emissions. The chart provides a clear comparison of how different countries contribute to global CO₂ emissions across various sources. Additionally, a tooltip appears when hovering over a cell, showing the exact emission value for that country and category. The legend at the bottom further clarifies the color scale, reinforcing the relationship between emission levels and color intensity. This visualization is a powerful tool for analyzing emission patterns and identifying major contributors to global carbon emissions.
-  </p>
-  </div>
+        <p>
+            The CO₂ Emissions Heatmap visualizes the top 10 countries with the highest carbon dioxide emissions,
+            categorized into three major types: Total CO₂ emissions, Land-use Change emissions, and Fossil Fuel
+            emissions. The intensity of the color represents the magnitude of emissions, where darker shades indicate
+            higher emissions and lighter shades indicate lower emissions. The chart provides a clear comparison of how
+            different countries contribute to global CO₂ emissions across various sources. Additionally, a tooltip
+            appears when hovering over a cell, showing the exact emission value for that country and category. The
+            legend at the bottom further clarifies the color scale, reinforcing the relationship between emission levels
+            and color intensity. This visualization is a powerful tool for analyzing emission patterns and identifying
+            major contributors to global carbon emissions.
+        </p>
+    </div>
     <script src="/static/js/heatmap.js"></script>
-  </body>
-  </html>  
+</body>
+
+</html>
 {% endblock %}

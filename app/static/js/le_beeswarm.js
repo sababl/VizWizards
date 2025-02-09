@@ -1,12 +1,12 @@
 var app = angular.module('myApp', ['ngMaterial']);
 
 const PARENT_LOCATION_COLORS = {
-  'Africa': '#2989CEFF',
-  'Eastern Mediterranean': '#FFA95EFF',
-  'Americas': '#07105EFF',
-  'Western Pacific': '#DB4B4BFF',
-  'South-East Asia': '#9467bd',
-  'Europe' : '#00AC86FF'
+  "Africa": "#143642",
+  "Eastern Mediterranean": "#741C28",
+  "Western Pacific": "#877765",
+  "Americas": "#E7DECD",
+  "South-East Asia": "#A1A8BE",
+  "Europe": "#BB8C94"
 };
 
 app.controller('FormController', ['$scope', '$http', '$mdToast', function ($scope, $http, $mdToast) {
@@ -109,8 +109,8 @@ app.controller('FormController', ['$scope', '$http', '$mdToast', function ($scop
       height -= margin.top + margin.bottom;
 
       // Define legend position dynamically
-      const legendX = width - margin.right; // Ensure it remains within bounds
-      const legendY = margin.top;
+      // const legendX = width * 0.85; // Adjust dynamically instead of using a fixed value
+      // const legendY = 20;
 
       // Function to resize chart on window resize
       window.addEventListener("resize", () => {
@@ -164,10 +164,10 @@ app.controller('FormController', ['$scope', '$http', '$mdToast', function ($scop
 
       // Create a force simulation to prevent overlapping circles.
       const simulation = d3.forceSimulation(finalData)
-        .force("x", d3.forceX(d => xScale(d.female)).strength(1))
-        .force("y", d3.forceY(d => yScale(d.male)).strength(1))
-        .force("collide", d3.forceCollide(d => radiusScale(d.population) + 1).iterations(4))
-        .stop();  // We'll manually run the simulation ticks.
+        .force("x", d3.forceX(d => xScale(d.female)).strength(2)) // Increase strength
+        .force("y", d3.forceY(d => yScale(d.male)).strength(2)) // Increase strength
+        .force("collide", d3.forceCollide(d => radiusScale(d.population) + 2).iterations(6)) // Increase iterations
+        .stop();
 
       // Run the simulation for a fixed number of ticks.
       for (let i = 0; i < 300; ++i) simulation.tick();
@@ -205,15 +205,19 @@ app.controller('FormController', ['$scope', '$http', '$mdToast', function ($scop
       // ===================================================
       // 5. Draw Axes
       // ===================================================
-      const xAxis = d3.axisBottom(xScale);
-      const yAxis = d3.axisLeft(yScale);
+      const xAxis = d3.axisBottom(xScale).ticks(10).tickSize(-height);
+      const yAxis = d3.axisLeft(yScale).ticks(10).tickSize(-width);
 
       svg.append("g")
         .attr("transform", `translate(0,${height})`)
-        .call(xAxis);
-      svg.append("g")
-        .call(yAxis);
+        .call(xAxis)
+        .selectAll("text")
+        .style("font-size", "14px");
 
+      svg.append("g")
+        .call(yAxis)
+        .selectAll("text")
+        .style("font-size", "14px");
       // Add axis labels.
       svg.append("text")
         .attr("x", width / 2)
@@ -239,9 +243,32 @@ app.controller('FormController', ['$scope', '$http', '$mdToast', function ($scop
         .attr("r", d => radiusScale(d.population))
         .attr("fill", d => colorScale(d.ParentLocation))
         .attr("stroke", "#333")
-        .attr("stroke-width", 1)
-        .append("title")  // Tooltip to show details.
-        .text(d => `${d.Location}\nPopulation: ${d.population}\nMale LE: ${d.male}\nFemale LE: ${d.female}`);
+        .attr("stroke-width", 1);
+      // Create tooltip div
+      const tooltip = d3.select("body").append("div")
+        .attr("class", "tooltip")
+        .style("position", "absolute")
+        .style("background", "rgba(255, 255, 255, 0.9)")
+        .style("border", "1px solid #ccc")
+        .style("padding", "5px")
+        .style("border-radius", "5px")
+        .style("box-shadow", "2px 2px 5px rgba(0,0,0,0.3)")
+        .style("pointer-events", "none")
+        .style("display", "none");
+
+      svg.selectAll("circle")
+        .on("mouseover", function (event, d) {
+          tooltip.style("display", "block")
+            .html(`
+      <strong>${d.Location}</strong><br>
+      Population: ${d.population.toLocaleString()}<br>
+      Male LE: ${d.male}<br>
+      Female LE: ${d.female}
+    `)
+            .style("left", (event.pageX + 10) + "px")
+            .style("top", (event.pageY - 20) + "px");
+        })
+        .on("mouseout", () => tooltip.style("display", "none"));
 
       // ===================================================
       // 7. Add Country Labels for High Population (> 100 Million)
@@ -251,33 +278,38 @@ app.controller('FormController', ['$scope', '$http', '$mdToast', function ($scop
         .enter()
         .append("text")
         .attr("class", "country-label")
-        // Position the label to the right of the circle (with a small offset)
         .attr("x", d => d.x + radiusScale(d.population) + 4)
         .attr("y", d => d.y + 3)
+        .style("font-size", "12px")
+        .style("font-weight", "bold")
+        .style("fill", "#000")
+        .style("stroke", "#fff")
+        .style("stroke-width", "0.5px")
         .text(d => d.Location);
 
+
       // Add legend for color of ParentLocation
-      const legendGroup = d3.select("svg")
-        .append("g")
+      const legendGroup = svg.append("g")
         .attr("class", "legend")
-        .attr("transform", `translate(${legendX}, ${legendY})`);
+        .attr("transform", `translate(${width / 2 - 300}, -50)`);
+      
+        let categories = Object.keys(PARENT_LOCATION_COLORS);
+        categories.forEach((cat, i) => {
+          legendGroup.append("rect")
+            .attr("x", i * 100)
+            .attr("y", 0)
+            .attr("width", 15)
+            .attr("height", 15)
+            .attr("fill", PARENT_LOCATION_COLORS[cat]);
+          legendGroup.append("text")
+            .attr("x", i * 100 + 20)
+            .attr("y", 12)
+            .style("font-size", "14px")
+            .style("font-weight", "bold")
+            .text(cat);
+        });
 
-
-      const categories = colorScale.domain();
-      categories.forEach((cat, i) => {
-        legendGroup.append("rect")
-          .attr("x", 0)
-          .attr("y", i * 20)
-          .attr("width", 15)
-          .attr("height", 15)
-          .attr("fill", colorScale(cat));
-
-        legendGroup.append("text")
-          .attr("x", 20)
-          .attr("y", i * 20 + 12)
-          .text(cat)
-          .style("font-size", "12px");
-      });
+        
 
     }).catch(function (error) {
       console.error("Error loading data:", error);

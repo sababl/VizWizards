@@ -64,17 +64,20 @@ app.controller('FormController', ['$scope', '$http', '$mdToast', function ($scop
         d3.select("#violin-chart").select("svg").remove();
 
         // Set margins and dimensions
-        var margin = { top: 20, right: 30, bottom: 50, left: 40 },
+        var containerWidth = document.getElementById("violin-chart").clientWidth;
+
+        var margin = { top: 20, right: 30, bottom: 80, left: 50 },
             width = 800 - margin.left - margin.right,
             height = 500 - margin.top - margin.bottom;
 
         // Create the SVG canvas
         var svg = d3.select("#violin-chart")
-            .append("svg")
-            .attr("width", width + margin.left + margin.right)
-            .attr("height", height + margin.top + margin.bottom)
-            .append("g")
-            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+        .append("svg")
+        .attr("width", "100%") // Make it responsive
+        .attr("height", height + margin.top + margin.bottom)
+        .attr("viewBox", `0 0 ${width + margin.left + margin.right} ${height + margin.top + margin.bottom}`)
+        .append("g")
+        .attr("transform", `translate(${margin.left},${margin.top})`);
 
         // Filter data by the selected year
         var filteredData = dataset.filter(function (d) {
@@ -98,9 +101,10 @@ app.controller('FormController', ['$scope', '$http', '$mdToast', function ($scop
 
         // Create the x-scale for groups; each group will be assigned a band
         var x = d3.scaleBand()
-            .domain(dataGrouped.map(function (d) { return d.key; }))
-            .range([0, width])
-            .padding(0.05);
+    .domain(dataGrouped.map(d => d.key))
+    .range([0, width]) // Ensure it fully uses available space
+    .padding(0.05);
+
 
         // Determine global y-scale based on life expectancy (FactValueNumeric)
         var allValues = filteredData.map(function (d) { return +d.FactValueNumeric; });
@@ -116,14 +120,31 @@ app.controller('FormController', ['$scope', '$http', '$mdToast', function ($scop
 
         // Add the x-axis
         svg.append("g")
-            .attr("class", "x-axis")
-            .attr("transform", "translate(0," + height + ")")
-            .call(d3.axisBottom(x))
-            .selectAll("text")  
-            .style("text-anchor", "end")
-            .attr("dx", "-.8em")
-            .attr("dy", ".15em")
-            .attr("transform", "rotate(-45)");
+           .attr("class", "x-axis")
+           .attr("transform", "translate(0," + height + ")")
+           .call(d3.axisBottom(x))
+           .selectAll("text")
+           .style("text-anchor", "end")
+           .attr("dx", "-.8em")
+           .attr("dy", ".15em")
+           .attr("transform", "rotate(-30)"); // Adjust rotation for better fit
+            // X-axis label
+        svg.append("text")
+            .attr("text-anchor", "middle")
+            .attr("x", width / 2)
+            .attr("y", height + 70)  // Adjust position
+            .style("font-size", "16px")
+            .text("Regions / Countries");
+            
+            // Y-axis label
+        svg.append("text")
+            .attr("text-anchor", "middle")
+            .attr("transform", "rotate(-90)")
+            .attr("x", -height / 2)
+            .attr("y", -30)  // Adjust position
+            .style("font-size", "16px")
+            .text("Life Expectancy (Years)");
+
         // Maximum width for a violin (based on the band size)
         var maxViolinWidth = x.bandwidth();
 
@@ -151,7 +172,11 @@ app.controller('FormController', ['$scope', '$http', '$mdToast', function ($scop
         var xNum = d3.scaleLinear()
             .domain([0, maxDensity])
             .range([0, maxViolinWidth / 2]);
-
+        var x = d3.scaleBand()
+            .domain(dataGrouped.map(d => d.key))
+            .range([0, width - 60]) // Adjusted to fit within available space
+            .padding(0.04);
+        
         // For each group, draw the violin shape and add markers for the extreme values
         dataGrouped.forEach(function (group) {
             // Create a group element for each violin, centered at the group's x position

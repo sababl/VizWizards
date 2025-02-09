@@ -416,17 +416,13 @@ body {
 }
 
 /* Inline Container */
-.inline-container {
+.inline-container-bar {
   display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  /* Align items to the left for better structure */
-  width: 90%;
-  gap: 15px;
-  /* Add spacing between elements */
+  flex-wrap: wrap;
+  justify-content: space-between;
 }
 
-.inline-container p {
+.inline-container-bar p {
   margin-right: 15px;
   font-size: 1rem;
   font-weight: 500;

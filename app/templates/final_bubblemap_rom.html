@@ -4,99 +4,67 @@
 
 {% block content %}
 
-    <h2 style="text-align: center;">Life Expectancy Across Countries</h2>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Life Expectancy Bubble Map</title>
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+    <script src="https://d3js.org/topojson.v3.min.js"></script>
     <style>
-        p {
-            line-height: 1.8;
-        }
         .info-box {
             background-color: #f0f0f0;
             padding: 15px;
             border-radius: 8px;
             box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
-            max-width: 1000px;
-            width: 90%;
+            max-width: 900px;
             text-align: justify;
             margin: 20px auto;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            box-sizing: border-box;
+            line-height: 1.5;
+            font-size: 16px;
         }
-        .chart-container {
-            width: 100%;
-            max-width: 1200px;
-            overflow: hidden;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin: auto;
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
         }
-        #bubble-map {
-            width: 100%;
-            height: auto;
-            max-height: 600px;
+        .tooltip {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 8px;
+            border-radius: 5px;
+            font-size: 12px;
+            box-shadow: 0px 0px 5px rgba(0,0,0,0.3);
+            pointer-events: none;
+            visibility: hidden;
+        }
+        .legend {
+            font-size: 12px;
+            text-anchor: start;
         }
     </style>
+</head>
+<body>
+    <h2>Life Expectancy Across Countries (Bubble Map)</h2>
 
     <div class="info-box">
-        <p>
-            This bubble map visualizes life expectancy across different countries. The size of each bubble represents 
-            the population of the country, while the color indicates life expectancy. Larger bubbles correspond to 
-            more populous countries, and darker colors represent higher life expectancy. The visualization highlights the relationship between population size and life expectancy. Countries with 
-            larger populations and lower life expectancy may face significant public health challenges, whereas 
-            smaller countries with high life expectancy often have well-developed healthcare systems. By analyzing 
-            both metrics together, this map helps identify global disparities in health and longevity, guiding 
-            potential improvements in healthcare policies.
-        </p>
+        This bubble map visualizes life expectancy across different countries. The size of each bubble represents 
+        the population of the country, while the color indicates life expectancy. Larger bubbles correspond to 
+        more populous countries, and darker colors represent higher life expectancy. The visualization highlights 
+        the relationship between population size and life expectancy in 2021. Countries with larger populations and lower 
+        life expectancy may face significant public health challenges, whereas smaller countries with high life 
+        expectancy often have well-developed healthcare systems. By analyzing both metrics together, this map helps 
+        identify global disparities in health and longevity, guiding potential improvements in healthcare policies.
     </div>
 
-    <div class="chart-container">
-        <div id="bubble-map"></div>
+    <div id="map-container">
+        <svg id="bubble-map"></svg>
     </div>
 
-    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-    <script>
-        let data = [{
-            type: "scattergeo",
-            mode: "markers",
-            lat: [37.0902, 51.5074, 51.1657, 48.8566, 20.5937, 35.8617, -14.2350, 36.2048, 56.1304, -25.2744],
-            lon: [-95.7129, -0.1278, 10.4515, 2.3522, 78.9629, 104.1954, -51.9253, 138.2529, -106.3468, 133.7751],
-            text: [
-                "USA: Life Expectancy 78 yrs, Population 330M",
-                "UK: Life Expectancy 80 yrs, Population 67M",
-                "Germany: Life Expectancy 81 yrs, Population 83M",
-                "France: Life Expectancy 82 yrs, Population 65M",
-                "India: Life Expectancy 69 yrs, Population 1380M",
-                "China: Life Expectancy 76 yrs, Population 1441M",
-                "Brazil: Life Expectancy 74 yrs, Population 212M",
-                "Japan: Life Expectancy 85 yrs, Population 126M",
-                "Canada: Life Expectancy 83 yrs, Population 38M",
-                "Australia: Life Expectancy 84 yrs, Population 25M"
-            ],
-            marker: {
-                size: [50, 20, 25, 20, 60, 65, 30, 25, 15, 10], // Adjusted sizes for better visualization
-                color: [78, 80, 81, 82, 69, 76, 74, 85, 83, 84], // Life Expectancy
-                colorscale: "Viridis",
-                showscale: true,
-                colorbar: { title: "Life Expectancy (years)" },
-                line: { color: "black" }
-            }
-        }];
+    <div class="tooltip" id="tooltip"></div>
 
-        let layout = {
-            title: "Life Expectancy Across Countries (Bubble Size = Population)",
-            geo: {
-                projection: { type: "natural earth" },
-                showland: true
-            }
-        };
-
-        let config = {
-            displayModeBar: false // Removes toolbar options
-        };
-
-        Plotly.newPlot("bubble-map", data, layout, config);
-    </script>
+    <script src="../static/js/finalbubble.js"></script>
+</body>
+</html>
 
 {% endblock %}

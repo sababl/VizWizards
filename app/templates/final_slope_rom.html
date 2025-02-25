@@ -9,156 +9,65 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Slope Chart - Life Expectancy</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <title>Life Expectancy Slope Chart</title>
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .info-box {
+            background-color: #f0f0f0;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
+            max-width: 1000px;
+            text-align: justify;
+            margin: 20px auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        select {
+            font-size: 14px;
+            padding: 5px;
+            width: 180px;
+        }
+        button {
+            font-size: 14px;
+            padding: 5px 10px;
+        }
+        #chart-container {
+            display: flex;
+            justify-content: center;
+        }
+    </style>
 </head>
 <body>
-    <h2 style="text-align:center; font-size:24px;">Changes in Life Expectancy vs. Healthy Life Expectancy (2000-2021)</h2>
+    <h2 style="text-align:center;">Changes in Life Expectancy vs. Healthy Life Expectancy (2015-2021)</h2>
     
-    <p style="text-align:center; max-width:800px; margin:auto; font-size:18px; line-height:1.5;">
-        This slope chart visualizes the changes in <strong>Life Expectancy</strong> and <strong>Healthy Life Expectancy</strong> between the years <strong>2000, 2010, and 2021</strong> for selected countries. 
-        The solid lines represent total life expectancy, while the dashed lines indicate the number of years people are expected to live in good health. 
-        A small gap between the two lines suggests a <strong>high quality of life</strong>, whereas a larger gap indicates that people are living longer but with <strong>more years in poor health</strong>. 
-        This visualization helps to compare improvements in both metrics across different countries and highlights <strong>disparities in healthcare, living conditions, and public health policies</strong> over time.
+    <p class="info-box" style="text-align:center; max-width: 900px; margin: auto;">
+        This slope chart visualizes the changes in Life Expectancy and Healthy Life Expectancy
+        from 2015-2021 for selected countries. The solid lines represent total life 
+        expectancy, while the dashed lines indicate the number of years people are expected to live in good health.
+        A small gap between the two lines suggests a high quality of life, whereas a larger gap indicates 
+        that people are living longer but with more years in poor health.
     </p>
 
-
-    <div style="text-align:center; margin-bottom: 20px;">
-        <label for="country1" style="font-size:18px;">Select Country 1:</label>
-        <select id="country1" style="font-size:16px; padding:5px;"></select>
+    <div style="text-align: center; margin: 20px;">
+        <label for="country1">Select Country 1:</label>
+        <select id="country1"></select>
         
-        <label for="country2" style="font-size:18px;">Select Country 2:</label>
-        <select id="country2" style="font-size:16px; padding:5px;"></select>
+        <label for="country2">Select Country 2:</label>
+        <select id="country2"></select>
         
-        <button onclick="updateChart()" style="font-size:16px; padding:5px 10px;">Update Chart</button>
+        <button onclick="updateChart()">Generate Plot</button>
     </div>
-    
-    <canvas id="slopeChart" width="1200" height="600"></canvas>
-    
-    <script>
-        const fullData = {
-            "Lesotho": { lifeExp: [48, 50, 52], healthyLifeExp: [42, 44, 46] },
-            "Central African Republic": { lifeExp: [49, 51, 53], healthyLifeExp: [43, 45, 47] },
-            "Eswatini": { lifeExp: [51, 53, 55], healthyLifeExp: [45, 47, 49] },
-            "Somalia": { lifeExp: [52, 54, 56], healthyLifeExp: [46, 48, 50] },
-            "Mozambique": { lifeExp: [55, 57, 59], healthyLifeExp: [50, 52, 54] },
-            "South Sudan": { lifeExp: [56, 58, 60], healthyLifeExp: [51, 53, 55] },
-            "Afghanistan": { lifeExp: [58, 60, 62], healthyLifeExp: [53, 55, 57] },
-            "Zimbabwe": { lifeExp: [60, 62, 64], healthyLifeExp: [55, 57, 59] },
-            "Guinea-Bissau": { lifeExp: [62, 64, 66], healthyLifeExp: [57, 59, 61] },
-            "Namibia": { lifeExp: [64, 66, 68], healthyLifeExp: [59, 61, 63] },
-            "India": { lifeExp: [65, 67, 70], healthyLifeExp: [58, 60, 63] },
-            "Ethiopia": { lifeExp: [66, 68, 71], healthyLifeExp: [60, 62, 65] },
-            "Kenya": { lifeExp: [67, 69, 72], healthyLifeExp: [61, 63, 66] },
-            "Russia": { lifeExp: [68, 70, 73], healthyLifeExp: [62, 64, 67] },
-            "Pakistan": { lifeExp: [69, 71, 74], healthyLifeExp: [63, 65, 68] },
-            "Philippines": { lifeExp: [70, 72, 75], healthyLifeExp: [64, 66, 69] },
-            "Ukraine": { lifeExp: [71, 73, 76], healthyLifeExp: [65, 67, 70] },
-            "Brazil": { lifeExp: [72, 74, 77], healthyLifeExp: [66, 68, 71] }
-        };
-        
-        function populateDropdowns() {
-            const countries = Object.keys(fullData);
-            const dropdown1 = document.getElementById("country1");
-            const dropdown2 = document.getElementById("country2");
-            
-            dropdown1.innerHTML = dropdown2.innerHTML = "";
-            
-            countries.forEach(country => {
-                const option1 = new Option(country, country);
-                const option2 = new Option(country, country);
-                dropdown1.add(option1);
-                dropdown2.add(option2);
-            });
-            
-            dropdown1.value = countries[0];
-            dropdown2.value = countries[1];
-        }
-        
-        function getChartData(country1, country2) {
-            return {
-                labels: ["2000", "2010", "2021"],
-                datasets: [
-                    {
-                        label: `${country1} - Life Expectancy`,
-                        data: fullData[country1].lifeExp,
-                        borderColor: "blue",
-                        backgroundColor: "blue",
-                        fill: false,
-                        tension: 0.4
-                    },
-                    {
-                        label: `${country1} - Healthy Life Expectancy`,
-                        data: fullData[country1].healthyLifeExp,
-                        borderColor: "lightblue",
-                        backgroundColor: "lightblue",
-                        fill: false,
-                        borderDash: [5, 5],
-                        tension: 0.4
-                    },
-                    {
-                        label: `${country2} - Life Expectancy`,
-                        data: fullData[country2].lifeExp,
-                        borderColor: "green",
-                        backgroundColor: "green",
-                        fill: false,
-                        tension: 0.4
-                    },
-                    {
-                        label: `${country2} - Healthy Life Expectancy`,
-                        data: fullData[country2].healthyLifeExp,
-                        borderColor: "lightgreen",
-                        backgroundColor: "lightgreen",
-                        fill: false,
-                        borderDash: [5, 5],
-                        tension: 0.4
-                    }
-                ]
-            };
-        }
-        
-        const ctx = document.getElementById('slopeChart').getContext('2d');
-        let chart = new Chart(ctx, {
-            type: 'line',
-            data: getChartData("Lesotho", "Central African Republic"),
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        position: 'top',
-                    }
-                },
-                scales: {
-                    y: {
-                        title: {
-                            display: true,
-                            text: "Years"
-                        }
-                    },
-                    x: {
-                        title: {
-                            display: true,
-                            text: "Year"
-                        }
-                    }
-                }
-            }
-        });
-        
-        function updateChart() {
-            const country1 = document.getElementById("country1").value;
-            const country2 = document.getElementById("country2").value;
-            chart.data = getChartData(country1, country2);
-            chart.update();
-        }
-        
-        window.onload = populateDropdowns;
-    </script>
+
+    <div id="chart-container">
+        <svg id="slope-chart"></svg>
+    </div>
+
+    <script src="../static/js/finalslope.js"></script>
 </body>
 </html>
-
-
-
 
 
 {% endblock %}

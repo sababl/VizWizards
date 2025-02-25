@@ -25,7 +25,7 @@ const barHoverColor = rootStyles.getPropertyValue("--light-green").trim();
   //
   // Create the SVG container
   const svg_one_year = d3
-    .select("#chart-one-year")
+    .select("#plot-one-year")
     .append("svg")
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
@@ -445,7 +445,7 @@ const barHoverColor = rootStyles.getPropertyValue("--light-green").trim();
   const svgHeight = 800 - margin2.top - margin2.bottom;
 
   const svg = d3
-    .select("#chart_decade")
+    .select("#plot_decade")
     .append("svg")
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)

@@ -1,3 +1,22 @@
+:root {
+    /* Original Colors */
+    --gray: #C7CDCC;
+    --khaki: #AFAE9F;
+    --dark-green: #1C554F;
+    --light-green: #019154;
+    --white: #f8faf9;
+    --orange: #E05515;
+    --cream: #EBECEB;
+    
+    /* Additional Complementary Colors */
+    --dark-gray: #4A4A4A;
+    --light-gray: #F5F5F5;
+    --sage: #7C9A92;
+    --pale-green: #E8F5E9;
+    --deep-orange: #CC4110;
+    --soft-cream: #F9F6F2;
+}
+
 body {
   font-family: 'Roboto', sans-serif;
   margin: 0;
@@ -32,7 +51,10 @@ body {
 .section-container {
   max-width: 1200px;
   margin: 20px auto;
-  padding: 0 20px;
+  padding: 16px;
+  margin-bottom: 32px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .section-card {
@@ -65,6 +87,9 @@ body {
 .chart-container {
   padding: 20px 24px;
   position: relative;
+  margin: 16px 0;
+  min-height: 400px;
+  background-color: var(--white);
 }
 
 .chart-header {
@@ -72,17 +97,19 @@ body {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 16px;
+  border-bottom: 2px solid var(--cream);
+  padding-bottom: 16px;
 }
 
 .chart-title {
-  color: #2c6975;
+  color: var(--dark-green);
   margin: 0;
   font-size: 18px;
   font-weight: 500;
 }
 
 .chart-placeholder {
-  background-color: #f1f1f1;
+  background-color: var(--light-gray);
   height: 400px;
   border-radius: 4px;
   display: flex;
@@ -91,7 +118,7 @@ body {
   font-size: 14px;
   color: #888;
   min-height: 400px;
-  border: 1px solid #ccc;
+  border: 1px solid var(--gray);
   margin: 20px 0;
   padding: 10px;
 }
@@ -104,6 +131,15 @@ body {
 
 .filter-select {
   min-width: 150px;
+  border-color: var(--khaki);
+}
+
+.filter-select:focus {
+  border-color: var(--light-green);
+}
+
+.filter-select:hover {
+  border-color: var(--light-green);
 }
 
 md-nav-bar .md-nav-bar {
@@ -122,4 +158,100 @@ md-nav-bar .md-button._md-nav-button.md-active {
 #globalTrendsChart {
   width: 100%;
   height: 500px;
+}
+
+md-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
+md-content {
+  background-color: #f5f7fa;
+}
+
+md-card {
+  margin: 8px;
+  background-color: var(--white);
+}
+
+/* Add smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Ensure proper spacing for anchor links */
+section {
+  scroll-margin-top: 64px; /* Height of toolbar */
+}
+
+.md-toolbar-tools {
+  min-height: 100px;
+  height: auto !important;
+  padding: 0;
+  background-color: var(--dark-green);
+}
+
+.md-toolbar-tools h2 {
+  margin: 16px 16px 0 16px;
+}
+
+md-tabs {
+  width: 100%;
+}
+
+md-tabs md-tabs-wrapper {
+  background-color: var(--dark-green) !important;
+}
+
+md-tabs .md-tab {
+  color: var(--cream) !important;
+  font-size: 14px;
+}
+
+md-tabs .md-tab.md-active {
+  color: var(--white) !important;
+}
+
+md-tabs md-ink-bar {
+  background-color: white !important;
+}
+
+.chart-subtitle {
+  color: var(--dark-gray);
+}
+
+.md-headline {
+  color: var(--dark-green);
+}
+
+.md-subhead {
+  color: var(--sage);
+}
+
+.tooltip {
+  background-color: var(--cream);
+  border: 1px solid var(--khaki);
+}
+
+/* Add hover effects */
+.md-button:hover {
+  background-color: var(--light-green) !important;
+}
+
+md-tab-item:hover {
+  background-color: rgba(1, 145, 84, 0.1);
+}
+
+/* Visualization specific colors */
+.axis line, .axis path {
+  stroke: var(--khaki);
+}
+
+.grid line {
+  stroke: var(--cream);
+}
+
+.legend text {
+  fill: var(--dark-gray);
 }

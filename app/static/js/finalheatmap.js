@@ -110,6 +110,7 @@ d3.csv("../static/data/le.csv").then(function(data) {
 
     svg.append("text")  
         .attr("class", "axis-label")
+        
         .attr("text-anchor", "middle")
         .attr("transform", "rotate(-90)")
         .attr("x", -height / 2)

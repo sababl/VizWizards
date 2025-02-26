@@ -110,63 +110,126 @@ function createTestChart() {
                 .domain([65, d3.max(chartData, d => d.lifeExpectancy) + 1])
                 .range([height, 0]);
 
-            // Add axes
+            // Add animation duration constant
+            const transitionDuration = 1000;
+
+            // Modify the axes creation to include transitions
+            // X axis with animation
             svg.append("g")
                 .attr("transform", `translate(0,${height})`)
                 .call(d3.axisBottom(x))
                 .selectAll("text")
                 .attr("transform", "translate(-10,0)rotate(-45)")
-                .style("text-anchor", "end");
+                .style("text-anchor", "end")
+                .style("opacity", 0) // Start invisible
+                .transition()
+                .duration(transitionDuration)
+                .style("opacity", 1); // Fade in
 
+            // Y axis with animation
             svg.append("g")
-                .call(d3.axisLeft(y));
+                .call(d3.axisLeft(y))
+                .style("opacity", 0) // Start invisible
+                .transition()
+                .duration(transitionDuration)
+                .style("opacity", 1); // Fade in
 
-            // Add labels
-            svg.append("text")
-                .attr("text-anchor", "middle")
-                .attr("x", width / 2)
-                .attr("y", height + margin.bottom - 5)
-                .text("Year");
-
-            svg.append("text")
-                .attr("text-anchor", "middle")
-                .attr("transform", "rotate(-90)")
-                .attr("y", -margin.left + 15)
-                .attr("x", -height / 2)
-                .text("Life Expectancy (years)");
-
-            // Add title
-            svg.append("text")
-                .attr("x", width / 2)
-                .attr("y", -10)
-                .attr("text-anchor", "middle")
-                .style("font-size", "18px")
-                .text("Global Average Life Expectancy (2000-2021)");
-
-            // Bars
-            svg.selectAll("rect")  // Changed from "bar" to "rect" for proper selection
+            // Animate the bars with modified hover effects
+            svg.selectAll("rect")
                 .data(chartData)
                 .join("rect")
                 .attr("x", d => x(d.year))
-                .attr("y", d => y(d.lifeExpectancy))
+                .attr("y", height) // Start from bottom
                 .attr("width", x.bandwidth())
-                .attr("height", d => height - y(d.lifeExpectancy))
+                .attr("height", 0) // Start with height 0
                 .attr("fill", "#69b3a2")
-                .on("mouseover", function (event, d) {
-                    d3.select(this).attr("fill", "#2E8B57");
+                .transition() // Add transition
+                .duration(transitionDuration)
+                .delay((d, i) => i * 100) // Stagger the animations
+                .attr("y", d => y(d.lifeExpectancy))
+                .attr("height", d => height - y(d.lifeExpectancy))
+                .on("end", function() { // Add event listeners after transition
+                    d3.selectAll("rect")
+                        .on("mouseover", function(event, d) {
+                            // Only change color
+                            d3.select(this)
+                                .transition()
+                                .duration(200)
+                                .attr("fill", "#2E8B57");
 
-                    // Show tooltip with exact value
+                            // Add tooltip
+                            let tooltip = svg.append("text")
+                                .attr("class", "tooltip")
+                                .attr("x", x(d.year) + x.bandwidth() / 2)
+                                .attr("y", y(d.lifeExpectancy) - 10)
+                                .attr("text-anchor", "middle")
+                                .style("opacity", 0)
+                                .text(`${d.lifeExpectancy.toFixed(2)} years`);
+
+                            // Fade in tooltip
+                            tooltip.transition()
+                                .duration(200)
+                                .style("opacity", 1);
+
+                            // Auto-remove tooltip after 2 seconds
+                            setTimeout(() => {
+                                tooltip.transition()
+                                    .duration(200)
+                                    .style("opacity", 0)
+                                    .remove();
+                            }, 2000);
+                        })
+                        .on("mouseout", function() {
+                            // Only change color back
+                            d3.select(this)
+                                .transition()
+                                .duration(200)
+                                .attr("fill", "#69b3a2");
+                        });
+                });
+
+            // After the transition, add the hover effects
+            svg.selectAll("rect")
+                .on("mouseover", function(event, d) {
+                    d3.select(this)
+                        .transition()
+                        .duration(200)
+                        .attr("fill", "#2E8B57")
+                        .attr("transform", "scale(1.05)"); // Slightly enlarge the bar
+
+                    // Add tooltip with animation
                     svg.append("text")
                         .attr("id", "tooltip")
                         .attr("x", x(d.year) + x.bandwidth() / 2)
                         .attr("y", y(d.lifeExpectancy) - 10)
                         .attr("text-anchor", "middle")
-                        .text(`${d.lifeExpectancy.toFixed(2)} years`);
+                        .style("opacity", 0)
+                        .text(`${d.lifeExpectancy.toFixed(2)} years`)
+                        .transition()
+                        .duration(200)
+                        .style("opacity", 1);
                 })
-                .on("mouseout", function () {
-                    d3.select(this).attr("fill", "#69b3a2");
-                    d3.select("#tooltip").remove();
+                .on("mouseout", function() {
+                    d3.select(this)
+                        .transition()
+                        .duration(200)
+                        .attr("fill", "#69b3a2")
+                        .attr("transform", "scale(1)"); // Return to original size
+
+                    // Remove tooltip with fade out
+                    d3.select("#tooltip")
+                        .transition()
+                        .duration(200)
+                        .style("opacity", 0)
+                        .remove();
                 });
+
+            // Animate the title and labels
+            svg.selectAll("text:not(#tooltip)")
+                .style("opacity", 0)
+                .transition()
+                .duration(transitionDuration)
+                .style("opacity", 1);
 
         })
         .catch(function (error) {
@@ -294,8 +357,8 @@ function createGlobalTrendsChart() {
                     .text("Global Average Life Expectancy (2000-2021)");
 
 
-                // Bars
-                svg.selectAll("rect")  // Changed from "bar" to "rect" for proper selection
+                // Bars with modified hover effects
+                svg.selectAll("rect")
                     .data(chartData)
                     .join("rect")
                     .attr("x", d => x(d.year))
@@ -303,20 +366,41 @@ function createGlobalTrendsChart() {
                     .attr("width", x.bandwidth())
                     .attr("height", d => height - y(d.lifeExpectancy))
                     .attr("fill", "#69b3a2")
-                    .on("mouseover", function (event, d) {
-                        d3.select(this).attr("fill", "#2E8B57");
+                    .on("mouseover", function(event, d) {
+                        // Only change color
+                        d3.select(this)
+                            .transition()
+                            .duration(200)
+                            .attr("fill", "#2E8B57");
 
-                        // Show tooltip with exact value
-                        svg.append("text")
-                            .attr("id", "tooltip")
+                        // Add tooltip
+                        let tooltip = svg.append("text")
+                            .attr("class", "tooltip")
                             .attr("x", x(d.year) + x.bandwidth() / 2)
                             .attr("y", y(d.lifeExpectancy) - 10)
                             .attr("text-anchor", "middle")
+                            .style("opacity", 0)
                             .text(`${d.lifeExpectancy.toFixed(2)} years`);
+
+                        // Fade in tooltip
+                        tooltip.transition()
+                            .duration(200)
+                            .style("opacity", 1);
+
+                        // Auto-remove tooltip after 2 seconds
+                        setTimeout(() => {
+                            tooltip.transition()
+                                .duration(200)
+                                .style("opacity", 0)
+                                .remove();
+                        }, 2000);
                     })
-                    .on("mouseout", function () {
-                        d3.select(this).attr("fill", "#69b3a2");
-                        d3.select("#tooltip").remove();
+                    .on("mouseout", function() {
+                        // Only change color back
+                        d3.select(this)
+                            .transition()
+                            .duration(200)
+                            .attr("fill", "#69b3a2");
                     });
 
             })

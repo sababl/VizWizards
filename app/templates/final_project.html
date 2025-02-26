@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Life Expectancy Analysis</title>
+  <!-- Angular Libraries -->
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-animate.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-aria.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-messages.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angular_material/1.2.5/angular-material.min.js"></script>
+
+  <!-- Angular Material -->
+  <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/1.2.5/angular-material.min.css">
+  
+  <!-- D3.js -->
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="/static/css/final_project.css">
+  
+  <!-- Custom JS - Load Last -->
+  <script src="/static/js/le_global.js"></script>
+</head>
+
+<body ng-app="myApp" ng-controller="FormController">
+  
+  <!-- Header -->
+  <header class="header">
+    <div class="header-content">
+      <h1 class="header-title">Life Expectancy Analysis</h1>
+      
+      <md-nav-bar md-selected-nav-item="currentNavItem" nav-bar-aria-label="navigation links">
+        <md-nav-item md-nav-click="goto('evolution')" name="evolution">Evolution</md-nav-item>
+        <md-nav-item md-nav-click="goto('comprehensive')" name="comprehensive">Comprehensive</md-nav-item>
+        <md-nav-item md-nav-click="goto('gender')" name="gender">Gender</md-nav-item>
+        <md-nav-item md-nav-click="goto('covid')" name="covid">COVID Impact</md-nav-item>
+      </md-nav-bar>
+    </div>
+  </header>
+  
+  <!-- Main Content (conditionally displayed based on the selected tab) -->
+  <div class="section-container" ng-show="currentNavItem === 'evolution'">
+    <!-- Life Expectancy Evolution Section -->
+    <div class="section-card">
+      <div class="section-header">
+        <h2 class="section-title">Life Expectancy Evolution</h2>
+        <p class="section-subtitle">Tracking the global progression of life expectancy over time</p>
+      </div>
+      
+      <!-- Global Trends Chart -->
+      <div class="chart-container">
+        <div class="chart-header">
+          <h3 class="chart-title">Global Trends</h3>
+        </div>
+        <p class="chart-subtitle">Analysis of worldwide life expectancy trends from 1950 to 2020</p>
+        <div id="globalTrendsChart" class="chart-placeholder">Chart loading...</div>
+      </div>
+    </div>
+    
+    <!-- Regional Development Section -->
+    <div class="section-card">
+      <div class="chart-container">
+        <div class="chart-header">
+          <h3 class="chart-title">Regional Development</h3>
+          <div class="filters">
+            <md-select class="filter-select" ng-model="timeRange" placeholder="1950-1980">
+              <md-option value="1950-1980">1950-1980</md-option>
+              <md-option value="1980-2000">1980-2000</md-option>
+              <md-option value="2000-2020">2000-2020</md-option>
+            </md-select>
+          </div>
+        </div>
+        <p class="chart-subtitle">Comparison of life expectancy development across different regions</p>
+        <div id="regionalDevelopmentChart" class="chart-placeholder">Chart loading...</div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="section-container" ng-show="currentNavItem === 'comprehensive'">
+    <!-- Comprehensive Look Section -->
+    <div class="section-card">
+      <div class="section-header">
+        <h2 class="section-title">A Comprehensive Look</h2>
+        <p class="section-subtitle">Detailed analysis of factors influencing life expectancy</p>
+      </div>
+      
+      <!-- Socioeconomic Factors Chart -->
+      <div class="chart-container">
+        <div class="chart-header">
+          <h3 class="chart-title">Socioeconomic Factors</h3>
+          <div class="filters">
+            <md-select class="filter-select" ng-model="socioFactor" placeholder="GDP Impact">
+              <md-option value="gdp">GDP Impact</md-option>
+              <md-option value="education">Education Impact</md-option>
+              <md-option value="healthcare">Healthcare Access Impact</md-option>
+            </md-select>
+          </div>
+        </div>
+        <p class="chart-subtitle">Impact of GDP, education, and healthcare access on life expectancy</p>
+        <div id="socioeconomicFactorsChart" class="chart-placeholder">Chart loading...</div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="section-container" ng-show="currentNavItem === 'gender'">
+    <!-- Gender Analysis Section -->
+    <div class="section-card">
+      <div class="section-header">
+        <h2 class="section-title">Gender Analysis</h2>
+        <p class="section-subtitle">Exploring the differences in life expectancy between genders</p>
+      </div>
+      
+      <!-- Gender Gap Analysis Chart -->
+      <div class="chart-container">
+        <div class="chart-header">
+          <h3 class="chart-title">Gender Gap Analysis</h3>
+          <div class="filters">
+            <md-select class="filter-select" ng-model="genderRegion" placeholder="All Regions">
+              <md-option value="all">All Regions</md-option>
+              <md-option value="africa">Africa</md-option>
+              <md-option value="americas">Americas</md-option>
+              <md-option value="asia">Asia</md-option>
+              <md-option value="europe">Europe</md-option>
+              <md-option value="oceania">Oceania</md-option>
+            </md-select>
+            <md-select class="filter-select" ng-model="genderYear" placeholder="2020">
+              <md-option value="2020">2020</md-option>
+              <md-option value="2010">2010</md-option>
+              <md-option value="2000">2000</md-option>
+              <md-option value="1990">1990</md-option>
+            </md-select>
+          </div>
+        </div>
+        <p class="chart-subtitle">Examining the life expectancy gap between males and females across regions</p>
+        <div id="genderGapChart" class="chart-placeholder">Chart loading...</div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="section-container" ng-show="currentNavItem === 'covid'">
+    <!-- COVID Effect Section -->
+    <div class="section-card">
+      <div class="section-header">
+        <h2 class="section-title">COVID Effect</h2>
+        <p class="section-subtitle">Analysis of COVID-19's impact on global life expectancy</p>
+      </div>
+      
+      <!-- Pre vs Post COVID Chart -->
+      <div class="chart-container">
+        <div class="chart-header">
+          <h3 class="chart-title">Pre vs Post COVID</h3>
+          <div class="filters">
+            <md-select class="filter-select" ng-model="covidRegion" placeholder="Global">
+              <md-option value="global">Global</md-option>
+              <md-option value="africa">Africa</md-option>
+              <md-option value="americas">Americas</md-option>
+              <md-option value="asia">Asia</md-option>
+              <md-option value="europe">Europe</md-option>
+              <md-option value="oceania">Oceania</md-option>
+            </md-select>
+          </div>
+        </div>
+        <p class="chart-subtitle">Comparing life expectancy before and after the COVID-19 pandemic</p>
+        <div id="prePostCovidChart" class="chart-placeholder">Chart loading...</div>
+      </div>
+    </div>
+    
+    <!-- Recovery Patterns Section -->
+    <div class="section-card">
+      <div class="chart-container">
+        <div class="chart-header">
+          <h3 class="chart-title">Recovery Patterns</h3>
+          <div class="filters">
+            <md-select class="filter-select" ng-model="recoveryCountries" placeholder="All Countries">
+              <md-option value="all">All Countries</md-option>
+              <md-option value="highIncome">High Income</md-option>
+              <md-option value="middleIncome">Middle Income</md-option>
+              <md-option value="lowIncome">Low Income</md-option>
+            </md-select>
+          </div>
+        </div>
+        <p class="chart-subtitle">Analysis of life expectancy recovery patterns post-COVID</p>
+        <div id="recoveryPatternsChart" class="chart-placeholder">Chart loading...</div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

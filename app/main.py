@@ -56,6 +56,10 @@ def init_data():
 async def home(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
+@app.get("/final", response_class=HTMLResponse)
+def read_root(request: Request):
+    return templates.TemplateResponse("final_project.html", {"request": request})
+
 
 @app.get("/map1", response_class=HTMLResponse)
 async def map1(request: Request):
@@ -277,3 +281,29 @@ async def get_regions():
     le_regions = df_le['ParentLocation'].unique().tolist()
     # Combine unique countries from both datasets    
     return JSONResponse(content={"regions": le_regions} )
+
+
+@app.get("/global")
+async def get_global_data():
+    """Get global average life expectancy data by year"""
+    try:
+        df_le, _ = init_data()
+        
+        # Filter for life expectancy at birth, both sexes, from 2000 to 2021
+        mask = (
+            (df_le['Indicator'] == 'Life expectancy at birth (years)') &
+            (df_le['Sex'].str.lower() == 'both sexes') &
+            (df_le['Period'].astype(int) >= 2000) &
+            (df_le['Period'].astype(int) <= 2021)
+        )
+        
+        filtered_df = df_le[mask]
+        
+        # Calculate global average per year
+        yearly_avg = filtered_df.groupby('Period')['FactValueNumeric'].mean().reset_index()
+        
+        # Format for response
+        result = {year: avg for year, avg in zip(yearly_avg['Period'], yearly_avg['FactValueNumeric'])}
+        return JSONResponse(content={"global_avg_le": result})
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error calculating global data: {str(e)}")

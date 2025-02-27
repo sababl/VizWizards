@@ -10,7 +10,7 @@ const svg = d3.select("#bubble-map")
     .style("height", "95vh");
 
 const mapGroup = svg.append("g")
-    .attr("transform", `translate(${width / 10}, ${height / 6})`);
+    .attr("transform", `translate(${width / 30}, ${height / 6})`);
 
 // Define a Mercator projection for a flat world map
 let projection = d3.geoMercator()

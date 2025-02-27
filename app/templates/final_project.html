@@ -98,24 +98,15 @@
             <div class="chart-header">
               <h3 class="chart-title">Socioeconomic Factors</h3>
               <div class="filters">
-                <md-select class="filter-select" ng-model="socioFactor" ng-change="generateErroPlot()"
-                  placeholder="GDP Impact">
-                  <md-option value="gdp">GDP Impact</md-option>
-                  <md-option value="education">Education Impact</md-option>
-                  <md-option value="healthcare">Healthcare Access Impact</md-option>
-                </md-select>
-
-                <!-- Year filter -->
                 <md-select class="filter-select" ng-model="formData.year" ng-change="generateErroPlot()"
-                  placeholder="Select Year">
+                  aria-label="Select Year" md-container-class="select-on-body" md-append-to-body="true">
                   <md-option ng-repeat="year in years" ng-value="year">
                     {% raw %}{{year}}{% endraw %}
                   </md-option>
                 </md-select>
 
-                <!-- Region filter -->
                 <md-select class="filter-select" ng-model="formData.region" ng-change="generateErroPlot()"
-                  placeholder="Select Region">
+                  aria-label="Select Region">
                   <md-option ng-repeat="region in regions" ng-value="region">
                     {% raw %}{{region}}{% endraw %}
                   </md-option>

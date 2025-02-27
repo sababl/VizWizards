@@ -90,6 +90,7 @@ body {
   margin: 16px 0;
   min-height: 400px;
   background-color: var(--white);
+  overflow: visible;
 }
 
 .chart-header {
@@ -131,7 +132,8 @@ body {
 
 .filter-select {
   min-width: 150px;
-  border-color: var(--khaki);
+  border-color: var(--light-green);
+  color: var(--dark-green);
 }
 
 .filter-select:focus {
@@ -165,7 +167,10 @@ md-toolbar {
   top: 0;
   z-index: 2;
 }
-
+.md-select-menu-container,
+.md-select-menu {
+  z-index: 9999 !important;
+}
 md-content {
   background-color: #f5f7fa;
 }
@@ -230,8 +235,40 @@ md-tabs md-ink-bar {
 }
 
 .tooltip {
-  background-color: var(--cream);
-  border: 1px solid var(--khaki);
+  position: fixed;
+  padding: 8px;
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  pointer-events: none;
+  font-size: 12px;
+  opacity: 0;
+  z-index: 10000;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  transition: opacity 0.2s;
+}
+
+
+.error-message {
+  color: #B33E06;
+  padding: 16px;
+  text-align: center;
+}
+
+.error-bar {
+  stroke: #C7CDCC;
+  stroke-width: 1.5;
+}
+
+.mean-marker {
+  fill: #1C554F;
+  transition: all 0.2s;
+}
+
+.mean-line {
+  stroke: #019154;
+  stroke-width: 2;
+  fill: none;
 }
 
 /* Add hover effects */

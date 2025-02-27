@@ -1,7 +1,7 @@
 // Create Angular service for chart functions
-angular.module('myApp').service('GlobalChartsService', ['$http', function($http) {
-    
-    this.createGlobalTrendsChart = function() {
+angular.module('myApp').service('GlobalChartsService', ['$http', function ($http) {
+
+    this.createGlobalTrendsChart = function () {
         const container = document.getElementById('globalTrendsChart');
         if (!container) return;
 
@@ -20,11 +20,23 @@ angular.module('myApp').service('GlobalChartsService', ['$http', function($http)
         const margin = dims.margin;
 
         // Create tooltip using config utility
-        const tooltip = ChartConfig.utils.createTooltip('globalTrendsChart');
+        const tooltip = d3.select("body")
+            .append('div')
+            .attr('class', 'tooltip')
+            .style('opacity', 0)
+            .style('position', 'fixed')
+            .style('background-color', 'white')
+            .style('border', `1px solid ${ChartConfig.colors.neutral.gray}`)
+            .style('padding', '8px')
+            .style('border-radius', '4px')
+            .style('pointer-events', 'none')
+            .style('font-size', ChartConfig.styling.fontSize.labels)
+            .style('font-family', ChartConfig.styling.fontFamily)
+            .style('z-index', '10000');
 
         // Fetch data using Angular's $http
         return $http.get('/global')
-            .then(function(response) {
+            .then(function (response) {
                 if (!response.data || !response.data.global_avg_le) {
                     throw new Error("Invalid data format received from API");
                 }
@@ -114,7 +126,7 @@ angular.module('myApp').service('GlobalChartsService', ['$http', function($http)
 
                 // Add interactions
                 svg.selectAll("rect")
-                    .on("mouseover", function(event, d) {
+                    .on("mouseover", function (event, d) {
                         d3.select(this)
                             .transition()
                             .duration(200)
@@ -123,11 +135,17 @@ angular.module('myApp').service('GlobalChartsService', ['$http', function($http)
                         tooltip.transition()
                             .duration(200)
                             .style("opacity", 0.9);
-                        tooltip.html(`${d.lifeExpectancy.toFixed(2)} years`)
-                            .style("left", (event.pageX + 5) + "px")
-                            .style("top", (event.pageY - 28) + "px");
-                    })
-                    .on("mouseout", function() {
+
+                        // Calculate position relative to viewport
+                        const tooltipWidth = tooltip.node().getBoundingClientRect().width;
+                        const tooltipHeight = tooltip.node().getBoundingClientRect().height;
+
+                        tooltip
+                            .html(`${d.lifeExpectancy.toFixed(2)} years`)
+                            .style("left", (event.pageX + 10) + "px")
+                            .style("top", (event.pageY - tooltipHeight - 10) + "px");
+                        })
+                    .on("mouseout", function () {
                         d3.select(this)
                             .transition()
                             .duration(200)
@@ -139,7 +157,7 @@ angular.module('myApp').service('GlobalChartsService', ['$http', function($http)
                     });
 
             })
-            .catch(function(error) {
+            .catch(function (error) {
                 console.error("API error:", error);
                 container.innerHTML = `
                     <md-card>
@@ -150,22 +168,4 @@ angular.module('myApp').service('GlobalChartsService', ['$http', function($http)
                 `;
             });
     };
-}]);
-
-// Update the FormController to use the service
-angular.module('myApp').controller('FormController', ['$scope', '$http', 'GlobalChartsService', '$timeout', '$location', '$anchorScroll', '$mdToast',
-function($scope, $http, GlobalChartsService, $timeout, $location, $anchorScroll, $mdToast) {
-    // ... existing controller code ...
-
-    // Initialize charts when controller loads
-    GlobalChartsService.createGlobalTrendsChart();
-
-    // Add window resize handler
-    let resizeTimeout;
-    window.addEventListener('resize', function() {
-        if (resizeTimeout) clearTimeout(resizeTimeout);
-        resizeTimeout = setTimeout(function() {
-            GlobalChartsService.createGlobalTrendsChart();
-        }, 500);
-    });
 }]);

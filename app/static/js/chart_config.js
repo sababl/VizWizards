@@ -1,3 +1,4 @@
+
 // Define the Angular module
 const app = angular.module('myApp', ['ngMaterial', 'ngAria', 'ngAnimate', 'ngMessages']);
 
@@ -9,51 +10,91 @@ app.config(function ($mdThemingProvider) {
 });
 
 // Define the shared FormController
-app.controller('FormController', ['$scope', '$http', '$timeout', '$location', '$anchorScroll', '$mdToast',
-function($scope, $http, $timeout, $location, $anchorScroll, $mdToast) {
-    // Initialize form data
-    $scope.years = [];
-    $scope.regions = [];
-    $scope.formData = {
-        region: '',
-        year: ''
-    };
+app.controller('FormController', [
+    '$scope', '$http', 'GlobalChartsService', 'ErrorChartService', '$timeout', '$location', '$anchorScroll', '$mdToast',
+    function ($scope, $http, GlobalChartsService, ErrorChartService, $timeout, $location, $anchorScroll, $mdToast) {
+        console.log("Unified FormController is running!");
+        // Initialize form data
+        $scope.years = [];
+        $scope.regions = [];
+        $scope.formData = {
+            region: '',
+            year: ''
+        };
+        // Initialize data on controller load
+        function init() {
+            // Fetch available years
+            $http.get('/years')
+                .then(function (response) {
+                    $scope.years = response.data.years;
+                    if ($scope.years.length > 0) {
+                        $scope.formData.year = $scope.years[0];
+                    }
+                    console.log($scope.years);
+                });
 
-    // Fetch available regions
-    $http.get('/regions').then(function(response) {
-        $scope.regions = response.data.regions
-            .toString()
-            .split(',')
-            .map(region => region.trim())
-            .filter(region => region.length > 0);
-    });
+            // Fetch available regions
+            $http.get('/regions')
+                .then(function (response) {
+                    $scope.regions = response.data.regions;
+                    if ($scope.regions.length > 0) {
+                        $scope.formData.region = $scope.regions[0];
+                    }
 
-    // Fetch available years
-    $http.get('/years').then(function(response) {
-        $scope.years = response.data.years
-            .toString()
-            .split(',')
-            .map(year => year.trim())
-            .filter(year => year.length > 0);
-    });
+                    console.log($scope.regions);
+                });
+        }
 
-    // Scroll function for navigation
-    $scope.scrollTo = function(elementId) {
-        $timeout(function() {
-            var element = document.getElementById(elementId);
-            if (element) {
-                element.scrollIntoView({ behavior: 'smooth' });
+        // Call init function when controller loads
+        GlobalChartsService.createGlobalTrendsChart();
+        init();
+        // Scroll function for navigation
+        $scope.scrollTo = function (elementId) {
+            $timeout(function () {
+                var element = document.getElementById(elementId);
+                if (element) {
+                    element.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        };
+
+        // Chart generation functions
+        $scope.generateErroPlot = function () {
+            if ($scope.formData.year && $scope.formData.region) {
+                ErrorChartService.createErrorChart($scope.formData)
+                    .then(function () {
+                        $mdToast.show(
+                            $mdToast.simple()
+                                .textContent('Chart updated successfully')
+                                .position('top right')
+                                .hideDelay(3000)
+                        );
+                    })
+                    .catch(function (error) {
+                        $mdToast.show(
+                            $mdToast.simple()
+                                .textContent('Error updating chart: ' + error.message)
+                                .position('top right')
+                                .hideDelay(3000)
+                        );
+                    });
+            } else {
+                $mdToast.show(
+                    $mdToast.simple()
+                        .textContent('Please select both year and region')
+                        .position('top right')
+                        .hideDelay(3000)
+                );
+            }
+        };
+
+        // Add watchers for automatic chart updates
+        $scope.$watchGroup(['formData.year', 'formData.region'], function (newValues, oldValues) {
+            if (newValues !== oldValues && newValues[0] && newValues[1]) {
+                $scope.generateErroPlot();
             }
         });
-    };
-
-    // Chart generation functions
-    $scope.generateErroPlot = function() {
-        if ($scope.formData.year && $scope.formData.region) {
-            createErrorChart($scope.formData);
-        }
-    };
-}]);
+    }]);
 
 const ChartConfig = {
     // Color palette
@@ -126,17 +167,17 @@ const ChartConfig = {
     // Shared chart functions
     utils: {
         // Responsive sizing
-        getChartDimensions: function(containerId) {
+        getChartDimensions: function (containerId) {
             const container = document.getElementById(containerId);
             if (!container) return null;
 
             const width = container.offsetWidth;
             const height = Math.min(
-                Math.max(width * ChartConfig.dimensions.aspectRatio, 
-                        ChartConfig.dimensions.minHeight),
+                Math.max(width * ChartConfig.dimensions.aspectRatio,
+                    ChartConfig.dimensions.minHeight),
                 ChartConfig.dimensions.maxHeight
             );
-            
+
             return {
                 width: width - ChartConfig.dimensions.margin.left - ChartConfig.dimensions.margin.right,
                 height: height - ChartConfig.dimensions.margin.top - ChartConfig.dimensions.margin.bottom,
@@ -145,14 +186,14 @@ const ChartConfig = {
         },
 
         // Common transitions
-        transition: function() {
+        transition: function () {
             return d3.transition()
                 .duration(ChartConfig.animation.duration)
                 .ease(d3.easeQuadOut);
         },
 
         // Tooltip creation
-        createTooltip: function(containerId) {
+        createTooltip: function (containerId) {
             return d3.select(`#${containerId}`)
                 .append('div')
                 .attr('class', 'tooltip')

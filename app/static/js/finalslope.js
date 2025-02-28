@@ -17,6 +17,7 @@ Promise.all([
 ]).then(([leData, hleData]) => {
     // Filter LE data for years 2015-2021 and Both sexes
     const filteredLE = leData.filter(d => 
+        d.Indicator === "Life expectancy at birth (years)" && 
         d.Dim1 === "Both sexes" && 
         d.Period >= 2015 && 
         d.Period <= 2021
@@ -28,6 +29,7 @@ Promise.all([
 
     // Filter HLE data for years 2015-2021 and Both sexes
     const filteredHLE = hleData.filter(d => 
+        d.Indicator === "Healthy life expectancy (HALE) at birth (years)" && 
         d.Dim1 === "Both sexes" && 
         d.Period >= 2015 && 
         d.Period <= 2021

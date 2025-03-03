@@ -1,9 +1,8 @@
 d3.csv("/static/data/box_life_expectancy_by_region.csv").then(data => {
     data.forEach(d => {
         d.AverageLifeExpectancy = +d.AverageLifeExpectancy;
-    });
-
-    const regionColors = {
+      });
+      const regionColors = {
         "Africa": "#143642",
         "Eastern Mediterranean": "#741C28",
         "Western Pacific": "#877765",
@@ -12,21 +11,35 @@ d3.csv("/static/data/box_life_expectancy_by_region.csv").then(data => {
         "Europe": "#BB8C94"
     };
 
-    const svg = d3.select("svg"),
-        margin = { top: 30, right: 50, bottom: 50, left: 50 },
-        width = +svg.attr("width") - margin.left - margin.right,
-        height = +svg.attr("height") - margin.top - margin.bottom,
-        g = svg.append("g").attr("transform", `translate(${margin.left},${margin.top})`);
-
-    const x = d3.scaleBand()
+      // Get the width of the parent container
+      const container = d3.select("#box-chart").node().parentNode;
+      const containerWidth = container.getBoundingClientRect().width;
+    
+      // You can pick a fixed height or a ratio:
+      const margin = { top: 30, right: 50, bottom: 50, left: 50 };
+      const svgWidth = containerWidth;
+      const svgHeight = 400; // or something dynamic
+    
+      const width = svgWidth - margin.left - margin.right;
+      const height = svgHeight - margin.top - margin.bottom;
+    
+      const svg = d3.select("#box-chart")
+        .attr("width", svgWidth)
+        .attr("height", svgHeight);
+    
+      const g = svg.append("g")
+        .attr("transform", `translate(${margin.left},${margin.top})`);
+    
+      // Define scales
+      const x = d3.scaleBand()
         .domain(data.map(d => d.Region))
         .range([0, width])
         .padding(0.4);
-
-    const y = d3.scaleLinear()
-    .domain([50, d3.max(data, d => d.AverageLifeExpectancy) + 5])
-    .range([height, 0]);
-
+    
+      const y = d3.scaleLinear()
+        .domain([50, d3.max(data, d => d.AverageLifeExpectancy) + 5])
+        .range([height, 0]);
+    
     g.append("g")
         .attr("class", "x-axis")
         .attr("transform", `translate(0,${height})`)

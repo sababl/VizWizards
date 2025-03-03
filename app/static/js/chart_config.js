@@ -10,9 +10,28 @@ app.config(function ($mdThemingProvider) {
 });
 
 // Define the shared FormController
+
 app.controller('FormController', [
-    '$scope', '$http', 'GlobalChartsService', 'ErrorChartService', '$timeout', '$location', '$anchorScroll', '$mdToast',
-    function ($scope, $http, GlobalChartsService, ErrorChartService, $timeout, $location, $anchorScroll, $mdToast) {
+    '$scope',
+    '$http',
+    'GlobalChartsService',
+    'ErrorChartService',
+    '$timeout',
+    '$location',
+    '$anchorScroll',
+    '$mdToast',
+    'SpiderChartService',
+    function (
+        $scope,
+        $http,
+        GlobalChartsService,
+        ErrorChartService,
+        $timeout,
+        $location,
+        $anchorScroll,
+        $mdToast,
+        SpiderChartService
+    ) {
         console.log("Unified FormController is running!");
         // Initialize form data
         $scope.years = [];
@@ -21,6 +40,15 @@ app.controller('FormController', [
             region: '',
             year: ''
         };
+
+        // 2) Spider chart form data
+        $scope.countries = [];
+        $scope.spiderFormData = {
+            selectedCountries: [],
+            sex: '',
+            year: ''
+        };
+
         // Initialize data on controller load
         function init() {
             // Fetch available years
@@ -44,7 +72,19 @@ app.controller('FormController', [
                     console.log($scope.regions);
                 });
         }
-
+        $http.get('/countries')
+            .then(function (response) {
+                $scope.countries = response.data.countries || [];
+                // Provide some default countries if you want automatic chart
+                if ($scope.countries.length >= 2) {
+                    $scope.spiderFormData.selectedCountries = [
+                        $scope.countries[0],
+                        $scope.countries[1]
+                    ];
+                } else if ($scope.countries.length > 0) {
+                    $scope.spiderFormData.selectedCountries = [$scope.countries[0]];
+                }
+            });
         // Call init function when controller loads
         GlobalChartsService.createGlobalTrendsChart();
         init();
@@ -94,6 +134,59 @@ app.controller('FormController', [
                 $scope.generateErroPlot();
             }
         });
+        $scope.generateSpiderPlot = function () {
+            if (
+                !$scope.spiderFormData.sex ||
+                !$scope.spiderFormData.year ||
+                !$scope.spiderFormData.selectedCountries.length
+            ) {
+                // If user hasn't picked all required filters
+                return;
+            }
+
+            if ($scope.spiderFormData.selectedCountries.length > 10) {
+                // Optionally warn about picking too many
+                $mdToast.show(
+                    $mdToast.simple()
+                        .textContent('Please select maximum 10 countries')
+                        .position('top right')
+                        .hideDelay(3000)
+                );
+                return;
+            }
+
+            // Use the radar chart service
+            SpiderChartService.createRadarChart(
+                $scope.spiderFormData.selectedCountries,
+                $scope.spiderFormData.sex,
+                $scope.spiderFormData.year
+            ).catch(function (error) {
+                console.error('Error generating spider plot:', error);
+                $mdToast.show(
+                    $mdToast.simple()
+                        .textContent('Error generating spider plot')
+                        .position('top right')
+                        .hideDelay(3000)
+                );
+            });
+        };
+
+        // 7) Watch for changes in the spider form data
+        //    Each time the user changes sex, year, or selectedCountries, auto-generate the chart.
+        $scope.$watchGroup(
+            [
+                'spiderFormData.sex',
+                'spiderFormData.year',
+                'spiderFormData.selectedCountries'
+            ],
+            function (newVals, oldVals) {
+                if (newVals !== oldVals) {
+                    $scope.generateSpiderPlot();
+                }
+            }
+        );
+
+
     }]);
 
 const ChartConfig = {

@@ -2,69 +2,52 @@
 
 
 {% block extra_styles %}
-<title>Life Expectancy Visualization</title>
 
-<style>
-  body {
-    font-family: Arial, sans-serif;
-  }
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Healthy Life Expectancy at Age 60</title>
+  <script src="https://d3js.org/d3.v6.min.js"></script>
+  <style>
 
-  .axis-label {
-    font-size: 14px;
-  }
+      .axis-label {
+          font-size: 14px;
+          font-weight: bold;
+      }
+      .tooltip {
+          position: absolute;
+          background: lightgray;
+          padding: 5px;
+          border-radius: 5px;
+          visibility: hidden;
+          text-align: center; /* Center tooltip text */
+      }
+      svg {
+          display: block; /* Prevents default inline behavior */
+          margin: 20px auto; /* Centers the SVG */
+      }
+  </style>
+  {% endblock %}
+  {% block content %}
+</head>
+<body>
+  <h2>Average Healthy Life Expectancy at Age 60 (2000-2021)</h2>
+  <label for="year">Select Year:</label>
+  <select id="year"></select>
 
-  .info-box {
-    background-color: #f0f0f0;
-    /* Light gray background */
-    padding: 15px;
-    border-radius: 8px;
-    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
-    max-width: 800px;
-    /* Adjust width */
-    text-align: justify;
-    /* Justify the paragraph text */
-    margin: 20px auto;
-    /* Center the frame horizontally */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
+  <div class="content-wrapper">
+    <div class="text-box">
+        <p>
+          This bar chart represents average healthy life expectancy at age 60 across different regions over time. The
+          consistent height of the bars indicates that life expectancy beyond 60 has remained relatively stable, with
+          variations among regions. Europe and the Americas have the highest life expectancy, while Africa shows the
+          lowest. This visualization highlights longevity trends and aging populations in different global regions.
+    </div>
+  <svg width="900" height="600"></svg>
+  <div class="tooltip"></div>
 
-  .content-wrapper {
-    width: 100%;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .chart-container {
-    width: 100%;
-    max-width: 1500px;
-    overflow-x: auto;
-    margin: 20px auto;
-  }
-
-  .info-box {
-    max-width: 800px;
-    margin: 20px auto;
-  }
-</style>
-{% endblock %}
-{% block content %}
-<div class="content-wrapper">
-  <h1>Healthy Life Expectancy at Age 60 by Region (2000-2021)</h1>
-
-  <div class="info-box">
-    <p>
-      This stacked bar chart represents average healthy life expectancy at age 60 across different regions over time. The
-      consistent height of the bars indicates that life expectancy beyond 60 has remained relatively stable, with
-      variations among regions. Europe and the Americas have the highest life expectancy, while Africa shows the
-      lowest. This visualization highlights longevity trends and aging populations in different global regions.
-    </p>
-  </div>
-  <div class="chart-container"></div>
-</div>
-
+  
 <script src="/static/js/finalstackedbar.js"></script>
+</body>
+</html>
 {% endblock %}

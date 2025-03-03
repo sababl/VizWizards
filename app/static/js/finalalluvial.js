@@ -1,124 +1,147 @@
-// Set dimensions for the chart to ensure full visibility at 100% zoom
-const margin = {top: 20, right: 50, bottom: 50, left: 60};
+// ✅ Set dimensions for the chart to ensure full visibility at 100% zoom
+const margin = {top: 20, right: 80, bottom: 50, left: 150};
 const width = Math.min(1100, window.innerWidth - margin.left - margin.right);
 const height = Math.min(600, window.innerHeight - margin.top - margin.bottom);
 
-const svg = d3.select("#alluvial-chart")
+const svg = d3.select("#bullet-chart")
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
     .append("g")
     .attr("transform", `translate(${margin.left},${margin.top})`);
 
-// ✅ Load data from JSON file
-d3.json("../static/data/life_expectancy.json").then(function(data) {
+// ✅ Load data from CSV files
+Promise.all([
+    d3.csv("../static/data/le.csv"),
+    d3.csv("../static/data/hle.csv")
+]).then(([leData, hleData]) => {
     
-    console.log("✅ Data Loaded Successfully:", data);
+    console.log("✅ Data Loaded Successfully:", leData, hleData);
 
-    if (!data || data.length === 0) {
+    if (!leData.length || !hleData.length) {
         throw new Error("❌ Data is empty!");
     }
 
-    // ✅ Filter data to get highest and lowest Life Expectancy per continent
-    let filteredData = [];
-    let continents = Array.from(new Set(data.map(d => d.ParentLocation)));
+    // ✅ Filter data to include only 2021 data
+    const filteredLE = leData.filter(d => +d.Period === 2021).map(d => ({
+        Location: d.Location,
+        LifeExpectancy: +d.FactValueNumeric
+    }));
 
-    continents.forEach(continent => {
-        let continentData = data.filter(d => d.ParentLocation === continent);
-        let highestLE = continentData.reduce((prev, curr) => (curr.LifeExpectancy > prev.LifeExpectancy ? curr : prev), continentData[0]);
-        let lowestLE = continentData.reduce((prev, curr) => (curr.LifeExpectancy < prev.LifeExpectancy ? curr : prev), continentData[0]);
-        filteredData.push(highestLE, lowestLE);
+    const filteredHLE = hleData.filter(d => +d.Period === 2021).map(d => ({
+        Location: d.Location,
+        HealthyLifeExpectancy: +d.FactValueNumeric
+    }));
+
+    // ✅ Merge Life Expectancy & Healthy Life Expectancy Data
+    let mergedData = filteredLE.map(le => {
+        let hle = filteredHLE.find(h => h.Location === le.Location);
+        return {
+            Location: le.Location,
+            LifeExpectancy: le.LifeExpectancy,
+            HealthyLifeExpectancy: hle ? hle.HealthyLifeExpectancy : 0,
+            UnhealthyYears: le.LifeExpectancy - (hle ? hle.HealthyLifeExpectancy : 0)
+        };
     });
 
-    console.log("✅ Filtered Data:", filteredData);
+    // ✅ Sort by Life Expectancy for better visualization
+    mergedData.sort((a, b) => b.LifeExpectancy - a.LifeExpectancy);
 
-    // ✅ Extract all unique countries
-    let nodes = [];
-    let links = [];
-    let nodeMap = {};
+    console.log("✅ Filtered & Merged Data:", mergedData);
 
-    // Define color scale for different countries
-    const colorScale = d3.scaleOrdinal(d3.schemeCategory10);
+    // ✅ Define Scales
+    const xScale = d3.scaleLinear()
+        .domain([0, d3.max(mergedData, d => d.LifeExpectancy) + 5])
+        .range([0, width]);
 
-    filteredData.forEach((d, i) => {
-        let countryNode = { name: d.Location, color: colorScale(i) };
-        let lifeExpNode = { name: "LE(years)", color: "#bcbd22" };
-        let healthyExpNode = { name: "HLE(years)", color: "#17becf" };
+    const yScale = d3.scaleBand()
+        .domain(mergedData.map(d => d.Location))
+        .range([0, height])
+        .padding(0.4);
 
-        if (!nodeMap[d.Location]) {
-            nodeMap[d.Location] = nodes.length;
-            nodes.push(countryNode);
-        }
-        if (!nodeMap["LE(years)"]) {
-            nodeMap["LE(years)"] = nodes.length;
-            nodes.push(lifeExpNode);
-        }
-        if (!nodeMap["HLE(years)"]) {
-            nodeMap["HLE(years)"] = nodes.length;
-            nodes.push(healthyExpNode);
-        }
+    // ✅ Draw Bars (Total Life Expectancy)
+    svg.selectAll(".le-bar")
+        .data(mergedData)
+        .enter()
+        .append("rect")
+        .attr("class", "le-bar")
+        .attr("x", 0)
+        .attr("y", d => yScale(d.Location))
+        .attr("width", d => xScale(d.LifeExpectancy))
+        .attr("height", yScale.bandwidth())
+        .attr("fill", "gray");  // Total Life Expectancy
 
-        links.push({
-            source: nodeMap[d.Location],
-            target: nodeMap["LE(years)"],
-            value: d.LifeExpectancy
-        });
+    // ✅ Draw Bars (Healthy Life Expectancy)
+    svg.selectAll(".hle-bar")
+        .data(mergedData)
+        .enter()
+        .append("rect")
+        .attr("class", "hle-bar")
+        .attr("x", 0)
+        .attr("y", d => yScale(d.Location) + yScale.bandwidth() * 0.2)
+        .attr("width", d => xScale(d.HealthyLifeExpectancy))
+        .attr("height", yScale.bandwidth() * 0.6)
+        .attr("fill", "green");  // Healthy Life Expectancy
 
-        links.push({
-            source: nodeMap["LE(years)"],
-            target: nodeMap["HLE(years)"],
-            value: d.HealthyLifeExpectancy
-        });
-    });
+    // ✅ Draw Bars (Unhealthy Years)
+    svg.selectAll(".unhealthy-bar")
+        .data(mergedData)
+        .enter()
+        .append("rect")
+        .attr("class", "unhealthy-bar")
+        .attr("x", d => xScale(d.HealthyLifeExpectancy))
+        .attr("y", d => yScale(d.Location) + yScale.bandwidth() * 0.2)
+        .attr("width", d => xScale(d.UnhealthyYears))
+        .attr("height", yScale.bandwidth() * 0.6)
+        .attr("fill", "red");  // Unhealthy Years
 
-    console.log("✅ Nodes:", nodes);
-    console.log("✅ Links:", links);
-
-    // ✅ Initialize Sankey Layout
-    const sankey = d3.sankey()
-        .nodeWidth(30)
-        .nodePadding(15)
-        .size([width * 0.65, height * 0.65]);
-
-    const graph = sankey({ nodes: nodes.map(d => Object.assign({}, d)), links: links });
-
-    console.log("✅ Graph Generated:", graph);
-
-    // ✅ Draw Links (Flows)
+    // ✅ Add Y-axis
     svg.append("g")
-        .selectAll(".link")
-        .data(graph.links)
-        .enter().append("path")
-        .attr("d", d3.sankeyLinkHorizontal())
-        .style("stroke-width", d => Math.max(1, d.width))
-        .style("fill", "none")
-        .style("stroke", "rgba(150, 150, 150, 0.5)")
-        .style("opacity", 0.6);
+        .call(d3.axisLeft(yScale));
 
-    console.log("✅ Links drawn.");
+    // ✅ Add X-axis
+    svg.append("g")
+        .attr("transform", `translate(0, ${height})`)
+        .call(d3.axisBottom(xScale));
 
-    // ✅ Draw Nodes
-    const node = svg.append("g")
-        .selectAll(".node")
-        .data(graph.nodes)
-        .enter().append("g");
+    // ✅ Add Title
+    svg.append("text")
+        .attr("x", width / 2)
+        .attr("y", -10)
+        .attr("text-anchor", "middle")
+        .style("font-size", "18px")
+        .text("Life Expectancy vs. Healthy Life Expectancy (2021)");
 
-    node.append("rect")
-        .attr("x", d => d.x0)
-        .attr("y", d => d.y0)
-        .attr("height", d => d.y1 - d.y0)
-        .attr("width", d => d.x1 - d.x0)
+    // ✅ Add Legend
+    const legend = svg.append("g")
+        .attr("transform", `translate(${width - 150}, 20)`);
+
+    const legendItems = [
+        { color: "gray", label: "Total Life Expectancy" },
+        { color: "green", label: "Healthy Life Expectancy" },
+        { color: "red", label: "Unhealthy Years" }
+    ];
+
+    legend.selectAll(".legend-rect")
+        .data(legendItems)
+        .enter()
+        .append("rect")
+        .attr("x", 0)
+        .attr("y", (d, i) => i * 20)
+        .attr("width", 15)
+        .attr("height", 15)
         .attr("fill", d => d.color);
 
-    node.append("text")
-        .attr("x", d => d.x1 + 10)
-        .attr("y", d => (d.y1 + d.y0) / 2)
-        .attr("dy", "0.35em")
-        .attr("text-anchor", "start")
-        .text(d => d.name)
-        .style("font-size", "10px")
-        .style("font-weight", "bold");
+    legend.selectAll(".legend-text")
+        .data(legendItems)
+        .enter()
+        .append("text")
+        .attr("x", 20)
+        .attr("y", (d, i) => i * 20 + 12)
+        .style("font-size", "12px")
+        .text(d => d.label);
 
-    console.log("✅ Alluvial plot should be visible now.");
+    console.log("✅ Bullet Chart rendered successfully!");
+
 }).catch(error => {
     console.error("❌ Error loading the data:", error);
 });

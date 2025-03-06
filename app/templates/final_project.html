@@ -17,6 +17,7 @@
 
   <!-- D3.js -->
   <script src="https://d3js.org/d3.v7.min.js"></script>
+  <script src="https://d3js.org/topojson.v3.min.js"></script>
 
   <!-- Custom CSS -->
   <link rel="stylesheet" href="/static/css/final_project.css">
@@ -90,6 +91,26 @@
             <p class="chart-subtitle">Analysis of worldwide life expectancy trends from 1950 to 2020</p>
             <div id="globalTrendsChart" class="chart-placeholder">Chart loading...</div>
           </div>
+          <!-- New Bubble Map -->
+          <div class="chart-container">
+            <div class="chart-header">
+              <h3 class="chart-title">Global Life Expectancy Distribution</h3>
+            </div>
+            <p class="chart-subtitle">Geographic distribution of life expectancy across countries (2021)</p>
+            <div class="info-box">
+              <p>
+                This bubble map visualizes life expectancy across different countries. The size of each bubble
+                represents
+                the population of the country, while the color indicates life expectancy. Larger bubbles correspond to
+                more populous countries, and darker colors represent higher life expectancy.
+              </p>
+            </div>
+            <div id="map-container" class="chart-placeholder">
+              <svg id="bubble-map"></svg>
+            </div>
+            <div id="tooltip" class="tooltip"></div>
+          </div>
+          <script src="/static/js/finalbubble.js"></script>
         </md-card-content>
       </md-card>
     </section>

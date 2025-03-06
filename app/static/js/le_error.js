@@ -1,5 +1,3 @@
-
-
 angular.module('myApp').service('ErrorChartService', ['$http', '$q', function($http, $q) {
     this.createErrorChart = function(formData) {
         const deferred = $q.defer();

@@ -28,7 +28,10 @@
   <script src="/static/js/finalbox.js"></script>
   <script src="/static/js/le_spider.js"></script>
   <script src="/static/js/finalscatter.js"></script>
-
+  <script src="/static/js/finalstackedbar.js"></script>
+  <script src="/static/js/finalline.js"></script>
+  <script src="/static/js/le_bubble.js"></script>
+  <!-- <script src="/static/js/finalchoropleth.js"></script> -->
 </head>
 
 <body ng-controller="FormController" layout="column">
@@ -203,7 +206,90 @@
             <input type="range" id="year-slider" min="2000" max="2021" value="2000" step="1">
             <span id="year-display">2000</span>
           </div>
-          <div id="scatter-chart"class="chart-container"></div>
+          <div id="scatter-chart" class="chart-container"></div>
+
+          <div class="filters">
+            <label for="year">Select Year:</label>
+            <select id="year"></select>
+          </div>
+
+          <!-- The SVG where bars will be drawn -->
+          <svg width="900" height="600" id="bar-chart"></svg>
+
+          <!-- Tooltip (hidden by default) -->
+          <div class="tooltip" style="position: absolute; visibility: hidden;"></div>
+
+          <div id="heatmap" class="chart-container">
+            <div class="chart-header">
+              <h3 class="chart-title">Women's Life Expectancy Heatmap</h3>
+            </div>
+            <p class="chart-subtitle">Visualization of women's life expectancy at age 60 across continents</p>
+            <div class="info-box">
+              <p>
+                This heatmap shows women's life expectancy at age 60 across different continents.
+                Darker colors indicate higher life expectancy, while lighter colors represent lower values.
+              </p>
+            </div>
+            <div id="heatmap-container" class="chart-placeholder"></div>
+          </div>
+          <script src="/static/js/finalheatmap.js"></script>
+
+          <div class="chart-container">
+            <h2 style="text-align: center;">Female Life Expectancy At Age 60 (2000–2021)</h2>
+            <div class="select-container">
+              <label for="country-select">Select Country:</label>
+              <select id="country-select"></select>
+            </div>
+            <div id="tooltip" class="tooltip"></div>
+            <svg id="line-chart" width="800" height="500"></svg>
+          </div>
+
+          <div class="chart-container">
+            <div class="chart-header">
+              <h3 class="chart-title">Global Sex Ratio Distribution</h3>
+            </div>
+            <p class="chart-subtitle">Geographic distribution of life expectancy sex ratios across countries</p>
+            <div class="info-box">
+              <p>
+                This choropleth map displays the sex ratio of life expectancy across different countries.
+                Darker colors indicate higher ratios (where female life expectancy is higher relative to male),
+                while lighter colors represent lower ratios. Use the year selector to explore changes over time.
+              </p>
+            </div>
+
+            <!-- The year selector used by finalchoropleth.js -->
+            <div class="filters">
+              <label for="yearSelector">Select Year:</label>
+              <select id="yearSelector" class="filter-select"></select>
+            </div>
+
+            <div class="map-container">
+              <div id="map"></div>
+              <div id="legend" class="legend"></div>
+            </div>
+            <div class="chart-container">
+              <div class="chart-header">
+                <h3 class="chart-title">Global Gender Gap in Life Expectancy</h3>
+                <div class="filters">
+                  <md-select class="filter-select" ng-model="beeswarmData.year" placeholder="Select Year"
+                    aria-label="Year">
+                    <md-option ng-repeat="year in years" ng-value="year">{{year}}</md-option>
+                  </md-select>
+                </div>
+              </div>
+              <p class="chart-subtitle">Comparing male and female life expectancy across countries</p>
+              <div class="info-box">
+                <p>
+                  This bubble chart reveals how men's and women's lifespans differ across regions.
+                  Each circle represents a country, color-coded by continent and sized by population.
+                  The horizontal axis shows female life expectancy while the vertical axis shows male life expectancy.
+                </p>
+              </div>
+              <div id="chart-beeswarm" class="chart-placeholder"></div>
+            </div>
+
+          </div>
+
         </md-card-content>
       </md-card>
     </section>
@@ -257,6 +343,7 @@
       </md-card>
     </section>
   </md-content>
+  <script src="/static/js/finalchoropleth.js"></script>
 </body>
 
 </html>

@@ -1,31 +1,25 @@
-var app = angular.module('myApp', ['ngMaterial']);
+angular.module('myApp').service('BubbleChartService', ['$http', function($http) {
 
-const PARENT_LOCATION_COLORS = {
-  "Africa": "#143642",
-  "Eastern Mediterranean": "#741C28",
-  "Western Pacific": "#877765",
-  "Americas": "#E7DECD",
-  "South-East Asia": "#A1A8BE",
-  "Europe": "#BB8C94"
-};
-
-app.controller('FormController', ['$scope', '$http', '$mdToast', function ($scope, $http, $mdToast) {
-
-  $scope.years = Array.from({ length: 22 }, (_, i) => i + 2000);
-  $scope.formData = {
-    year: 2015 // default year
+  const PARENT_LOCATION_COLORS = {
+    "Africa": "#143642",
+    "Eastern Mediterranean": "#741C28",
+    "Western Pacific": "#877765",
+    "Americas": "#E7DECD",
+    "South-East Asia": "#A1A8BE",
+    "Europe": "#BB8C94"
   };
-  $scope.generateBeeswarmChart = function () {
-    // Clear existing chart
+
+  this.createBubbleChart = function(year) {
     d3.select("#chart-beeswarm").selectAll("*").remove();
 
     // Call chart generation with selected year
-    generateBeeswarmChart(
+    return generateBeeswarmChart(
       '/static/data/le.csv',
       '/static/data/population.csv',
-      $scope.formData.year
+      year
     );
   };
+
   function generateBeeswarmChart(lifeExpCsvPath, populationCsvPath, year) {
     // Load both CSV files concurrently.
     Promise.all([
@@ -315,5 +309,4 @@ app.controller('FormController', ['$scope', '$http', '$mdToast', function ($scop
       console.error("Error loading data:", error);
     });
   }
-
 }]);

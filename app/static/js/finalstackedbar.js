@@ -3,7 +3,7 @@ d3.csv("/static/data/bar-hle_avg_filtered.csv").then(function(data) {
       width = 900 - margin.left - margin.right,
       height = 600 - margin.top - margin.bottom;
 
-  const svg = d3.select("svg")
+  const svg = d3.select("#bar-chart")
       .append("g")
       .attr("transform", `translate(${margin.left},${margin.top})`);
 
@@ -31,11 +31,11 @@ d3.csv("/static/data/bar-hle_avg_filtered.csv").then(function(data) {
       .attr("transform", `translate(0,${height})`);
   const yAxis = svg.append("g");
   svg.append("text")
-  .attr("x", -height / 2)  // Rotate to vertical
-  .attr("y", -60) // Adjust position as needed
-  .attr("transform", "rotate(-90)") // Rotate text
+  .attr("x", -height / 2)  
+  .attr("y", -60) 
+  .attr("transform", "rotate(-90)") 
   .attr("text-anchor", "middle")
-  .attr("class", "axis-label") // Apply your axis label style
+  .attr("class", "axis-label") 
   .text("Years");
 
   const colorScale = d3.scaleOrdinal()
@@ -60,7 +60,7 @@ d3.csv("/static/data/bar-hle_avg_filtered.csv").then(function(data) {
       const bars = svg.selectAll(".bar")
                   .data(filteredData, d => d.ParentLocation);
 
-              // Enter selection (for new bars)
+            
               bars.enter().append("rect")
                   .attr("class", "bar")
                   .attr("x", d => x(d.ParentLocation))
@@ -68,7 +68,6 @@ d3.csv("/static/data/bar-hle_avg_filtered.csv").then(function(data) {
                   .attr("width", x.bandwidth())
                   .attr("height", d => height - y(d.FactValueNumeric))
                   .attr("fill", d => colorScale(d.ParentLocation))
-                  // *** Attach event listeners HERE ***
                   .on("mouseover", (event, d) => {
                       tooltip.style("visibility", "visible")
                           .html(`${d.ParentLocation}<br>Value: ${d.FactValueNumeric.toFixed(2)}`)

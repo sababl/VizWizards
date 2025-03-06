@@ -1,4 +1,3 @@
-
 // Define the Angular module
 const app = angular.module('myApp', ['ngMaterial', 'ngAria', 'ngAnimate', 'ngMessages']);
 
@@ -21,6 +20,7 @@ app.controller('FormController', [
     '$anchorScroll',
     '$mdToast',
     'SpiderChartService',
+    'BubbleChartService', // Add this
     function (
         $scope,
         $http,
@@ -30,7 +30,8 @@ app.controller('FormController', [
         $location,
         $anchorScroll,
         $mdToast,
-        SpiderChartService
+        SpiderChartService,
+        BubbleChartService  // Add this
     ) {
         console.log("Unified FormController is running!");
         // Initialize form data
@@ -47,6 +48,11 @@ app.controller('FormController', [
             selectedCountries: [],
             sex: '',
             year: ''
+        };
+
+        // Add bubble chart specific data
+        $scope.beeswarmData = {
+            year: 2015 // default year
         };
 
         // Initialize data on controller load
@@ -186,6 +192,17 @@ app.controller('FormController', [
             }
         );
 
+        // Add bubble chart generation function
+        $scope.generateBubbleChart = function() {
+            BubbleChartService.createBubbleChart($scope.beeswarmData.year);
+        };
+
+        // Watch for changes in beeswarm year
+        $scope.$watch('beeswarmData.year', function(newYear) {
+            if (newYear) {
+                $scope.generateBubbleChart();
+            }
+        });
 
     }]);
 

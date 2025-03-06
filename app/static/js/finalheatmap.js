@@ -1,29 +1,30 @@
 // Set up dimensions for the heatmap
-const margin = { top: 50, right: 50, bottom: 100, left: 120 };
-const width = 800 - margin.left - margin.right;
-const height = 500 - margin.top - margin.bottom;
+const h_margin = { top: 50, right: 50, bottom: 100, left: 120 };
+const h_width = 800 - h_margin.left - h_margin.right;
+const h_height = 500 - h_margin.top - h_margin.bottom;
 
-const svg = d3.select("#heatmap")
-    .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom)
-  .append("g")
-    .attr("transform", `translate(${margin.left}, ${margin.top})`);
-
+const h_svg = d3.select("#heatmap-container")
+    .append("svg")
+    .attr("width", h_width + h_margin.left + h_margin.right)
+    .attr("height", h_height + h_margin.top + h_margin.bottom)
+    .append("g")
+    .attr("transform", `translate(${h_margin.left}, ${h_margin.top})`);
+    
 // Create a tooltip div that is hidden by default:
 const tooltip = d3.select("body")
     .append("div")
     .attr("class", "tooltip")
     .style("opacity", 0);
 
-d3.csv("../static/data/le.csv").then(function(data) {
+d3.csv("/static/data/le.csv").then(function (data) {
     // Log unique status values
-    console.log("Available status values:", 
+    console.log("Available status values:",
         [...new Set(data.map(d => d.Indicator))]
     );
 
     // Filter data for life expectancy at age 60 for Females
-    let filteredData = data.filter(d => 
-        d.Indicator === "Life expectancy at age 60 (years)" && 
+    let filteredData = data.filter(d =>
+        d.Indicator === "Life expectancy at age 60 (years)" &&
         d.Dim1 === "Female"
     );
 
@@ -45,13 +46,13 @@ d3.csv("../static/data/le.csv").then(function(data) {
 
     // Group data by continent and year, then compute the average life expectancy
     const averageData = Array.from(
-      d3.group(processedData, d => d.continent, d => d.year),
-      ([continent, yearMap]) => {
-          return Array.from(yearMap, ([year, values]) => {
-              const avgLE = d3.mean(values, d => d.lifeExpectancy);
-              return { continent, year, avgLE };
-          });
-      }
+        d3.group(processedData, d => d.continent, d => d.year),
+        ([continent, yearMap]) => {
+            return Array.from(yearMap, ([year, values]) => {
+                const avgLE = d3.mean(values, d => d.lifeExpectancy);
+                return { continent, year, avgLE };
+            });
+        }
     ).flat();
 
     console.log("Average Data:", averageData);
@@ -63,12 +64,12 @@ d3.csv("../static/data/le.csv").then(function(data) {
     // Define scales using averageData
     const xScale = d3.scaleBand()
         .domain(years)
-        .range([0, width])
+        .range([0, h_width])
         .padding(0.1);
 
     const yScale = d3.scaleBand()
         .domain(continents)
-        .range([0, height])
+        .range([0, h_height])
         .padding(0.1);
 
     // Get the original extent of average life expectancy
@@ -81,8 +82,8 @@ d3.csv("../static/data/le.csv").then(function(data) {
         .domain(extendedDomain);
 
     // Draw axes
-    svg.append("g")
-        .attr("transform", `translate(0, ${height})`)
+    h_svg.append("g")
+        .attr("transform", `translate(0, ${h_height})`)
         .call(d3.axisBottom(xScale).tickSize(0))
         .selectAll("text")
         .style("text-anchor", "end")
@@ -90,35 +91,35 @@ d3.csv("../static/data/le.csv").then(function(data) {
         .attr("dy", "-0.5em")
         .attr("transform", "rotate(-45)");
 
-    svg.append("g")
+    h_svg.append("g")
         .call(d3.axisLeft(yScale).tickSize(0));
 
     // Add axis labels
-    svg.append("text")
+    h_svg.append("text")
         .attr("class", "axis-label")
         .attr("text-anchor", "middle")
-        .attr("x", width / 1.3)
-        .attr("y", height + margin.bottom + 20)
+        .attr("x", h_width / 1.3)
+        .attr("y", h_height + h_margin.bottom + 20)
         .text("Years");
 
-    svg.append("text")
+    h_svg.append("text")
         .attr("class", "axis-label")
         .attr("text-anchor", "middle")
-        .attr("x", width / 1)
-        .attr("y", height + margin.bottom - 79)
+        .attr("x", h_width / 1)
+        .attr("y", h_height + h_margin.bottom - 79)
         .text("Years");
 
-    svg.append("text")  
+    h_svg.append("text")
         .attr("class", "axis-label")
-        
+
         .attr("text-anchor", "middle")
         .attr("transform", "rotate(-90)")
-        .attr("x", -height / 2)
-        .attr("y", -margin.left + 30)
+        .attr("x", -h_height / 2)
+        .attr("y", -h_margin.left + 30)
         .text("Continents");
 
     // Draw heatmap rectangles using averageData
-    svg.selectAll("rect")
+    h_svg.selectAll("rect")
         .data(averageData)
         .enter()
         .append("rect")
@@ -127,17 +128,17 @@ d3.csv("../static/data/le.csv").then(function(data) {
         .attr("width", xScale.bandwidth())
         .attr("height", yScale.bandwidth())
         .attr("fill", d => colorScale(d.avgLE))
-        .on("mouseover", function(event, d) {
+        .on("mouseover", function (event, d) {
             tooltip.transition().duration(200).style("opacity", 0.9);
             tooltip.html("Avg LE: " + d.avgLE.toFixed(2))
                 .style("left", (event.pageX) + "px")
                 .style("top", (event.pageY - 28) + "px");
         })
-        .on("mousemove", function(event) {
+        .on("mousemove", function (event) {
             tooltip.style("left", (event.pageX) + "px")
-                   .style("top", (event.pageY - 28) + "px");
+                .style("top", (event.pageY - 28) + "px");
         })
-        .on("mouseout", function() {
+        .on("mouseout", function () {
             tooltip.transition().duration(500).style("opacity", 0);
         });
 
@@ -145,8 +146,8 @@ d3.csv("../static/data/le.csv").then(function(data) {
     const legendWidth = 500;
     const legendHeight = 20;
 
-    const legendSvg = svg.append("g")
-        .attr("transform", `translate(${width / 3.5 - 100}, ${height + 50})`);
+    const legendSvg = h_svg.append("g")
+        .attr("transform", `translate(${h_width / 3.5 - 100}, ${h_height + 50})`);
 
     const legendScale = d3.scaleLinear()
         .domain(extendedDomain)
@@ -181,6 +182,6 @@ d3.csv("../static/data/le.csv").then(function(data) {
         .attr("height", legendHeight)
         .style("fill", "url(#legend-gradient)");
 
-}).catch(function(error) {
+}).catch(function (error) {
     console.error("Error loading or processing data:", error);
 });

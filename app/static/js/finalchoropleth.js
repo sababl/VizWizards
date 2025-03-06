@@ -1,7 +1,13 @@
-const width = 1440, height = 600;
-const svg = d3.select("#map").append("svg")
-    .attr("width", width)
-    .attr("height", height);
+document.addEventListener('DOMContentLoaded', () => {
+
+const container = d3.select("#map");
+const width = container.node().getBoundingClientRect().width;
+const height = Math.min(600, width * 0.6);
+
+const svg = container
+    .append("svg")
+    .attr("viewBox", `0 0 ${width} ${height}`)
+    .attr("preserveAspectRatio", "xMidYMid meet");
 
 const projection = d3.geoNaturalEarth1()
     .scale(225)
@@ -11,12 +17,12 @@ const path = d3.geoPath().projection(projection);
 
 // Define color scale
 const colorScale = d3.scaleSequential(d3.interpolatePurples)
-    .domain([0.5, 1.5]); // Adjust range as needed
+    .domain([0.5, 1.5]);
 
 // Load data
 Promise.all([
     d3.json("https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/world.geojson"),
-    d3.csv("/static/data/Updated_Country_Names_in_Data.csv") // Ensure this file is hosted properly
+    d3.csv("/static/data/Updated_Country_Names_in_Data.csv")
 ]).then(([geoData, csvData]) => {
     let dataByYear = {};
     let years = new Set();
@@ -28,6 +34,7 @@ Promise.all([
         dataByYear[d.Period][d.Location] = +d.SexRatio;
         years.add(d.Period);
     });
+    console.log('Processed data by year:', dataByYear);
 
     // Populate year selector
     const yearSelector = d3.select("#yearSelector");
@@ -35,7 +42,7 @@ Promise.all([
         yearSelector.append("option").attr("value", year).text(year);
     });
 
-    yearSelector.on("change", function() {
+    yearSelector.on("change", function () {
         updateMap(this.value);
     });
 
@@ -59,7 +66,7 @@ Promise.all([
 
     // Initialize with the first available year
     updateMap(yearSelector.property("value"));
-    
+
     // Add legend
     const legend = d3.select("#legend");
     legend.append("div").attr("class", "no-data")
@@ -72,7 +79,7 @@ Promise.all([
         .attr("x2", "100%")
         .attr("y1", "0%")
         .attr("y2", "0%");
-    
+
     legendGradient.selectAll("stop")
         .data([
             { offset: "0%", color: colorScale(0.5) },
@@ -81,14 +88,15 @@ Promise.all([
         .enter().append("stop")
         .attr("offset", d => d.offset)
         .attr("stop-color", d => d.color);
-    
+
     legendSvg.append("rect")
         .attr("x", 0)
         .attr("y", 5)
         .attr("width", 150)
         .attr("height", 10)
         .style("fill", "url(#legendGradient)");
-    
+
     legendSvg.append("text").attr("x", 0).attr("y", 25).text("0.5");
     legendSvg.append("text").attr("x", 140).attr("y", 25).text("1.5");
+});
 });

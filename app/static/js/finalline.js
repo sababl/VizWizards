@@ -13,7 +13,7 @@ d3.csv("/static/data/finalline_females_life_expectancy.csv").then(function(data)
         .text(d => d)
         .attr("value", d => d);
 
-    let svg = d3.select("svg"),
+    let svg = d3.select("#line-chart"),
         margin = {top: 50, right: 50, bottom: 50, left: 50},
         width = +svg.attr("width") - margin.left - margin.right,
         height = +svg.attr("height") - margin.top - margin.bottom,

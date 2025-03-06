@@ -114,7 +114,7 @@ document.addEventListener("DOMContentLoaded", function () {
           "transform",
           `translate(${width - legendWidth - 50}, ${height - 50})`
         );
-      console.log(minEmission, maxEmission);
+      // console.log(minEmission, maxEmission);
       const legendScale = d3
         .scaleLinear()
         .domain([minEmission / 1000000000, maxEmission/ 1000000000]) // Use dynamic domain from data

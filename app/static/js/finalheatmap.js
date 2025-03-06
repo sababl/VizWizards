@@ -18,9 +18,9 @@ const tooltip = d3.select("body")
 
 d3.csv("/static/data/le.csv").then(function (data) {
     // Log unique status values
-    console.log("Available status values:",
-        [...new Set(data.map(d => d.Indicator))]
-    );
+    // console.log("Available status values:",
+    //     [...new Set(data.map(d => d.Indicator))]
+    // );
 
     // Filter data for life expectancy at age 60 for Females
     let filteredData = data.filter(d =>
@@ -28,8 +28,8 @@ d3.csv("/static/data/le.csv").then(function (data) {
         d.Dim1 === "Female"
     );
 
-    console.log("Filtered data length:", filteredData.length);
-    console.log("Sample filtered record:", filteredData[0]);
+    // console.log("Filtered data length:", filteredData.length);
+    // console.log("Sample filtered record:", filteredData[0]);
 
     if (filteredData.length === 0) {
         console.error("No data found after filtering!");
@@ -42,7 +42,7 @@ d3.csv("/static/data/le.csv").then(function (data) {
         year: d.Period,
         lifeExpectancy: +d.FactValueNumeric
     })).filter(d => !isNaN(d.lifeExpectancy));
-    console.log("Sample record:", filteredData[0]);
+    // console.log("Sample record:", filteredData[0]);
 
     // Group data by continent and year, then compute the average life expectancy
     const averageData = Array.from(
@@ -55,7 +55,7 @@ d3.csv("/static/data/le.csv").then(function (data) {
         }
     ).flat();
 
-    console.log("Average Data:", averageData);
+    // console.log("Average Data:", averageData);
 
     // Extract unique continents and years from the aggregated data
     const continents = Array.from(new Set(averageData.map(d => d.continent)));

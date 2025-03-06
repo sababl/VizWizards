@@ -69,7 +69,7 @@ app.controller('FormController', ['$scope', '$http', '$mdToast', function ($scop
             countryName = countryName.trim().toLowerCase();
             // Filter the combined data to only include rows for the selected country.
             const filteredData = combinedData.filter(d => d.Location === countryName);
-            console.log(countryName);
+            // console.log(countryName);
             if (filteredData.length === 0) {
                 alert("No data found for country: " + countryName);
                 return;

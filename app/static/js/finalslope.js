@@ -1,14 +1,16 @@
-const margin = { top: 60, right: 220, bottom: 60, left: 80 }; // Increased right margin for legend
-const width = 900 - margin.left - margin.right; // Smaller width
-const height = 550 - margin.top - margin.bottom; // Smaller height
+const s_margin = { top: 60, right: 220, bottom: 60, left: 80 }; // Increased right s_margin for legend
+const s_width = 900 - s_margin.left - s_margin.right; // Smaller width
+const s_height = 550 - s_margin.top - s_margin.bottom; // Smaller height
 
-const svg = d3.select("#slope-chart")
-    .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom)
+const s_svg = d3.select("#slope-chart")
+    .append("svg")
+    .attr("width", s_width + s_margin.left + s_margin.right)
+    .attr("height", s_height + s_margin.top + s_margin.bottom)
     .append("g")
-    .attr("transform", `translate(${margin.left},${margin.top})`);
+    .attr("transform", `translate(${s_margin.left},${s_margin.top})`);
 
 let data;
+let initializeChart = true;
 
 // Modify the data loading section to use both CSVs
 Promise.all([
@@ -61,14 +63,14 @@ Promise.all([
     });
 
     // Debugging logs
-    console.log("Filtered LE Data:", filteredLE);
-    console.log("Filtered HLE Data:", filteredHLE);
-    console.log("Merged Data:", data);
+    // console.log("Filtered LE Data:", filteredLE);
+    // console.log("Filtered HLE Data:", filteredHLE);
+    // console.log("Merged Data:", data);
 
     // Check specific countries for debugging
     const testCountries = ["Italy", "USA", "Germany"];
     testCountries.forEach(country => {
-        console.log(`Data for ${country}:`, data.filter(d => d.Location === country));
+        // console.log(`Data for ${country}:`, data.filter(d => d.Location === country));
     });
 
     const uniqueCountries = [...new Set(data.map(d => d.Location))].sort();
@@ -92,14 +94,34 @@ Promise.all([
         .append("option")
         .text(d => d)
         .attr("value", d => d);
+
+    // Add event listeners for the country dropdowns
+    country1Dropdown.on("change", function() {
+        const country1 = d3.select(this).property("value");
+        const country2 = country2Dropdown.property("value");
+        if (country1 && country2) {
+            updateChart(country1, country2);
+        }
+    });
+
+    country2Dropdown.on("change", function() {
+        const country1 = country1Dropdown.property("value");
+        const country2 = d3.select(this).property("value");
+        if (country1 && country2) {
+            updateChart(country1, country2);
+        }
+    });
+
+    // Initialize chart with first two countries
+    if (uniqueCountries.length >= 2) {
+        updateChart(uniqueCountries[0], uniqueCountries[1]);
+    }
 });
 
-function updateChart() {
-    const country1 = document.getElementById("country1").value;
-    const country2 = document.getElementById("country2").value;
-
+function updateChart(country1, country2) {
+    // Use passed parameters instead of DOM elements
     if (!country1 || !country2) {
-        alert("Please select two countries to generate the plot.");
+        console.error("Missing country values");
         return;
     }
 
@@ -109,31 +131,31 @@ function updateChart() {
 
     const years = [...new Set(selectedData.map(d => d.Period))].sort((a, b) => a - b);
 
-    svg.selectAll("*").remove();
+    s_svg.selectAll("*").remove();
 
     // Compute correct min/max for y-axis
     const minY = d3.min(selectedData, d => Math.min(d.LifeExpectancy || Infinity, d.HealthyLifeExpectancy || Infinity)) - 5;
     const maxY = d3.max(selectedData, d => Math.max(d.LifeExpectancy || -Infinity, d.HealthyLifeExpectancy || -Infinity)) + 5;
 
-    console.log("Computed Y Scale Domain:", minY, maxY);
+    // console.log("Computed Y Scale Domain:", minY, maxY);
 
     const xScale = d3.scalePoint()
         .domain(years)
-        .range([0, width]);
+        .range([0, s_width]);
 
     const yScale = d3.scaleLinear()
         .domain([minY, maxY])
-        .range([height, 0]);
-
+        .range([s_height, 0]);
+        
     // Draw Axes
-    svg.append("g")
-        .attr("transform", `translate(0,${height})`)
-        .call(d3.axisBottom(xScale).tickFormat(d3.format("d")).tickSize(-height))
+    s_svg.append("g")
+        .attr("transform", `translate(0,${s_height})`)
+        .call(d3.axisBottom(xScale).tickFormat(d3.format("d")).tickSize(-s_height))
         .selectAll("text")
         .style("font-size", "12px");
 
-    svg.append("g")
-        .call(d3.axisLeft(yScale).tickSize(-width))
+    s_svg.append("g")
+        .call(d3.axisLeft(yScale).tickSize(-s_width))
         .selectAll("text")
         .style("font-size", "12px");
 
@@ -153,14 +175,14 @@ function updateChart() {
     const groupedData = d3.groups(selectedData, d => d.Location);
 
     groupedData.forEach(([location, values], i) => {
-        svg.append("path")
+        s_svg.append("path")
             .datum(values)
             .attr("fill", "none")
             .attr("stroke", d3.schemeCategory10[i % 10])
             .attr("stroke-width", 2)
             .attr("d", lineGenerator);
 
-        svg.append("path")
+        s_svg.append("path")
             .datum(values)
             .attr("fill", "none")
             .attr("stroke", d3.schemeCategory10[i % 10])
@@ -170,14 +192,14 @@ function updateChart() {
 
         values.forEach(d => {
             if (d.LifeExpectancy !== null) {
-                svg.append("circle")
+                s_svg.append("circle")
                     .attr("cx", xScale(d.Period))
                     .attr("cy", yScale(d.LifeExpectancy))
                     .attr("r", 4)
                     .attr("fill", d3.schemeCategory10[i % 10]);
             }
             if (d.HealthyLifeExpectancy !== null) {
-                svg.append("circle")
+                s_svg.append("circle")
                     .attr("cx", xScale(d.Period))
                     .attr("cy", yScale(d.HealthyLifeExpectancy))
                     .attr("r", 4)
@@ -187,9 +209,9 @@ function updateChart() {
     });
 
     // Add legend
-    const legend = svg.append("g")
+    const legend = s_svg.append("g")
         .attr("class", "legend")
-        .attr("transform", `translate(${width + 10}, 20)`); // Position on the right side
+        .attr("transform", `translate(${s_width + 10}, 20)`); // Position on the right side
 
     // Add legend entries for countries
     groupedData.forEach(([location, values], i) => {

@@ -80,11 +80,11 @@
     d3.csv("/static/data/co-emissions-per-capitacopy.csv"), // CO₂ data file
   ])
     .then(([geojson, data]) => {
-      console.log("All data loaded:", data);
+      // console.log("All data loaded:", data);
 
       // Filter data for the specific year
       const filteredData = data.filter((d) => +d.Year === yearToShow);
-      console.log(`Data for year ${yearToShow}:`, filteredData);
+      // console.log(`Data for year ${yearToShow}:`, filteredData);
 
       // Create a map for emissions for the specific year
       const emissionsMap = new Map(
@@ -94,7 +94,7 @@
         ])
       );
 
-      console.log(`Emissions map for year ${yearToShow}:`, emissionsMap);
+      // console.log(`Emissions map for year ${yearToShow}:`, emissionsMap);
 
       // Modify the GeoJSON data to match the country names
       const normalizedGeojson = geojson.features.map((feature) => {
@@ -127,7 +127,7 @@
               d.properties.normalized_name
             );
             if (!emissions) {
-              console.log(
+              // console.log(
                 `No data for region: ${d.properties.normalized_name}`
               );
             }

@@ -87,11 +87,11 @@ app.controller('FormController', ['$scope', '$http', '$mdToast', function ($scop
     };
 
     function createLineAndScatterChart(rawData) {
-        console.log('Raw data received:', rawData);
+        // console.log('Raw data received:', rawData);
         d3.select("#line-chart").html("");
 
         const data = Array.isArray(rawData) ? rawData : JSON.parse(rawData);
-        console.log('Parsed data:', data);
+        // console.log('Parsed data:', data);
 
         const chartData = data.map(yearData => ({
             year: yearData.year,
@@ -231,12 +231,12 @@ app.controller('FormController', ['$scope', '$http', '$mdToast', function ($scop
             const tminData = parseData(tminText);
             const tmaxData = parseData(tmaxText);
             const avgData = parseData(avgText);
-            console.log('Parsed data:', tminData);
+            // console.log('Parsed data:', tminData);
 
             const combinedData = $scope.formData.years.map(year => {
                 const yearStr = year.toString();
                 const stateCode = $scope.formData.state.code;
-                console.log('Processing data for year', year, 'state', stateCode);
+                // console.log('Processing data for year', year, 'state', stateCode);
                 const tminRow = tminData.find(d => d.Year === yearStr && d.StateCode === stateCode);
                 const tmaxRow = tmaxData.find(d => d.Year === yearStr && d.StateCode === stateCode);
                 const avgRow = avgData.find(d => d.Year === yearStr && d.StateCode === stateCode);
@@ -253,7 +253,7 @@ app.controller('FormController', ['$scope', '$http', '$mdToast', function ($scop
                     avg: months.map(month => avgRow[month])
                 };
             }).filter(d => d !== null);
-            console.log('Combined data:', combinedData);
+            // console.log('Combined data:', combinedData);
             createLineAndScatterChart(combinedData);
         }).catch(error => {
             console.error('Error fetching or parsing data:', error);

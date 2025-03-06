@@ -88,11 +88,11 @@ app.controller('FormController', ['$scope', '$http', '$mdToast', function ($scop
     };
 
     function createRadarChart(rawData) {
-        console.log('Raw data received:', rawData);
+        // console.log('Raw data received:', rawData);
         d3.select("#radar-chart").html("");
 
         const data = Array.isArray(rawData) ? rawData : JSON.parse(rawData);
-        console.log('Parsed data:', data);
+        // console.log('Parsed data:', data);
 
         const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
         const chartData = data.map(yearData => ({
@@ -103,7 +103,7 @@ app.controller('FormController', ['$scope', '$http', '$mdToast', function ($scop
             }))
         }));
 
-        console.log('Transformed chart data:', chartData);
+        // console.log('Transformed chart data:', chartData);
 
         const margin = { top: 100, right: 200, bottom: 100, left: 100 };
         const width = 800 - margin.left - margin.right;
@@ -113,7 +113,7 @@ app.controller('FormController', ['$scope', '$http', '$mdToast', function ($scop
         // Ensure we have valid temperature values
         const allTemps = chartData.flatMap(d => d.values.map(v => v.value));
         const tempRange = [Math.min(...allTemps), Math.max(...allTemps)];
-        console.log('Temperature range:', tempRange);
+        // console.log('Temperature range:', tempRange);
 
         const rScale = d3.scaleLinear()
             .domain([0, tempRange[1]])
@@ -237,7 +237,7 @@ app.controller('FormController', ['$scope', '$http', '$mdToast', function ($scop
                 years: $scope.formData.years.join(',')
             }
         }).then(function(response) {
-            console.log('API response:', response.data);
+            // console.log('API response:', response.data);
             createRadarChart(response.data);
         }).catch(function(error) {
             console.error('Error:', error);

@@ -14,10 +14,10 @@ const svg = d3.select("#chart")
 const dataPath = "../static/data/life_expectancy_allyears.json";
 
 d3.json(dataPath).then(data => {
-    console.log("✅ Raw Data Loaded:", data);
+    // console.log("✅ Raw Data Loaded:", data);
 
     // 🔍 Check available Status values in the dataset
-    console.log("🔍 Unique Status values:", [...new Set(data.map(d => d.Status))]);
+    // console.log("🔍 Unique Status values:", [...new Set(data.map(d => d.Status))]);
 
     // Filter for HALE at birth for Males in 2010 & 2021
     let filteredData = data.filter(d =>
@@ -26,7 +26,7 @@ d3.json(dataPath).then(data => {
         (d.Period === 2010 || d.Period === 2021)
     );
 
-    console.log("✅ Filtered Data:", filteredData);
+    // console.log("✅ Filtered Data:", filteredData);
 
     if (filteredData.length === 0) {
         console.error("❌ No matching data found! Check if 'Status' and 'Period' exist in the dataset.");
@@ -48,16 +48,16 @@ d3.json(dataPath).then(data => {
             }
         });
 
-        console.log(`📌 Continent: ${continent}`);
-        console.log(`  🔹 HALE Values 2010:`, yearData[2010]);
-        console.log(`  🔹 HALE Values 2021:`, yearData[2021]);
+        // console.log(`📌 Continent: ${continent}`);
+        // console.log(`  🔹 HALE Values 2010:`, yearData[2010]);
+        // console.log(`  🔹 HALE Values 2021:`, yearData[2021]);
 
         // Compute average HALE for 2010 and 2021
         let avg2010 = d3.mean(yearData[2010]) || NaN;
         let avg2021 = d3.mean(yearData[2021]) || NaN;
 
-        console.log(`  🔸 Average HALE 2010: ${avg2010}`);
-        console.log(`  🔸 Average HALE 2021: ${avg2021}`);
+        // console.log(`  🔸 Average HALE 2010: ${avg2010}`);
+        // console.log(`  🔸 Average HALE 2021: ${avg2021}`);
 
         // Store processed data if both values are valid
         if (!isNaN(avg2010) && !isNaN(avg2021)) {
@@ -68,7 +68,7 @@ d3.json(dataPath).then(data => {
         }
     });
 
-    console.log("✅ Processed Data for Plot:", processedData);
+    // console.log("✅ Processed Data for Plot:", processedData);
 
     // If no valid data, stop execution
     if (processedData.length === 0) {
@@ -127,7 +127,7 @@ d3.json(dataPath).then(data => {
         .attr("height", d => height - yScale(d.hale))
         .attr("fill", d => colorScale(d.year));
 
-    console.log("✅ Chart Rendered Successfully");
+    // console.log("✅ Chart Rendered Successfully");
 
     // Add title
     svg.append("text")

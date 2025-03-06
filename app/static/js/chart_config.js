@@ -20,7 +20,8 @@ app.controller('FormController', [
     '$anchorScroll',
     '$mdToast',
     'SpiderChartService',
-    'BubbleChartService', // Add this
+    'BubbleChartService',
+    'ViolinChartService',
     function (
         $scope,
         $http,
@@ -31,10 +32,9 @@ app.controller('FormController', [
         $anchorScroll,
         $mdToast,
         SpiderChartService,
-        BubbleChartService  // Add this
+        BubbleChartService,
+        ViolinChartService
     ) {
-        console.log("Unified FormController is running!");
-        // Initialize form data
         $scope.years = [];
         $scope.regions = [];
         $scope.formData = {
@@ -42,7 +42,6 @@ app.controller('FormController', [
             year: ''
         };
 
-        // 2) Spider chart form data
         $scope.countries = [];
         $scope.spiderFormData = {
             selectedCountries: [],
@@ -55,6 +54,13 @@ app.controller('FormController', [
             year: 2015 // default year
         };
 
+
+        // Add to FormController scope initialization
+        $scope.violinFormData = {
+            region: 'all',  // Set default region
+            year: '2021'    // Set default year
+        };
+
         // Initialize data on controller load
         function init() {
             // Fetch available years
@@ -64,7 +70,7 @@ app.controller('FormController', [
                     if ($scope.years.length > 0) {
                         $scope.formData.year = $scope.years[0];
                     }
-                    console.log($scope.years);
+                    // console.log($scope.years);
                 });
 
             // Fetch available regions
@@ -75,22 +81,28 @@ app.controller('FormController', [
                         $scope.formData.region = $scope.regions[0];
                     }
 
-                    console.log($scope.regions);
+                    // console.log($scope.regions);
+                });
+
+            // Initialize violin chart with default values
+            $timeout(function () {
+                $scope.generateViolinPlot();
+            });
+
+            $http.get('/countries')
+                .then(function (response) {
+                    $scope.countries = response.data.countries || [];
+                    // Provide some default countries if you want automatic chart
+                    if ($scope.countries.length >= 2) {
+                        $scope.spiderFormData.selectedCountries = [
+                            $scope.countries[0],
+                            $scope.countries[1]
+                        ];
+                    } else if ($scope.countries.length > 0) {
+                        $scope.spiderFormData.selectedCountries = [$scope.countries[0]];
+                    }
                 });
         }
-        $http.get('/countries')
-            .then(function (response) {
-                $scope.countries = response.data.countries || [];
-                // Provide some default countries if you want automatic chart
-                if ($scope.countries.length >= 2) {
-                    $scope.spiderFormData.selectedCountries = [
-                        $scope.countries[0],
-                        $scope.countries[1]
-                    ];
-                } else if ($scope.countries.length > 0) {
-                    $scope.spiderFormData.selectedCountries = [$scope.countries[0]];
-                }
-            });
         // Call init function when controller loads
         GlobalChartsService.createGlobalTrendsChart();
         init();
@@ -193,17 +205,61 @@ app.controller('FormController', [
         );
 
         // Add bubble chart generation function
-        $scope.generateBubbleChart = function() {
+        $scope.generateBubbleChart = function () {
             BubbleChartService.createBubbleChart($scope.beeswarmData.year);
         };
 
         // Watch for changes in beeswarm year
-        $scope.$watch('beeswarmData.year', function(newYear) {
+        $scope.$watch('beeswarmData.year', function (newYear) {
             if (newYear) {
                 $scope.generateBubbleChart();
             }
         });
 
+        // Add violin chart generation function
+        $scope.generateViolinPlot = function () {
+            if ($scope.violinFormData.year && $scope.violinFormData.region) {
+                ViolinChartService.createViolinPlot($scope.violinFormData)
+                    .then(() => {
+                        $mdToast.show(
+                            $mdToast.simple()
+                                .textContent('Violin chart updated successfully')
+                                .position('top right')
+                                .hideDelay(3000)
+                        );
+                    })
+                    .catch(error => {
+                        $mdToast.show(
+                            $mdToast.simple()
+                                .textContent('Error updating violin chart: ' + error.message)
+                                .position('top right')
+                                .hideDelay(3000)
+                        );
+                    });
+            }
+        };
+
+        // Add watchers for violin chart
+        $scope.$watchGroup(['violinFormData.year', 'violinFormData.region'], function (newValues, oldValues) {
+            if (newValues !== oldValues && newValues[0] && newValues[1]) {
+                $scope.generateViolinPlot();
+            }
+        });
+
+        // Set initial values
+        $http.get('/countries').then(function (response) {
+            $scope.countries = response.data.countries || [];
+        });
+
+        // Initialize the data structures
+        $scope.years = Array.from({ length: 22 }, (_, i) => 2000 + i);
+        $scope.countries = []; // Will be populated from data
+        $scope.regions = [];   // Will be populated from data
+        $scope.updateSlopeChart = function() {
+            if ($scope.slopeData.country1 && $scope.slopeData.country2) {
+                updateChart($scope.slopeData.country1, $scope.slopeData.country2);
+            }
+        };
     }]);
 
 const ChartConfig = {

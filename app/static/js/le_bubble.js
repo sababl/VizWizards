@@ -37,7 +37,7 @@ angular.module('myApp').service('BubbleChartService', ['$http', function($http) 
         +d["Period"] === year &&
         d.Indicator.trim() === "Life expectancy at birth (years)"
       );
-      console.log(lifeExpData);
+      // console.log(lifeExpData);
       let pivotData = {};
       lifeExpData.forEach(d => {
         const location = d.Location;

@@ -20,7 +20,7 @@ let projection = d3.geoMercator()
 const path = d3.geoPath().projection(projection);
 
 // Add after projection creation
-console.log("Testing projection:", projection([0, 0])); // Should return valid x,y coordinates
+// console.log("Testing projection:", projection([0, 0])); // Should return valid x,y coordinates
 
 // Load World Map, Life Expectancy Data, and Country Coordinates
 Promise.all([
@@ -39,7 +39,7 @@ Promise.all([
     })),
     d3.json("https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json") // Country coordinates
     ]).then(([populationData, world, lifeData, countryCoords]) => {
-    console.log("✅ Loaded Data Successfully");
+    // console.log("✅ Loaded Data Successfully");
 
     // Draw the complete world map
     mapGroup.append("path")
@@ -48,7 +48,7 @@ Promise.all([
         .attr("fill", "#e0c37a") 
         .attr("stroke", "#999");
 
-    console.log("✅ World map drawn successfully");
+    // console.log("✅ World map drawn successfully");
 
     // Normalize country names and store centroids
     const countryLookup = {};
@@ -59,7 +59,7 @@ Promise.all([
         countryLookup[countryName] = centroid;
     });
 
-    console.log("✅ Loaded Country Coordinates:", countryLookup);
+    // console.log("✅ Loaded Country Coordinates:", countryLookup);
     const countryNameCorrections = {
         "eswatini": "swaziland",
         "guinea-bissau": "guinea bissau",
@@ -111,7 +111,7 @@ Promise.all([
         d.Period === 2021 && d.Indicator === "Life expectancy at birth (years)" && d.Dim1 === "Both sexes"
     );
 
-    console.log("✅ Filtered Data (Life Expectancy at Birth - 2021):", filteredData);
+    // console.log("✅ Filtered Data (Life Expectancy at Birth - 2021):", filteredData);
 
 
     let populationLookup = {};
@@ -122,14 +122,14 @@ Promise.all([
         }
         populationLookup[country] = d.Population; // Use the parsed Population value
     });
-    console.log("✅ Population Lookup:", populationLookup);
+    // console.log("✅ Population Lookup:", populationLookup);
     const populationExtent = d3.extent(Object.values(populationLookup));
     const sizeScale = d3.scaleSqrt()
         .domain(populationExtent)
         .range([2, 23]); // Define a bubble size scale
 
     // Debug the population data
-    console.log("✅ Sample Population Data:", populationData.slice(0,5));
+    // console.log("✅ Sample Population Data:", populationData.slice(0,5));
         
         
     // Define a broader range for Life Expectancy (0-100)
@@ -177,29 +177,29 @@ Promise.all([
     }).filter(d => d.coordinates != null); // Filter out any null projections
 
     // Add debug logging
-    console.log("Sample coordinates:", processedData.slice(0,5).map(d => ({
-        country: d.country,
-        coordinates: d.coordinates
-    })));
+    // console.log("Sample coordinates:", processedData.slice(0,5).map(d => ({
+    //     country: d.country,
+    //     coordinates: d.coordinates
+    // })));
 
-    console.log("✅ Processed Data:", processedData);
+    // console.log("✅ Processed Data:", processedData);
 
-    console.log("Population values in processedData:", processedData.map(d => d.population));
-    console.log("Sample bubble sizes:", processedData.slice(0,5).map(d => ({
-        country: d.country,
-        population: d.population,
-        bubbleSize: sizeScale(d.population)
-    })));
+    // console.log("Population values in processedData:", processedData.map(d => d.population));
+    // console.log("Sample bubble sizes:", processedData.slice(0,5).map(d => ({
+    //     country: d.country,
+    //     population: d.population,
+    //     bubbleSize: sizeScale(d.population)
+    // })));
 
     // Add after processedData creation
-    console.log("First few processed coordinates:", 
-        processedData.slice(0,3).map(d => ({
-            country: d.country,
-            coords: d.coordinates,
-            population: d.population,
-            lifeExpectancy: d.lifeExpectancy
-        }))
-    );
+    // console.log("First few processed coordinates:", 
+    //     processedData.slice(0,3).map(d => ({
+    //         country: d.country,
+    //         coords: d.coordinates,
+    //         population: d.population,
+    //         lifeExpectancy: d.lifeExpectancy
+    //     }))
+    // );
 
     if (processedData.length === 0) {
         console.error("❌ No valid country data available for 2021!");
@@ -231,7 +231,7 @@ Promise.all([
             d3.select("#tooltip").style("visibility", "hidden");
         });
 
-    console.log("✅ Bubbles Drawn Successfully!");
+    // console.log("✅ Bubbles Drawn Successfully!");
 
     // ---- FIXED LEGEND ----
     const legendHeight = 200; 

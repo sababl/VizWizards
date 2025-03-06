@@ -106,6 +106,19 @@ md-toolbar {
   overflow: visible;
 }
 
+.chart-placeholder::after {
+  content: "Loading...";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: none;
+}
+
+.chart-placeholder.loading::after {
+  display: block;
+}
+
 /* Make any SVG inside the chart placeholder responsive */
 .chart-placeholder svg {
   width: 100% !important;
@@ -468,4 +481,35 @@ svg {
 #map svg {
   max-width: 100%;
   height: auto;
+}
+
+#slope-chart {
+  width: 100%;
+  height: 500px;
+}
+
+.slope-line {
+  fill: none;
+  stroke-width: 2;
+}
+
+.slope-point {
+  fill: #fff;
+  stroke-width: 2;
+}
+
+.slope-label {
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.violin-chart-wrapper {
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+}
+
+#violin-chart svg {
+  display: block;
+  margin: auto;
 }

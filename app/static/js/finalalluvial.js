@@ -15,7 +15,7 @@ Promise.all([
     d3.csv("../static/data/hle.csv")
 ]).then(([leData, hleData]) => {
     
-    console.log("✅ Data Loaded Successfully:", leData, hleData);
+    // console.log("✅ Data Loaded Successfully:", leData, hleData);
 
     if (!leData.length || !hleData.length) {
         throw new Error("❌ Data is empty!");
@@ -46,7 +46,7 @@ Promise.all([
     // ✅ Sort by Life Expectancy for better visualization
     mergedData.sort((a, b) => b.LifeExpectancy - a.LifeExpectancy);
 
-    console.log("✅ Filtered & Merged Data:", mergedData);
+    // console.log("✅ Filtered & Merged Data:", mergedData);
 
     // ✅ Define Scales
     const xScale = d3.scaleLinear()
@@ -140,7 +140,7 @@ Promise.all([
         .style("font-size", "12px")
         .text(d => d.label);
 
-    console.log("✅ Bullet Chart rendered successfully!");
+    // console.log("✅ Bullet Chart rendered successfully!");
 
 }).catch(error => {
     console.error("❌ Error loading the data:", error);

@@ -34,7 +34,7 @@ Promise.all([
         dataByYear[d.Period][d.Location] = +d.SexRatio;
         years.add(d.Period);
     });
-    console.log('Processed data by year:', dataByYear);
+    // console.log('Processed data by year:', dataByYear);
 
     // Populate year selector
     const yearSelector = d3.select("#yearSelector");

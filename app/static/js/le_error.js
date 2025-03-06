@@ -62,7 +62,7 @@ angular.module('myApp').service('ErrorChartService', ['$http', '$q', function($h
         return $http.get('/life', { params: params })
             .then(function(response) {
                 var lifeData = response.data.le[formData.year];
-                console.log("Life expectancy data:", lifeData);
+                // console.log("Life expectancy data:", lifeData);
                 // (Optional) Filter data to include only those entries that match the selected ParentLocation (case-insensitive)
                 lifeData = lifeData.filter(function(d) {
                     return d.ParentLocation.toLowerCase() === formData.region.toLowerCase();

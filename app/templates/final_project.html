@@ -32,7 +32,8 @@
   <script src="/static/js/finalstackedbar.js"></script>
   <script src="/static/js/finalline.js"></script>
   <script src="/static/js/le_bubble.js"></script>
-  <!-- <script src="/static/js/finalchoropleth.js"></script> -->
+  <script src="/static/js/le_violin.js"></script>
+
 </head>
 
 <body ng-controller="FormController" layout="column">
@@ -197,6 +198,59 @@
             <p class="chart-subtitle">Compare multiple countries on life-expectancy metrics</p>
 
             <div id="radar-chart" class="chart-placeholder">Chart loading...</div>
+          </div>
+
+          <div class="chart-container">
+            <div class="chart-header">
+              <h3 class="chart-title">Life Expectancy vs. Healthy Life Expectancy</h3>
+              <div class="filters">
+                <md-select class="filter-select" 
+                ng-model="slopeData.country1" 
+                ng-change="updateSlopeChart()"
+                placeholder="Select Country 1" 
+                aria-label="Country 1">
+                <md-option ng-repeat="country in countries" ng-value="country">{{country}}</md-option>
+            </md-select>
+            
+            <md-select class="filter-select" 
+                ng-model="slopeData.country2" 
+                ng-change="updateSlopeChart()"
+                placeholder="Select Country 2" 
+                aria-label="Country 2">
+                <md-option ng-repeat="country in countries" ng-value="country">{{country}}</md-option>
+            </md-select>
+              </div>
+            </div>
+            <p class="chart-subtitle">Compare changes in Life Expectancy and Healthy Life Expectancy between countries
+              (2015-2021)</p>
+            <div id="slope-chart" class="chart-placeholder"></div>
+          </div>
+          <script src="/static/js/finalslope.js"></script>
+          <div class="chart-container">
+            <div class="filters-container">
+              <!-- Region Selection -->
+              <md-input-container class="filter-item">
+                <label>Region</label>
+                <md-select ng-model="violinFormData.region" placeholder="Select Region">
+                  <md-option value="all">All Regions</md-option>
+                  <md-option ng-repeat="region in regions" ng-value="region">
+                    {{region}}
+                  </md-option>
+                </md-select>
+              </md-input-container>
+
+              <!-- Year Selection -->
+              <md-input-container class="filter-item">
+                <label>Year</label>
+                <md-select ng-model="violinFormData.year" placeholder="Select Year">
+                  <md-option ng-repeat="year in years" ng-value="year">
+                    {{year}}
+                  </md-option>
+                </md-select>
+              </md-input-container>
+            </div>
+
+            <div id="violin-chart" class="chart-placeholder"></div>
           </div>
         </md-card-content>
       </md-card>

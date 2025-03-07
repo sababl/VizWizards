@@ -206,6 +206,55 @@ Promise.all([
         .attr("text-anchor", "end")
         .text(d => d.Location);
 
+    // ✅ Add Legend
+    const legend = svg.append("g")
+    .attr("transform", `translate(${width - 700}, 450)`); // Adjust the position
+
+    // Legend for Total Life Expectancy (Gray)
+    legend.append("rect")
+    .attr("x", 0)
+    .attr("y", 0)
+    .attr("width", 20)
+    .attr("height", 20)
+    .attr("fill", "gray");
+
+    legend.append("text")
+    .attr("x", 30)
+    .attr("y", 15)
+    .text("Total Life Expectancy")
+    .style("font-size", "12px")
+    .attr("alignment-baseline", "middle");
+
+    // Legend for Healthy Life Expectancy (Green)
+    legend.append("rect")
+    .attr("x", 0)
+    .attr("y", 30)
+    .attr("width", 20)
+    .attr("height", 20)
+    .attr("fill", "green");
+
+    legend.append("text")
+    .attr("x", 30)
+    .attr("y", 45)
+    .text("Healthy Life Expectancy")
+    .style("font-size", "12px")
+    .attr("alignment-baseline", "middle");
+
+    // Legend for Unhealthy Years (Red)
+    legend.append("rect")
+    .attr("x", 0)
+    .attr("y", 60)
+    .attr("width", 20)
+    .attr("height", 20)
+    .attr("fill", "red");
+
+    legend.append("text")
+    .attr("x", 30)
+    .attr("y", 75)
+    .text("Unhealthy Years")
+    .style("font-size", "12px")
+    .attr("alignment-baseline", "middle");
+
     console.log("✅ Bullet Chart Rendered Successfully!");
 
 }).catch(error => {

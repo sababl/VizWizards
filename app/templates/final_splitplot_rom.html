@@ -11,9 +11,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Grouped Bar Chart - HALE for Men (2010 vs 2021)</title>
     <script src="https://d3js.org/d3.v7.min.js"></script>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="../static/css/styles.css">
     
-    <!-- Style for Info Box & Legend -->
+    <!-- Style for Info Box & Chart Container -->
     <style>
         .info-box {
             background-color: #f0f0f0;
@@ -27,13 +27,33 @@
             font-size: 16px;
         }
 
+        /* Scrollable Chart */
+        #chart-wrapper {
+            width: 100%;
+            overflow-x: auto !important; /* Ensures horizontal scrolling */
+            overflow-y: hidden;
+            white-space: nowrap;
+            padding-bottom: 5px; /* Minimal extra space */
+            display: block;
+        }
+
+        #chart-container {
+            min-width: 1000px;
+            width: fit-content;
+        }
+
+        #chart {
+            height: 300px !important; /* Further reduced height */
+        }
+
+        /* Legend Styling */
         #legend {
             display: flex;
             justify-content: center;
             gap: 20px;
-            font-size: 16px;
+            font-size: 14px;
             font-weight: bold;
-            margin-top: 15px;
+            margin-top: 10px;
         }
 
         .legend-item {
@@ -48,6 +68,7 @@
             margin-right: 5px;
             border-radius: 3px;
         }
+        
     </style>
 </head>
 <body>
@@ -56,19 +77,24 @@
 
     <!-- Info Box -->
     <div class="info-box">
-        <p >
-            This visualization compares the  Healthy Life Expectancy (HALE) at birth for males  across different continents 
-            in  2010 and 2021 . The chart displays a  grouped bar format , where each continent has  two bars :
-            a  blue bar for 2010  and a  red bar for 2021 . The height of each bar represents the  average HALE value  
-            for that year in that continent. The data is sourced from a global dataset and filtered to include only 
-             males  and  HALE at birth  values. This plot allows us to observe which continents have experienced 
-             an increase or decrease in life expectancy , highlighting overall trends in global health.
+        <p>
+        This split plot visualization compares the Healthy Life Expectancy (HALE) at birth for males across different continents in 2010 and 2021. 
+        Instead of displaying all countries, the chart highlights the most representative ones within each continent. For each continent, the country 
+        with the lowest average HALE and the country with the highest average HALE were selected based on their average values in 2010 and 2021. 
+        Each selected country has two bars: a blue bar representing HALE in 2010 and a red bar representing HALE in 2021. This allows us to observe 
+        health improvements or declines over time. By focusing on extreme cases within each continent, the visualization effectively reveals disparities 
+        in life expectancy, the impact of healthcare systems, and overall living conditions. The split plot format helps provide a clear comparison of 
+        global health trends while avoiding clutter.
         </p>
     </div>
 
-    <!-- Chart -->
-    <svg id="chart"></svg>
-
+    <!-- Chart Container -->
+    <div id="chart-wrapper">
+        <div id="chart-container">
+            <svg id="chart"></svg>
+        </div>
+    </div>
+    
     <!-- Legend -->
     <div id="legend">
         <span class="legend-item">
@@ -77,7 +103,7 @@
         <span class="legend-item">
             <span class="legend-color" style="background-color: #e74c3c;"></span> 2021
         </span>
-    </div>
+    </div>    
 
     <script src="../static/js/finalsplit.js"></script>
 

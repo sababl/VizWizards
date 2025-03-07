@@ -110,11 +110,11 @@ const colorScale = d3.scaleOrdinal()
             });
     }
     
-    years.forEach(year => {
-        const button = document.createElement("button");
-        button.textContent = year;
-        button.addEventListener("click", () => updateChart(year));
-        document.querySelector(".year-buttons").appendChild(button);
-    });
-    updateChart(years[0]);
+    const initialYear = 2010;
+    slider.attr("min", d3.min(years))
+          .attr("max", d3.max(years))
+          .attr("value", initialYear);
+    
+    yearDisplay.text(initialYear);
+    updateChart(initialYear);
 });

@@ -45,20 +45,20 @@ app.controller('FormController', [
         $scope.countries = [];
         $scope.spiderFormData = {
             selectedCountries: [],
-            sex: '',
-            year: ''
+            sex: 'female',
+            year: '2021'
         };
 
         // Add bubble chart specific data
         $scope.beeswarmData = {
-            year: 2015 // default year
+            year: 2021
         };
 
 
         // Add to FormController scope initialization
         $scope.violinFormData = {
-            region: 'all',  // Set default region
-            year: '2021'    // Set default year
+            region: 'all',
+            year: '2021'
         };
 
         // Initialize data on controller load
@@ -96,7 +96,8 @@ app.controller('FormController', [
                     if ($scope.countries.length >= 2) {
                         $scope.spiderFormData.selectedCountries = [
                             $scope.countries[0],
-                            $scope.countries[1]
+                            $scope.countries[1],
+                            $scope.countries[2]
                         ];
                     } else if ($scope.countries.length > 0) {
                         $scope.spiderFormData.selectedCountries = [$scope.countries[0]];
@@ -236,6 +237,7 @@ app.controller('FormController', [
                                 .hideDelay(3000)
                         );
                     });
+
             }
         };
 
@@ -255,7 +257,7 @@ app.controller('FormController', [
         $scope.years = Array.from({ length: 22 }, (_, i) => 2000 + i);
         $scope.countries = []; // Will be populated from data
         $scope.regions = [];   // Will be populated from data
-        $scope.updateSlopeChart = function() {
+        $scope.updateSlopeChart = function () {
             if ($scope.slopeData.country1 && $scope.slopeData.country2) {
                 updateChart($scope.slopeData.country1, $scope.slopeData.country2);
             }

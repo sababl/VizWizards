@@ -511,5 +511,13 @@ svg {
 
 #violin-chart svg {
   display: block;
-  margin: auto;
+  margin: 0 auto;
+}
+
+.y-axis text {
+  font-size: 10px;
+}
+
+.y-axis path, .y-axis line {
+  stroke: #888;
 }

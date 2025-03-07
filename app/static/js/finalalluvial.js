@@ -1,5 +1,5 @@
 // ✅ Set dimensions for the chart
-const margin = {top: 20, right: 40, bottom: 50, left: 100}; // Adjusted margins for better fit
+const margin = {top: 20, right: 40, bottom: 50, left: 130}; // Adjusted margins for better fit
 const width = Math.min(700, window.innerWidth - margin.left - margin.right);
 const height = Math.min(400, window.innerHeight - margin.top - margin.bottom);
 
@@ -77,6 +77,15 @@ Promise.all([
         };
     });
 
+
+    // Manually set Healthy Life Expectancy for a specific country (e.g., India)
+    mergedData.forEach(d => {
+        if (d.Location === "Lesotho") {
+            d.HealthyLifeExpectancy = 8.95;  // Change this to the desired value
+            d.UnhealthyYears = 42.53;
+        }
+    });
+
     console.log("✅ Merged Data (After Fixes):", mergedData);
 
     // ✅ Find Highest & Lowest LE & HLE per Continent
@@ -101,7 +110,6 @@ Promise.all([
         new Map(finalSelectedData.filter(Boolean).map(item => [item.Location, item])).values()
     ).sort((a, b) => a.ParentLocation.localeCompare(b.ParentLocation) || b.LifeExpectancy - a.LifeExpectancy);
 
-    console.log("✅ Final Data for Chart:", finalSelectedData);
 
     // ✅ Define Scales
     const xScale = d3.scaleLinear()
@@ -116,6 +124,8 @@ Promise.all([
     console.log("✅ X-Scale Domain:", xScale.domain());
     console.log("✅ Y-Scale Domain:", yScale.domain());
 
+    console.log("✅ Final Data for Chart:", finalSelectedData);
+
     // ✅ Draw Bars (Total Life Expectancy)
     svg.selectAll(".le-bar")
         .data(finalSelectedData)
@@ -123,16 +133,18 @@ Promise.all([
         .append("rect")
         .attr("class", "le-bar")
         .attr("x", 0)
-        .attr("y", d => yScale(d.Location))
+        .attr("y", d => yScale(d.Location) + yScale.bandwidth() * 0.5)
         .attr("width", d => xScale(d.LifeExpectancy))
         .attr("height", yScale.bandwidth())
         .attr("fill", "gray")
         .on("mouseover", function (event, d) {
-            tooltip.style("opacity", 1).html(`Total Life Expectancy: ${d.LifeExpectancy|| 0} years`);
-        })
+            tooltip.style("opacity", 1).html(`Total Life Expectancy: ${event.LifeExpectancy || 0} years`);
+            
+        })                
         .on("mousemove", function (event) {
-            tooltip.style("left", (event.pageX + 10) + "px")
-                   .style("top", (event.pageY - 20) + "px");
+            const barRect = this.getBoundingClientRect();
+            tooltip.style("left", `${barRect.x + barRect.width + 10}px`) // Position to the right of the bar
+                   .style("top", `${barRect.y + 10}px`); 
         })
         .on("mouseout", function () {
             tooltip.style("opacity", 0);
@@ -145,12 +157,12 @@ Promise.all([
         .append("rect")
         .attr("class", "hle-bar")
         .attr("x", 0)
-        .attr("y", d => yScale(d.Location) + yScale.bandwidth() * 0.2)
+        .attr("y", d => yScale(d.Location) + yScale.bandwidth() * 0.9)
         .attr("width", d => xScale(d.HealthyLifeExpectancy))
         .attr("height", yScale.bandwidth() * 0.6)
         .attr("fill", "green")
         .on("mouseover", function (event, d) {
-            tooltip.style("opacity", 1).html(`Healthy Life Expectancy: ${d.HealthyLifeExpectancy|| 0} years`);
+            tooltip.style("opacity", 1).html(`Healthy Life Expectancy: ${event.HealthyLifeExpectancy|| 0} years`);
         })
         .on("mousemove", function (event) {
             tooltip.style("left", (event.pageX + 10) + "px")
@@ -167,12 +179,12 @@ Promise.all([
         .append("rect")
         .attr("class", "unhealthy-bar")
         .attr("x", d => xScale(d.HealthyLifeExpectancy))
-        .attr("y", d => yScale(d.Location) + yScale.bandwidth() * 0.2)
+        .attr("y", d => yScale(d.Location) + yScale.bandwidth() * 0.9)
         .attr("width", d => xScale(d.UnhealthyYears))
         .attr("height", yScale.bandwidth() * 0.6)
         .attr("fill", "red")
         .on("mouseover", function (event, d) {
-            tooltip.style("opacity", 1).html(`Unhealthy Years: ${d.UnhealthyYears|| 0} years`);
+            tooltip.style("opacity", 1).html(`Unhealthy Years: ${event.UnhealthyYears|| 0}} years`);
         })
         .on("mousemove", function (event) {
             tooltip.style("left", (event.pageX + 10) + "px")

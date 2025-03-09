@@ -121,22 +121,22 @@ app.controller('FormController', [
         $scope.generateErroPlot = function () {
             if ($scope.formData.year && $scope.formData.region) {
                 ErrorChartService.createErrorChart($scope.formData)
-                    .then(function () {
-                        $mdToast.show(
-                            $mdToast.simple()
-                                .textContent('Chart updated successfully')
-                                .position('top right')
-                                .hideDelay(3000)
-                        );
-                    })
-                    .catch(function (error) {
-                        $mdToast.show(
-                            $mdToast.simple()
-                                .textContent('Error updating chart: ' + error.message)
-                                .position('top right')
-                                .hideDelay(3000)
-                        );
-                    });
+                // .then(function () {
+                //     $mdToast.show(
+                //         $mdToast.simple()
+                //             .textContent('Chart updated successfully')
+                //             .position('top right')
+                //             .hideDelay(3000)
+                //     );
+                // })
+                // .catch(function (error) {
+                //     $mdToast.show(
+                //         $mdToast.simple()
+                //             .textContent('Error updating chart: ' + error.message)
+                //             .position('top right')
+                //             .hideDelay(3000)
+                //     );
+                // });
             } else {
                 $mdToast.show(
                     $mdToast.simple()
@@ -221,14 +221,14 @@ app.controller('FormController', [
         $scope.generateViolinPlot = function () {
             if ($scope.violinFormData.year && $scope.violinFormData.region) {
                 ViolinChartService.createViolinPlot($scope.violinFormData)
-                    .then(() => {
-                        $mdToast.show(
-                            $mdToast.simple()
-                                .textContent('Violin chart updated successfully')
-                                .position('top right')
-                                .hideDelay(3000)
-                        );
-                    })
+                    // .then(() => {
+                    //     $mdToast.show(
+                    //         $mdToast.simple()
+                    //             .textContent('Violin chart updated successfully')
+                    //             .position('top right')
+                    //             .hideDelay(3000)
+                    //     );
+                    // })
                     .catch(error => {
                         $mdToast.show(
                             $mdToast.simple()
@@ -255,8 +255,8 @@ app.controller('FormController', [
 
         // Initialize the data structures
         $scope.years = Array.from({ length: 22 }, (_, i) => 2000 + i);
-        $scope.countries = []; // Will be populated from data
-        $scope.regions = [];   // Will be populated from data
+        $scope.countries = [];
+        $scope.regions = []; 
         $scope.updateSlopeChart = function () {
             if ($scope.slopeData.country1 && $scope.slopeData.country2) {
                 updateChart($scope.slopeData.country1, $scope.slopeData.country2);
@@ -360,7 +360,6 @@ const ChartConfig = {
                 .ease(d3.easeQuadOut);
         },
 
-        // Tooltip creation
         createTooltip: function (containerId) {
             return d3.select(`#${containerId}`)
                 .append('div')
@@ -373,7 +372,9 @@ const ChartConfig = {
                 .style('border-radius', '4px')
                 .style('pointer-events', 'none')
                 .style('font-size', ChartConfig.styling.fontSize.labels)
-                .style('font-family', ChartConfig.styling.fontFamily);
+                .style('font-family', ChartConfig.styling.fontFamily)
+                .style('box-shadow', '0 2px 5px rgba(0, 0, 0, 0.2)')
+                .style('transition', 'opacity 0.3s ease-in-out');
         }
     }
 };

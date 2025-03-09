@@ -19,6 +19,10 @@ const path = d3.geoPath().projection(projection);
 const colorScale = d3.scaleSequential(d3.interpolatePurples)
     .domain([0.5, 1.5]);
 
+const tooltip = d3.select("body").append("div")
+    .attr("class", "chart-tooltip")
+    .style("opacity", 0);
+
 // Load data
 Promise.all([
     d3.json("https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/world.geojson"),
@@ -60,6 +64,19 @@ Promise.all([
             })
             .attr("stroke", "#fff")
             .attr("stroke-width", 0.5)
+            .on("mouseover", function(event, d) {
+                tooltip.transition()
+                    .duration(200)
+                    .style("opacity", 0.9);
+                tooltip.html(`Country: ${d.properties.name}<br/>Value: ${dataMap[d.properties.name] || 'No data'}`)
+                    .style("left", (event.pageX + 10) + "px")
+                    .style("top", (event.pageY - 28) + "px");
+            })
+            .on("mouseout", function() {
+                tooltip.transition()
+                    .duration(500)
+                    .style("opacity", 0);
+            })
             .append("title")
             .text(d => `${d.properties.name}: ${dataMap[d.properties.name] || 'No data'}`);
     }

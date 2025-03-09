@@ -60,16 +60,18 @@ md-toolbar {
 }
 
 /* Chart Container & Placeholder */
-.chart-container {
+.chart-placeholder {
   position: relative;
-  margin: 20px 0;
-  background-color: var(--white);
+  width: 100%;
+  min-height: 400px;
+  background-color: var(--light-gray);
   border: 1px solid var(--gray);
   border-radius: 4px;
-  padding: 20px;
-  /* min-height: 500px;
-  min-width: 800px; */
-  /* overflow: hidden; */
+  padding: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: visible;
 }
 
 .chart-header {
@@ -93,7 +95,15 @@ md-toolbar {
   font-size: 14px;
 }
 
+@keyframes spinner {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Update chart-placeholder styling to include a spinner animation */
 .chart-placeholder {
+  position: relative;
   width: 100%;
   min-height: 400px;
   background-color: var(--light-gray);
@@ -106,6 +116,56 @@ md-toolbar {
   overflow: visible;
 }
 
+/* When loading, show spinner */
+.chart-placeholder.loading::after {
+  content: "";
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  border: 4px solid var(--gray);
+  border-top-color: var(--dark-green);
+  border-radius: 50%;
+  animation: spinner 1s linear infinite;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* Enhanced tooltip styling with transitions */
+.chart-tooltip {
+  position: absolute;
+  z-index: 1000;
+  padding: 10px;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  pointer-events: none;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  transition: opacity 0.3s ease-in-out;
+  opacity: 0;
+  font-size: 14px;
+  font-family: 'Roboto', sans-serif;
+}
+
+
+.tooltip {
+  position: absolute;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  pointer-events: none;
+  font-size: 12px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+}
+.chart-description {
+  font-size: 14px;
+  color: var(--dark-gray);
+  margin-bottom: 10px;
+  line-height: 1.4;
+}
+
 .chart-placeholder::after {
   content: "Loading...";
   position: absolute;
@@ -113,10 +173,6 @@ md-toolbar {
   left: 50%;
   transform: translate(-50%, -50%);
   display: none;
-}
-
-.chart-placeholder.loading::after {
-  display: block;
 }
 
 /* Make any SVG inside the chart placeholder responsive */
@@ -143,7 +199,6 @@ md-toolbar {
   border-color: var(--light-green);
 }
 
-/* Info Box & Tooltip */
 .info-box {
   background-color: #f0f0f0;
   padding: 15px;
@@ -152,17 +207,6 @@ md-toolbar {
   max-width: 800px;
   margin: 20px auto;
   text-align: justify;
-}
-
-.tooltip {
-  position: absolute;
-  z-index: 1000;
-  padding: 10px;
-  background: #fff;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  pointer-events: none;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 /* Angular Material Overrides */
@@ -202,10 +246,12 @@ md-tabs md-ink-bar {
   .chart-placeholder {
     min-height: 300px;
   }
+
   .filters {
     flex-direction: column;
     align-items: flex-start;
   }
+
   .filter-select {
     width: 100%;
     margin-bottom: 10px;
@@ -239,16 +285,6 @@ md-tabs md-ink-bar {
   opacity: 1;
 }
 
-/* .tooltip {
-  position: absolute;
-  padding: 8px;
-  background: rgba(255, 255, 255, 0.9);
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  pointer-events: none;
-  font-size: 12px;
-} */
-
 .year-buttons {
   margin: 20px;
   max-width: 800px;
@@ -275,6 +311,7 @@ button.active {
 button:hover:not(.active) {
   background-color: #f0f0f0;
 }
+
 .slider-container {
   margin: 20px auto;
   max-width: 800px;
@@ -304,7 +341,7 @@ button:hover:not(.active) {
   -webkit-appearance: none;
   width: 15px;
   height: 15px;
-  background: #2B4F60; 
+  background: #2B4F60;
   border-radius: 50%;
   cursor: pointer;
 }
@@ -312,7 +349,7 @@ button:hover:not(.active) {
 #year-slider::-moz-range-thumb {
   width: 15px;
   height: 15px;
-  background: #2B4F60; 
+  background: #2B4F60;
   border-radius: 50%;
   cursor: pointer;
   border: none;
@@ -321,7 +358,7 @@ button:hover:not(.active) {
 #year-display {
   font-size: 24px;
   font-weight: bold;
-  color: #2B4F60; 
+  color: #2B4F60;
   margin-top: 15px;
 }
 
@@ -329,6 +366,7 @@ button:hover:not(.active) {
   opacity: 0.8;
   transition: opacity 0.3s;
 }
+
 .bar:hover {
   opacity: 1.0;
 }
@@ -340,12 +378,14 @@ button:hover:not(.active) {
   align-items: center;
   margin-top: 20px;
 }
+
 .legend {
   display: flex;
   justify-content: center;
   align-items: center;
   margin-top: 10px;
 }
+
 .legend div {
   width: 30px;
   height: 10px;
@@ -462,6 +502,7 @@ svg {
   /* Adjust spacing as needed */
   align-items: center;
 }
+
 .map-container {
   width: 100%;
   height: 600px;
@@ -518,6 +559,19 @@ svg {
   font-size: 10px;
 }
 
-.y-axis path, .y-axis line {
+.y-axis path,
+.y-axis line {
   stroke: #888;
+}
+
+#map-wrapper {
+  position: relative;
+}
+
+#box-wrapper {
+  position: relative;
+}
+
+#violin-wrapper {
+  position: relative;
 }

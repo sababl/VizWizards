@@ -52,7 +52,7 @@ app.controller('FormController', ['$scope', '$http', '$mdToast', function ($scop
 
         // Create a tooltip div (hidden by default).
         const tooltip = d3.select("body").append("div")
-            .attr("class", "tooltip")
+            .attr("class", "chart-tooltip")
             .style("opacity", 0)
             .style("position", "absolute")
             .style("background", "#fff")

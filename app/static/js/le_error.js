@@ -37,7 +37,7 @@ angular.module('myApp').service('ErrorChartService', ['$http', '$q', function($h
         // Create tooltip
         const tooltip = d3.select("body")
             .append('div')
-            .attr('class', 'tooltip')
+            .attr('class', 'chart-tooltip')
             .style('opacity', 0)
             .style('position', 'fixed')
             .style('background-color', 'white')

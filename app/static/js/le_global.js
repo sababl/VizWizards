@@ -22,7 +22,7 @@ angular.module('myApp').service('GlobalChartsService', ['$http', function ($http
         // Create tooltip using config utility
         const tooltip = d3.select("body")
             .append('div')
-            .attr('class', 'tooltip')
+            .attr('class', 'chart-tooltip')
             .style('opacity', 0)
             .style('position', 'fixed')
             .style('background-color', 'white')
@@ -128,32 +128,22 @@ angular.module('myApp').service('GlobalChartsService', ['$http', function ($http
                 svg.selectAll("rect")
                     .on("mouseover", function (event, d) {
                         d3.select(this)
-                            .transition()
-                            .duration(200)
                             .attr("fill", ChartConfig.colors.secondary.main);
 
-                        tooltip.transition()
-                            .duration(200)
-                            .style("opacity", 0.9);
+                        // Set tooltip content immediately
+                        tooltip.html(`${d.lifeExpectancy.toFixed(2)} years`);
 
-                        // Calculate position relative to viewport
-                        const tooltipWidth = tooltip.node().getBoundingClientRect().width;
-                        const tooltipHeight = tooltip.node().getBoundingClientRect().height;
-
+                        // Set position with a simpler calculation for testing
                         tooltip
-                            .html(`${d.lifeExpectancy.toFixed(2)} years`)
                             .style("left", (event.pageX + 10) + "px")
-                            .style("top", (event.pageY - tooltipHeight - 10) + "px");
-                        })
+                            .style("top", (event.pageY - 20) + "px")
+                            .style("opacity", 1);
+                    })
                     .on("mouseout", function () {
                         d3.select(this)
-                            .transition()
-                            .duration(200)
                             .attr("fill", ChartConfig.colors.primary.main);
 
-                        tooltip.transition()
-                            .duration(500)
-                            .style("opacity", 0);
+                        tooltip.style("opacity", 0);
                     });
 
             })

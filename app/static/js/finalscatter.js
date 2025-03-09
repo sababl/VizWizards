@@ -63,7 +63,7 @@ const colorScale = d3.scaleOrdinal()
     
     const tooltip = d3.select("body")
         .append("div")
-        .attr("class", "tooltip")
+        .attr("class", "chart-tooltip")
         .style("opacity", 0);
     const slider = d3.select("#year-slider");
     const yearDisplay = d3.select("#year-display");

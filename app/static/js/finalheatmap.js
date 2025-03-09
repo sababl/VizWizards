@@ -1,5 +1,5 @@
 // Set up dimensions for the heatmap
-const h_margin = { top: 50, right: 50, bottom: 100, left: 120 };
+const h_margin = { top: 50, right: 120, bottom: 100, left: 120 };
 const h_width = 800 - h_margin.left - h_margin.right;
 const h_height = 500 - h_margin.top - h_margin.bottom;
 
@@ -9,27 +9,19 @@ const h_svg = d3.select("#heatmap-container")
     .attr("height", h_height + h_margin.top + h_margin.bottom)
     .append("g")
     .attr("transform", `translate(${h_margin.left}, ${h_margin.top})`);
-    
+
 // Create a tooltip div that is hidden by default:
 const tooltip = d3.select("body")
     .append("div")
-    .attr("class", "tooltip")
+    .attr("class", "chart-tooltip")
     .style("opacity", 0);
 
 d3.csv("/static/data/le.csv").then(function (data) {
-    // Log unique status values
-    // console.log("Available status values:",
-    //     [...new Set(data.map(d => d.Indicator))]
-    // );
-
     // Filter data for life expectancy at age 60 for Females
     let filteredData = data.filter(d =>
         d.Indicator === "Life expectancy at age 60 (years)" &&
         d.Dim1 === "Female"
     );
-
-    // console.log("Filtered data length:", filteredData.length);
-    // console.log("Sample filtered record:", filteredData[0]);
 
     if (filteredData.length === 0) {
         console.error("No data found after filtering!");
@@ -42,7 +34,6 @@ d3.csv("/static/data/le.csv").then(function (data) {
         year: d.Period,
         lifeExpectancy: +d.FactValueNumeric
     })).filter(d => !isNaN(d.lifeExpectancy));
-    // console.log("Sample record:", filteredData[0]);
 
     // Group data by continent and year, then compute the average life expectancy
     const averageData = Array.from(
@@ -54,8 +45,6 @@ d3.csv("/static/data/le.csv").then(function (data) {
             });
         }
     ).flat();
-
-    // console.log("Average Data:", averageData);
 
     // Extract unique continents and years from the aggregated data
     const continents = Array.from(new Set(averageData.map(d => d.continent)));
@@ -72,14 +61,9 @@ d3.csv("/static/data/le.csv").then(function (data) {
         .range([0, h_height])
         .padding(0.1);
 
-    // Get the original extent of average life expectancy
-    const dataExtent = d3.extent(averageData, d => d.avgLE);
-    // Extend the domain by subtracting 5 from the minimum and adding 5 to the maximum
-    const extendedDomain = [dataExtent[0] - 5, dataExtent[1] + 5];
-
-    // Use the extended domain for the color scale
+    // Set the color scale domain to exactly match the range shown in the legend (14 to 28)
     const colorScale = d3.scaleSequential(d3.interpolateYlGnBu)
-        .domain(extendedDomain);
+        .domain([14, 28]);
 
     // Draw axes
     h_svg.append("g")
@@ -98,20 +82,12 @@ d3.csv("/static/data/le.csv").then(function (data) {
     h_svg.append("text")
         .attr("class", "axis-label")
         .attr("text-anchor", "middle")
-        .attr("x", h_width / 1.3)
-        .attr("y", h_height + h_margin.bottom + 20)
+        .attr("x", h_width / 2)
+        .attr("y", h_height + h_margin.bottom / 2)
         .text("Years");
 
     h_svg.append("text")
         .attr("class", "axis-label")
-        .attr("text-anchor", "middle")
-        .attr("x", h_width / 1)
-        .attr("y", h_height + h_margin.bottom - 79)
-        .text("Years");
-
-    h_svg.append("text")
-        .attr("class", "axis-label")
-
         .attr("text-anchor", "middle")
         .attr("transform", "rotate(-90)")
         .attr("x", -h_height / 2)
@@ -142,41 +118,56 @@ d3.csv("/static/data/le.csv").then(function (data) {
             tooltip.transition().duration(500).style("opacity", 0);
         });
 
-    // Create legend using the extended domain
-    const legendWidth = 500;
-    const legendHeight = 20;
-
+    // Create a vertical legend
+    const legendWidth = 20;
+    const legendHeight = 200;
+    
+    // Position the legend to the right of the heatmap
     const legendSvg = h_svg.append("g")
-        .attr("transform", `translate(${h_width / 3.5 - 100}, ${h_height + 50})`);
+        .attr("transform", `translate(${h_width + 40}, ${(h_height - legendHeight) / 2})`);
 
+    // Create a vertical scale for the legend
     const legendScale = d3.scaleLinear()
-        .domain(extendedDomain)
-        .range([0, legendWidth]);
+        .domain([28, 14]) // Inverted domain for vertical orientation
+        .range([0, legendHeight]);
 
-    const legendAxis = d3.axisBottom(legendScale).ticks(10);
+    // Vertical axis on the right side of the legend
+    const legendAxis = d3.axisRight(legendScale).ticks(8);
 
     legendSvg.append("g")
         .call(legendAxis)
-        .attr("transform", `translate(0, ${legendHeight})`);
+        .attr("transform", `translate(${legendWidth}, 0)`);
 
-    // Create a legend gradient with multiple stops based on the extended domain
+    // Add legend title
+    legendSvg.append("text")
+        .attr("class", "legend-title")
+        .attr("text-anchor", "middle")
+        .attr("transform", "rotate(-90)")
+        .attr("y", -30)
+        .attr("x", -legendHeight / 2)
+        .text("Female Life Expectancy at Age 60 (years)");
+
+    // Create a vertical gradient
     const legendGradient = legendSvg.append("defs")
         .append("linearGradient")
         .attr("id", "legend-gradient")
         .attr("x1", "0%")
-        .attr("x2", "100%")
+        .attr("x2", "0%")
         .attr("y1", "0%")
-        .attr("y2", "0%");
+        .attr("y2", "100%");
 
-    const [minExtended, maxExtended] = extendedDomain;
-    const tickValues = legendScale.ticks(5);
-    tickValues.forEach(t => {
-        const offset = ((t - minExtended) / (maxExtended - minExtended)) * 100;
+    // Create gradient stops from blue (top) to yellow (bottom)
+    const colorMin = 14;
+    const colorMax = 28;
+    for (let i = 0; i <= 10; i++) {
+        const value = colorMax - (i/10) * (colorMax - colorMin); // Reversed for vertical orientation
+        const offset = (i / 10) * 100;
         legendGradient.append("stop")
             .attr("offset", offset + "%")
-            .attr("stop-color", colorScale(t));
-    });
+            .attr("stop-color", colorScale(value));
+    }
 
+    // Add the colored rectangle
     legendSvg.append("rect")
         .attr("width", legendWidth)
         .attr("height", legendHeight)

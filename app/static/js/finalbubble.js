@@ -15,7 +15,7 @@ const mapGroup = svg.append("g")
 // Define a Mercator projection for a flat world map
 let projection = d3.geoMercator()
     .scale(width / 6) // Increased scale for a bigger map
-    .translate([width / 2.2, height / 1.6]); 
+    .translate([width / 2.2, height / 1.6]);
 
 const path = d3.geoPath().projection(projection);
 
@@ -38,14 +38,14 @@ Promise.all([
         // Use FactValueNumeric for life expectancy
     })),
     d3.json("https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json") // Country coordinates
-    ]).then(([populationData, world, lifeData, countryCoords]) => {
+]).then(([populationData, world, lifeData, countryCoords]) => {
     // console.log("✅ Loaded Data Successfully");
 
     // Draw the complete world map
     mapGroup.append("path")
         .datum(topojson.feature(world, world.objects.countries))
         .attr("d", path)
-        .attr("fill", "#e0c37a") 
+        .attr("fill", "#e0c37a")
         .attr("stroke", "#999");
 
     // console.log("✅ World map drawn successfully");
@@ -103,11 +103,11 @@ Promise.all([
         "republic of korea": "south korea",
         "singapore": "singapore"
     };
-    
-    
+
+
 
     // Filter life expectancy data for 2021 and only keep relevant indicators
-    const filteredData = lifeData.filter(d => 
+    const filteredData = lifeData.filter(d =>
         d.Period === 2021 && d.Indicator === "Life expectancy at birth (years)" && d.Dim1 === "Both sexes"
     );
 
@@ -130,10 +130,10 @@ Promise.all([
 
     // Debug the population data
     // console.log("✅ Sample Population Data:", populationData.slice(0,5));
-        
-        
+
+
     // Define a broader range for Life Expectancy (0-100)
-    const lifeExpExtent = [0, 100];
+    const lifeExpExtent = [40, 90];
 
     // Define a color scale for life expectancy
     const colorScale = d3.scaleSequential(d3.interpolateYlGnBu)
@@ -160,7 +160,7 @@ Promise.all([
         }
     });
 
-    
+
     if (missingCountries.length > 0) {
         console.warn("⚠️ Missing country matches:", missingCountries);
     }
@@ -207,34 +207,60 @@ Promise.all([
     }
 
     // Add the visualization code
-    mapGroup.selectAll("circle")
-        .data(processedData)
-        .enter()
-        .append("circle")
-        .attr("cx", d => d.coordinates[0])
-        .attr("cy", d => d.coordinates[1])
-        .attr("r", d => sizeScale(d.population))
-        .attr("fill", d => colorScale(d.lifeExpectancy))
-        .attr("opacity", 0.8)
-        .attr("stroke", "#333")
-        .on("mouseover", (event, d) => {
-            d3.select("#tooltip")
-                .style("visibility", "visible")
-                .html(`<strong>${d.country}</strong><br>Life Expectancy: ${d.lifeExpectancy.toFixed(1)}`);
-        })
-        .on("mousemove", event => {
-            d3.select("#tooltip")
-                .style("top", (event.pageY - 10) + "px")
-                .style("left", (event.pageX + 10) + "px");
-        })
-        .on("mouseout", () => {
-            d3.select("#tooltip").style("visibility", "hidden");
-        });
+    const wrapper = d3.select("#map-wrapper");
+    const tooltip = d3.select("#tooltip");
 
+    // When creating circles for the bubble map:
+    mapGroup.selectAll("circle")
+    .data(processedData)
+    .enter()
+    .append("circle")
+    .attr("cx", d => d.coordinates[0])
+    .attr("cy", d => d.coordinates[1])
+    .attr("r", d => sizeScale(d.population))
+    .attr("fill", d => colorScale(d.lifeExpectancy))
+    .attr("opacity", 0.8)
+    .attr("stroke", "#333")
+    .on("mouseover", (event, d) => {
+      // Increase the radius by 20% (for example)
+      d3.select(event.currentTarget)
+        .transition()
+        .duration(200)
+        .attr("r", sizeScale(d.population) * 2);
+  
+      // Show tooltip as before
+      const [mouseX, mouseY] = d3.pointer(event, wrapper.node());
+      tooltip
+        .html(`
+          <strong>${d.country}</strong><br>
+          Life Expectancy: ${d.lifeExpectancy.toFixed(1)}
+        `)
+        .style("left", (mouseX + 10) + "px")
+        .style("top", (mouseY - 10) + "px")
+        .style("opacity", 1);
+    })
+    .on("mousemove", (event) => {
+      // Keep tooltip positioned with mouse
+      const [mouseX, mouseY] = d3.pointer(event, wrapper.node());
+      tooltip
+        .style("left", (mouseX + 10) + "px")
+        .style("top", (mouseY - 10) + "px");
+    })
+    .on("mouseout", (event, d) => {
+      // Revert circle to original radius
+      d3.select(event.currentTarget)
+        .transition()
+        .duration(200)
+        .attr("r", sizeScale(d.population));
+  
+      // Hide tooltip
+      tooltip.style("opacity", 0);
+    });
+      
     // console.log("✅ Bubbles Drawn Successfully!");
 
     // ---- FIXED LEGEND ----
-    const legendHeight = 200; 
+    const legendHeight = 200;
 
     // Define legend scale
     const legendScale = d3.scaleLinear()

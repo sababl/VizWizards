@@ -240,20 +240,15 @@ angular.module('myApp').service('BubbleChartService', ['$http', function($http) 
         .attr("stroke-width", 1);
       // Create tooltip div
       const tooltip = d3.select("body").append("div")
-        .attr("class", "tooltip")
-        .style("position", "absolute")
-        .style("background", "rgba(255, 255, 255, 0.9)")
-        .style("border", "1px solid #ccc")
-        .style("padding", "5px")
-        .style("border-radius", "5px")
-        .style("box-shadow", "2px 2px 5px rgba(0,0,0,0.3)")
-        .style("pointer-events", "none")
-        .style("display", "none");
+        .attr("class", "chart-tooltip")
+        .style("opacity", 0);
 
       svg.selectAll("circle")
         .on("mouseover", function (event, d) {
-          tooltip.style("display", "block")
-            .html(`
+          tooltip.transition()
+            .duration(200)
+            .style("opacity", 0.9);
+          tooltip.html(`
       <strong>${d.Location}</strong><br>
       Population: ${d.population.toLocaleString()}<br>
       Male LE: ${d.male}<br>
@@ -262,7 +257,11 @@ angular.module('myApp').service('BubbleChartService', ['$http', function($http) 
             .style("left", (event.pageX + 10) + "px")
             .style("top", (event.pageY - 20) + "px");
         })
-        .on("mouseout", () => tooltip.style("display", "none"));
+        .on("mouseout", function() {
+          tooltip.transition()
+            .duration(500)
+            .style("opacity", 0);
+        });
 
       // ===================================================
       // 7. Add Country Labels for High Population (> 100 Million)

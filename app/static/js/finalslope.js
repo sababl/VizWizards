@@ -1,13 +1,17 @@
-const s_margin = { top: 60, right: 220, bottom: 60, left: 80 }; // Increased right s_margin for legend
-const s_width = 900 - s_margin.left - s_margin.right; // Smaller width
-const s_height = 550 - s_margin.top - s_margin.bottom; // Smaller height
+const s_margin = { top: 60, right: 220, bottom: 60, left: 80 };
+const s_width = 900 - s_margin.left - s_margin.right;
+const s_height = 550 - s_margin.top - s_margin.bottom;
 
-const s_svg = d3.select("#slope-chart")
+const slopeContainer = d3.select("#slope-chart");
+
+const s_svg = slopeContainer
     .append("svg")
     .attr("width", s_width + s_margin.left + s_margin.right)
     .attr("height", s_height + s_margin.top + s_margin.bottom)
     .append("g")
     .attr("transform", `translate(${s_margin.left},${s_margin.top})`);
+
+const s_tooltip = d3.select("#slope-tooltip");
 
 let data;
 let initializeChart = true;
@@ -18,10 +22,10 @@ Promise.all([
     d3.csv("../static/data/hle.csv")
 ]).then(([leData, hleData]) => {
     // Filter LE data for years 2015-2021 and Both sexes
-    const filteredLE = leData.filter(d => 
-        d.Indicator === "Life expectancy at birth (years)" && 
-        d.Dim1 === "Both sexes" && 
-        d.Period >= 2015 && 
+    const filteredLE = leData.filter(d =>
+        d.Indicator === "Life expectancy at birth (years)" &&
+        d.Dim1 === "Both sexes" &&
+        d.Period >= 2015 &&
         d.Period <= 2021
     ).map(d => ({
         Location: d.Location,
@@ -30,10 +34,10 @@ Promise.all([
     }));
 
     // Filter HLE data for years 2015-2021 and Both sexes
-    const filteredHLE = hleData.filter(d => 
-        d.Indicator === "Healthy life expectancy (HALE) at birth (years)" && 
-        d.Dim1 === "Both sexes" && 
-        d.Period >= 2015 && 
+    const filteredHLE = hleData.filter(d =>
+        d.Indicator === "Healthy life expectancy (HALE) at birth (years)" &&
+        d.Dim1 === "Both sexes" &&
+        d.Period >= 2015 &&
         d.Period <= 2021
     ).map(d => ({
         Location: d.Location,
@@ -96,7 +100,7 @@ Promise.all([
         .attr("value", d => d);
 
     // Add event listeners for the country dropdowns
-    country1Dropdown.on("change", function() {
+    country1Dropdown.on("change", function () {
         const country1 = d3.select(this).property("value");
         const country2 = country2Dropdown.property("value");
         if (country1 && country2) {
@@ -104,7 +108,7 @@ Promise.all([
         }
     });
 
-    country2Dropdown.on("change", function() {
+    country2Dropdown.on("change", function () {
         const country1 = country1Dropdown.property("value");
         const country2 = d3.select(this).property("value");
         if (country1 && country2) {
@@ -146,7 +150,7 @@ function updateChart(country1, country2) {
     const yScale = d3.scaleLinear()
         .domain([minY, maxY])
         .range([s_height, 0]);
-        
+
     // Draw Axes
     s_svg.append("g")
         .attr("transform", `translate(0,${s_height})`)
@@ -196,14 +200,55 @@ function updateChart(country1, country2) {
                     .attr("cx", xScale(d.Period))
                     .attr("cy", yScale(d.LifeExpectancy))
                     .attr("r", 4)
-                    .attr("fill", d3.schemeCategory10[i % 10]);
+                    .attr("fill", d3.schemeCategory10[i % 10])
+                    // (Tooltip code) Mouse events
+                    .on("mouseover", (event) => {
+                        s_tooltip
+                            .html(`
+                          <strong>${location}</strong><br>
+                          Year: ${d.Period}<br>
+                          Life Exp: ${d.LifeExpectancy.toFixed(1)}
+                        `)
+                            .style("opacity", 1);
+                    })
+                    .on("mousemove", (event) => {
+                        // Use d3.pointer to get [x,y] inside slopeContainer
+                        const [mouseX, mouseY] = d3.pointer(event, slopeContainer.node());
+                        s_tooltip
+                            .style("left", (mouseX + 10) + "px")
+                            .style("top", (mouseY - 20) + "px");
+                    })
+                    .on("mouseout", () => {
+                        s_tooltip.style("opacity", 0);
+                    });
             }
+
+            // -- Draw circles for Healthy Life Expectancy -- //
             if (d.HealthyLifeExpectancy !== null) {
                 s_svg.append("circle")
                     .attr("cx", xScale(d.Period))
                     .attr("cy", yScale(d.HealthyLifeExpectancy))
                     .attr("r", 4)
-                    .attr("fill", d3.schemeCategory10[i % 10]);
+                    .attr("fill", d3.schemeCategory10[i % 10])
+                    // (Tooltip code) Mouse events
+                    .on("mouseover", (event) => {
+                        s_tooltip
+                            .html(`
+                          <strong>${location}</strong><br>
+                          Year: ${d.Period}<br>
+                          Healthy Life Exp: ${d.HealthyLifeExpectancy.toFixed(1)}
+                        `)
+                            .style("opacity", 1);
+                    })
+                    .on("mousemove", (event) => {
+                        const [mouseX, mouseY] = d3.pointer(event, slopeContainer.node());
+                        s_tooltip
+                            .style("left", (mouseX + 10) + "px")
+                            .style("top", (mouseY - 20) + "px");
+                    })
+                    .on("mouseout", () => {
+                        s_tooltip.style("opacity", 0);
+                    });
             }
         });
     });

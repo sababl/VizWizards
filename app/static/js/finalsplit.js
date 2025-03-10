@@ -1,6 +1,6 @@
 // Load CSV data
 d3.csv("../static/data/hle.csv").then(data => {
-    console.log("✅ Raw Data Loaded:", data);
+    console.log(" Raw Data Loaded:", data);
 
     // Ensure numeric conversion
     data.forEach(d => {
@@ -15,10 +15,10 @@ d3.csv("../static/data/hle.csv").then(data => {
         !isNaN(d.factValueNumeric)
     );
 
-    // console.log("✅ Filtered Data:", filteredData);
+    // console.log(" Filtered Data:", filteredData);
 
     if (filteredData.length === 0) {
-        console.error("❌ No matching data found!");
+        console.error("No matching data found!");
         return;
     }
 
@@ -30,7 +30,7 @@ d3.csv("../static/data/hle.csv").then(data => {
         hale: d.factValueNumeric
     }));
 
-    // ✅ Calculate the average HALE for each country in 2010 and 2021
+    //  Calculate the average HALE for each country in 2010 and 2021
     const avgHALEByCountry = d3.rollups(
         processedData,
         v => ({
@@ -45,9 +45,9 @@ d3.csv("../static/data/hle.csv").then(data => {
         continent: processedData.find(d => d.country === country)?.continent || "Unknown"
     }));
 
-    console.log("✅ Average HALE by Country:", avgHALEByCountry);
+    console.log(" Average HALE by Country:", avgHALEByCountry);
 
-    // ✅ Find min and max HALE countries for each continent based on **average HALE**
+    //  Find min and max HALE countries for each continent based on **average HALE**
     const minMaxHALEByContinent = d3.rollups(
         avgHALEByCountry,
         v => ({
@@ -67,9 +67,9 @@ d3.csv("../static/data/hle.csv").then(data => {
         maxHALE2021: values.maxHALECountry.avgHALE2021
     }));
 
-    console.log("✅ Min and Max HALE by Continent:", minMaxHALEByContinent);
+    console.log(" Min and Max HALE by Continent:", minMaxHALEByContinent);
 
-    // ✅ Prepare data for visualization (NO CHANGES HERE)
+    //  Prepare data for visualization (NO CHANGES HERE)
     let visualData = [];
     minMaxHALEByContinent.forEach(d => {
         visualData.push({ country: d.countryMin2010, year: "2010", hale: d.minHALE2010 });
@@ -78,7 +78,7 @@ d3.csv("../static/data/hle.csv").then(data => {
         visualData.push({ country: d.countryMax2021, year: "2021", hale: d.maxHALE2021 });
     });
 
-    console.log("✅ Processed Data for Plot:", visualData);
+    console.log(" Processed Data for Plot:", visualData);
 
     drawChart(visualData);
 });
@@ -153,5 +153,5 @@ function drawChart(visualData) {
         .attr("height", d => height - yScale(d.value))
         .attr("fill", d => color(d.year));
 
-    console.log("✅ Chart is now smaller and properly displayed");
+    console.log(" Chart is now smaller and properly displayed");
 }

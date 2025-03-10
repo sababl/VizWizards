@@ -25,4 +25,4 @@ merged_data = pd.merge(merged_data, population_df, on=["Location"], how="left") 
 json_file_path = "../app/static/data/life_expectancy_allyears.json"
 merged_data.to_json(json_file_path, orient="records", indent=2)
 
-print(f"✅ JSON file saved as {json_file_path}")
+print(f" JSON file saved as {json_file_path}")

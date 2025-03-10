@@ -4,13 +4,12 @@ angular.module('myApp').factory('SpiderChartService', ['$http', '$mdToast', func
     // Clear any existing chart
     d3.select(elementId).selectAll('*').remove();
 
-    // Custom color palette for up to 10 countries
+    // Custom color palette for up to 10 countries - more distinct colors
     const customColors = [
-      "#143642", "#741C28", "#E39A47FF", "#9BE243FF", "#533B04FF",
-      "#E92949FF", "#506D84", "#D76578FF", "#C5B4A5", "#4872E6FF"
-    ];
-
-    // Helper function to wrap text
+      "var(--vis-blue)", "var(--vis-teal)", "var(--vis-orange)", "var(--vis-green)", "var(--vis-purple)", 
+      "var(--vis-yellow)", "var(--primary-light)", "var(--secondary)", "var(--sage)", "var(--secondary-dark)"
+  ];
+    // Helper function to wrap text - improved for better positioning
     function wrap(text, width) {
       text.each(function () {
         const text = d3.select(this);
@@ -20,9 +19,10 @@ angular.module('myApp').factory('SpiderChartService', ['$http', '$mdToast', func
         let lineNumber = 0;
         const lineHeight = 1.1;
         const y = text.attr("y");
+        const x = text.attr("x");
         const dy = parseFloat(text.attr("dy"));
         let tspan = text.text(null).append("tspan")
-          .attr("x", text.attr("x"))
+          .attr("x", x)
           .attr("y", y)
           .attr("dy", dy + "em");
 
@@ -34,7 +34,7 @@ angular.module('myApp').factory('SpiderChartService', ['$http', '$mdToast', func
             tspan.text(line.join(" "));
             line = [word];
             tspan = text.append("tspan")
-              .attr("x", text.attr("x"))
+              .attr("x", x)
               .attr("y", y)
               .attr("dy", ++lineNumber * lineHeight + dy + "em")
               .text(word);
@@ -43,22 +43,31 @@ angular.module('myApp').factory('SpiderChartService', ['$http', '$mdToast', func
       });
     }
 
-    // Indicators in the order they'll be displayed
+    // Indicators - simplified for better display
     const indicators = [
-      "Life expectancy at age 60 (years)",
-      "Life expectancy at birth (years)",
-      "Healthy life expectancy (HALE) at birth (years)",
-      "Healthy life expectancy (HALE) at age 60 (years)"
+      "Life exp. 60",
+      "Life exp. birth",
+      "Healthy exp. birth",
+      "Healthy exp. 60"
     ];
+    
+    // Original indicator mapping for tooltips
+    const fullIndicatorNames = {
+      "Life exp. 60": "Life expectancy at age 60 (years)",
+      "Life exp. birth": "Life expectancy at birth (years)",
+      "Healthy exp. birth": "Healthy life expectancy (HALE) at birth (years)",
+      "Healthy exp. 60": "Healthy life expectancy (HALE) at age 60 (years)"
+    };
 
     // Process data for multiple locations
     const chartDatasets = locations.sort((a, b) => a.localeCompare(b)).map((location, index) => {
-      const locationData = indicators.map(indicator => {
+      const locationData = Object.keys(fullIndicatorNames).map(indicator => {
         let value = null;
+        const fullName = fullIndicatorNames[indicator];
 
         ['le', 'hle'].forEach(type => {
           const matchingEntry = data[location][type][year].find(
-            entry => entry.Indicator === indicator && entry.Sex.toLowerCase() === sex.toLowerCase().trim()
+            entry => entry.Indicator === fullName && entry.Sex.toLowerCase() === sex.toLowerCase().trim()
           );
           if (matchingEntry) {
             value = matchingEntry.FactValueNumeric;
@@ -67,6 +76,7 @@ angular.module('myApp').factory('SpiderChartService', ['$http', '$mdToast', func
 
         return {
           axis: indicator,
+          fullName: fullName,
           value: value || 0
         };
       });
@@ -77,20 +87,26 @@ angular.module('myApp').factory('SpiderChartService', ['$http', '$mdToast', func
       };
     });
 
-    // Get the container width for responsive sizing
+    // Get the container dimensions
     const container = d3.select(elementId).node();
     const containerWidth = container ? container.getBoundingClientRect().width : 500;
+    const containerHeight = container ? container.getBoundingClientRect().height : 400;
 
-    // Chart dimensions - make it responsive
-    const width = Math.min(containerWidth, 700);
-    const height = width;
+    // Chart dimensions - use available space effectively
+    const width = containerWidth - 20; // Slight padding
+    const height = containerHeight - 60; // Leave room for title
+    
+    // Calculate optimal center position and radius
+    const center = { 
+      x: width / 2, 
+      y: height / 2 + 20 // Shift down to make room for title
+    };
+    
+    // Adjust margins for better spacing
+    const margin = { top: 50, right: 30, bottom: 30, left: 30 };
+    const radius = Math.min(width, height) / 2.5 - Math.max(margin.top, margin.right, margin.bottom, margin.left);
 
-    const margin = { top: 60, right: 60, bottom: 60, left: 60 };
-    const innerWidth = width - margin.left - margin.right;
-    const innerHeight = height - margin.top - margin.bottom;
-    const radius = Math.min(innerWidth, innerHeight) / 2;
-
-    // Create SVG
+    // Create SVG container
     const svg = d3.select(elementId)
       .append('svg')
       .attr('width', width)
@@ -98,22 +114,35 @@ angular.module('myApp').factory('SpiderChartService', ['$http', '$mdToast', func
       .attr('viewBox', `0 0 ${width} ${height}`)
       .attr('preserveAspectRatio', 'xMidYMid meet')
       .append('g')
-      .attr("transform", `translate(${margin.left + innerWidth / 2},${margin.top + innerHeight / 2})`);
+      .attr("transform", `translate(${center.x},${center.y})`);
+
+    // Title area
+    svg.append("text")
+      .attr("x", 0)
+      .attr("y", -center.y + 25)
+      .attr("text-anchor", "middle")
+      .style("font-size", "16px")
+      .style("font-weight", "bold")
+      .style("fill", "#333")
+      .text(`Life Expectancy - ${sex} (${year})`);
 
     // Find max value for scaling
     const maxValue = d3.max(
       chartDatasets.flatMap(dataset => dataset.data),
       d => d.value
     );
+    
+    // Round max value up to nearest 5 for better scale
+    const roundedMax = Math.ceil(maxValue / 5) * 5;
 
-    // Radial scale
+    // Radial scale with rounded max
     const radialScale = d3.scaleLinear()
-      .domain([0, maxValue])
+      .domain([0, roundedMax])
       .range([0, radius]);
 
-    // Color scale using custom colors
+    // Color scale
     const colorScale = d3.scaleOrdinal()
-      .domain(d3.range(10))
+      .domain(locations)
       .range(customColors);
 
     // Angle slice
@@ -125,19 +154,22 @@ angular.module('myApp').factory('SpiderChartService', ['$http', '$mdToast', func
       .angle((d, i) => i * angleSlice)
       .curve(d3.curveLinearClosed);
 
-    // Background circles with values
+    // Create background circles
     const axisGrid = svg.append('g').attr('class', 'axisWrapper');
-    const levels = 5;
+    // Fewer levels for cleaner look (3 instead of 5)
+    const levels = 3;
+    const levelStep = roundedMax / levels;
 
+    // Draw the circular grid
     axisGrid.selectAll('.levels')
       .data(d3.range(1, levels + 1).reverse())
       .enter()
       .append('circle')
-      .attr('r', d => radius / levels * d)
-      .style('fill', '#CDCDCD')
-      .style('stroke', '#CDCDCD')
-      .style('fill-opacity', 0.1)
-      .style('stroke-opacity', 0.4);
+      .attr('r', d => radius * (d / levels))
+      .style('fill', '#f8f8f8')
+      .style('stroke', '#ddd')
+      .style('stroke-width', 0.5)
+      .style('fill-opacity', 0.5);
 
     // Add axis value labels
     axisGrid.selectAll('.axis-value')
@@ -146,10 +178,12 @@ angular.module('myApp').factory('SpiderChartService', ['$http', '$mdToast', func
       .append('text')
       .attr('class', 'axis-value')
       .attr('x', 5)
-      .attr('y', d => -radius / levels * d)
-      .text(d => Math.round(maxValue / levels * d))
-      .style('font-size', `${Math.max(8, width / 50)}px`)
-      .style('fill', '#737373');
+      .attr('y', d => -radialScale(levelStep * d))
+      .attr('dy', '0.3em')
+      .text(d => Math.round(levelStep * d))
+      .style('font-size', '10px')
+      .style('fill', '#888')
+      .style('text-anchor', 'start');
 
     // Axis lines
     const axis = svg.selectAll('.axis')
@@ -158,26 +192,41 @@ angular.module('myApp').factory('SpiderChartService', ['$http', '$mdToast', func
       .append('g')
       .attr('class', 'axis');
 
+    // Draw axis lines
     axis.append('line')
       .attr('x1', 0)
       .attr('y1', 0)
-      .attr('x2', (d, i) => radialScale(maxValue) * Math.cos(angleSlice * i - Math.PI / 2))
-      .attr('y2', (d, i) => radialScale(maxValue) * Math.sin(angleSlice * i - Math.PI / 2))
-      .attr('class', 'line')
-      .style('stroke', 'grey')
+      .attr('x2', (d, i) => radialScale(roundedMax * 1.05) * Math.cos(angleSlice * i - Math.PI / 2))
+      .attr('y2', (d, i) => radialScale(roundedMax * 1.05) * Math.sin(angleSlice * i - Math.PI / 2))
+      .style('stroke', '#ddd')
       .style('stroke-width', '1px');
 
-    axis.append('text')
-      .attr('class', 'legend')
-      .attr('text-anchor', 'middle')
-      .attr('dy', '0.35em')
-      .attr('x', (d, i) => radialScale(maxValue * 1.1) * Math.cos(angleSlice * i - Math.PI / 2))
-      .attr('y', (d, i) => radialScale(maxValue * 1.1) * Math.sin(angleSlice * i - Math.PI / 2))
-      .text(d => d)
-      .style('font-size', `${Math.max(8, width / 70)}px`)
-      .call(wrap, radius / 2);
+    // Calculate optimal position for axis labels
+    function getAxisLabelPosition(i) {
+      // Position labels based on their quadrant
+      const angle = angleSlice * i - Math.PI / 2;
+      const labelRadius = radialScale(roundedMax * 1.2);
+      
+      return {
+        x: labelRadius * Math.cos(angle),
+        y: labelRadius * Math.sin(angle),
+        anchor: angle > Math.PI / 2 && angle < 3 * Math.PI / 2 ? 'end' : 
+                (angle === Math.PI / 2 || angle === 3 * Math.PI / 2) ? 'middle' : 'start'
+      };
+    }
 
-    // Add tooltip div if it doesn't exist
+    // Add axis labels with optimal positioning
+    axis.append('text')
+      .attr('class', 'axis-label')
+      .attr('x', (d, i) => getAxisLabelPosition(i).x)
+      .attr('y', (d, i) => getAxisLabelPosition(i).y)
+      .attr('text-anchor', (d, i) => getAxisLabelPosition(i).anchor)
+      .attr('dy', '0.35em')
+      .text(d => d)
+      .style('font-size', '11px')
+      .style('fill', '#444');
+
+    // Set up tooltip
     let tooltip = d3.select("body").select(".spider-tooltip");
     if (tooltip.empty()) {
       tooltip = d3.select("body").append("div")
@@ -190,49 +239,106 @@ angular.module('myApp').factory('SpiderChartService', ['$http', '$mdToast', func
         .style("padding", "8px")
         .style("font-size", "12px")
         .style("box-shadow", "0 2px 4px rgba(0,0,0,0.1)")
+        .style("z-index", "1000")
         .style("pointer-events", "none");
     }
 
-    // Legend with responsive positioning
-    const legendX = radius + 40;
-    const legendY = -(radius * 0.8);
-    
-    const legend = svg.append("g")
-    .attr("transform", `translate(${-innerWidth / 2 + 20}, ${-innerHeight / 2 + 20})`);
-  
+    // Create legend - separate from chart
+    const legendContainer = d3.select(elementId)
+      .append('div')
+      .attr('class', 'spider-legend')
+      .style('position', 'absolute')
+      .style('top', '10px')
+      .style('right', '10px')
+      .style('background-color', 'rgba(255,255,255,0.9)')
+      .style('border', '1px solid #eee')
+      .style('border-radius', '4px')
+      .style('padding', '5px 8px')
+      .style('font-size', '11px')
+      .style('max-width', '120px');
+
+    // Add legend items
+    locations.forEach((location, index) => {
+      const legendItem = legendContainer.append('div')
+        .style('display', 'flex')
+        .style('align-items', 'center')
+        .style('margin', '3px 0')
+        .style('cursor', 'pointer')
+        .on('mouseover', function() {
+          // Highlight the shape
+          d3.select(`#shape-${index}`)
+            .style('fill-opacity', 0.5)
+            .style('stroke-width', 3);
+          
+          // Dim other shapes
+          chartDatasets.forEach((_, i) => {
+            if (i !== index) {
+              d3.select(`#shape-${i}`)
+                .style('fill-opacity', 0.1)
+                .style('stroke-opacity', 0.3);
+            }
+          });
+        })
+        .on('mouseout', function() {
+          // Reset all shapes
+          chartDatasets.forEach((_, i) => {
+            d3.select(`#shape-${i}`)
+              .style('fill-opacity', 0)
+              .style('stroke-width', 2)
+              .style('stroke-opacity', 1);
+          });
+        });
+
+      legendItem.append('div')
+        .style('width', '10px')
+        .style('height', '10px')
+        .style('background-color', colorScale(location))
+        .style('margin-right', '5px')
+        .style('flex-shrink', '0');
+
+      legendItem.append('span')
+        .text(location)
+        .style('white-space', 'nowrap')
+        .style('overflow', 'hidden')
+        .style('text-overflow', 'ellipsis')
+        .style('max-width', '100px');
+    });
 
     // Plot data for each location
     chartDatasets.forEach((dataset, index) => {
       // Plot area
       svg.append('path')
         .datum(dataset.data)
+        .attr('id', `shape-${index}`)
         .attr('d', line)
-        .style('fill', colorScale(index))
+        .style('fill', colorScale(dataset.location))
         .style('fill-opacity', 0)
-        .style('stroke', colorScale(index))
+        .style('stroke', colorScale(dataset.location))
         .style('stroke-width', 2);
 
-      // Plot individual data points with tooltips
+      // Add data points
       svg.selectAll(`.dataPoints-${index}`)
         .data(dataset.data)
         .enter()
         .append('circle')
-        .attr('r', width / 100)
+        .attr('r', 4)
         .attr('cx', (d, i) => radialScale(d.value) * Math.cos(angleSlice * i - Math.PI / 2))
         .attr('cy', (d, i) => radialScale(d.value) * Math.sin(angleSlice * i - Math.PI / 2))
-        .style('fill', colorScale(index))
-        .style('stroke', 'white')
-        .style('stroke-width', 2)
+        .style('fill', colorScale(dataset.location))
+        .style('stroke', '#fff')
+        .style('stroke-width', 1)
         .on('mouseover', function (event, d) {
-          const circle = d3.select(this);
           // Enlarge the circle
-          circle.transition()
+          d3.select(this)
+            .transition()
             .duration(200)
-            .attr('r', width / 80);
+            .attr('r', 6);
 
           // Show tooltip
           tooltip
-            .html(`\n              <strong>${dataset.location}</strong><br/>\n              <strong>${d.axis}</strong><br/>\n              Value: ${d.value.toFixed(2)}\n            `)
+            .html(`<strong>${dataset.location}</strong><br/>
+              <strong>${d.fullName}</strong><br/>
+              Value: ${d.value.toFixed(1)}`)
             .style("visibility", "visible")
             .style("left", (event.pageX + 10) + "px")
             .style("top", (event.pageY - 10) + "px");
@@ -243,40 +349,16 @@ angular.module('myApp').factory('SpiderChartService', ['$http', '$mdToast', func
             .style("top", (event.pageY - 10) + "px");
         })
         .on('mouseout', function () {
-          const circle = d3.select(this);
           // Restore circle size
-          circle.transition()
+          d3.select(this)
+            .transition()
             .duration(200)
-            .attr('r', width / 100);
+            .attr('r', 4);
 
           // Hide tooltip
           tooltip.style("visibility", "hidden");
         });
-
-      // Add legend items - make it responsive
-      const legendFontSize = Math.max(10, width / 40);
-      legend.append('rect')
-        .attr('x', 0)
-        .attr('y', index * (legendFontSize + 5))
-        .attr('width', legendFontSize)
-        .attr('height', legendFontSize)
-        .style('fill', colorScale(index));
-
-      legend.append('text')
-        .attr('x', legendFontSize * 1.5)
-        .attr('y', index * (legendFontSize + 5) + legendFontSize / 2)
-        .text(dataset.location)
-        .style('font-size', `${legendFontSize}px`)
-        .attr('alignment-baseline', 'middle');
     });
-
-    // svg.append("text")
-    // .attr("x", 0)
-    // .attr("y", -radius - 20)
-    // .attr("text-anchor", "middle")
-    // .style("font-size", "16px")
-    // .text(`Life Expectancy Comparison - ${sex} (${year})`);
- 
   }
 
   // 2) Return the publicly accessible methods
@@ -318,7 +400,6 @@ angular.module('myApp').factory('SpiderChartService', ['$http', '$mdToast', func
       });
     },
 
-    // Optionally expose a helper to set default data
     setDefaults: function ($scope) {
       if (!$scope.spiderFormData) {
         $scope.spiderFormData = {};

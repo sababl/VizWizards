@@ -58,7 +58,6 @@ angular.module('myApp').service('ErrorChartService', ['$http', '$q', function($h
             continent: formData.region
         };
 
-        // Use Angular's $http service
         return $http.get('/life', { params: params })
             .then(function(response) {
                 var lifeData = response.data.le[formData.year];

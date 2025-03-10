@@ -14,7 +14,10 @@
 
   <!-- Angular Material CSS -->
   <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/1.2.5/angular-material.min.css">
-
+  
+  <!-- Google Fonts - Roboto -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap">
+  
   <!-- D3.js -->
   <script src="https://d3js.org/d3.v7.min.js"></script>
   <script src="https://d3js.org/topojson.v3.min.js"></script>
@@ -30,10 +33,9 @@
   <script src="/static/js/le_spider.js"></script>
   <script src="/static/js/finalscatter.js"></script>
   <script src="/static/js/finalstackedbar.js"></script>
-  <script src="/static/js/finalline.js"></script>
   <script src="/static/js/le_bubble.js"></script>
   <script src="/static/js/le_violin.js"></script>
-
+  <script src="/static/js/finalline.js"></script>
 </head>
 
 <body ng-controller="FormController" layout="column">
@@ -64,20 +66,15 @@
             <span ng-click="scrollTo('gender-analysis')">Gender-Based Analysis</span>
           </md-tab-label>
         </md-tab>
-        <md-tab>
-          <md-tab-label>
-            <span ng-click="scrollTo('covid-impact')">COVID-19 Impact</span>
-          </md-tab-label>
-        </md-tab>
       </md-tabs>
     </div>
   </md-toolbar>
 
   <!-- Main Content -->
   <md-content flex layout-padding>
-    <!------------------------------------------------------- Global Overview Section ------------------------------------------------------->
+    <!-- Global Overview Section -->
     <section id="global-overview" class="section-container">
-      <md-card>
+      <md-card class="section-card">
         <md-card-title>
           <md-card-title-text>
             <span class="md-headline">Global Overview</span>
@@ -90,29 +87,28 @@
               <h3 class="chart-title">Global Trends</h3>
             </div>
             <p class="chart-description">Analysis of worldwide life expectancy trends from 1950 to 2020</p>
-            <div id="globalTrendsChart" class="chart-placeholder loading">Chart loading...</div>
+            <div id="globalTrendsChart" class="chart-content loading">
+              <div class="loading-indicator"></div>
+            </div>
           </div>
-          <!---------------------------------------------------Bubble Map ------------------------------------------------------------------->
+
           <div class="chart-container">
             <div class="chart-header">
               <h3 class="chart-title">Global Life Expectancy Distribution</h3>
+              <span class="chart-subtitle">Distribution across countries (2021)</span>
             </div>
-            <p class="chart-subtitle">Distribution across countries (2021)</p>
-
-            <div id="map-wrapper" class="chart-placeholder" style="position: relative;">
+            <div id="map-wrapper" class="chart-content">
               <svg id="bubble-map"></svg>
               <div id="tooltip" class="chart-tooltip"></div>
             </div>
           </div>
-
-          <script src="/static/js/finalbubble.js"></script>
         </md-card-content>
       </md-card>
     </section>
 
-    <!------------------------------------------------------- Regional & Continental Insights Section --------------------------------------->
+    <!-- Regional & Continental Insights Section -->
     <section id="regional-insights" class="section-container">
-      <md-card>
+      <md-card class="section-card">
         <md-card-title>
           <md-card-title-text>
             <span class="md-headline">Regional & Continental Insights</span>
@@ -120,33 +116,33 @@
           </md-card-title-text>
         </md-card-title>
         <md-card-content>
-          <!------------------------------------------------------- Error Chart ------------------------------------------------->
           <div class="chart-container">
             <div class="chart-header">
-              <h3 class="chart-title">Error chart</h3>
-              <div class="filters">
+              <h3 class="chart-title">Regional Impact Factors</h3>
+              <div class="filter-group">
                 <md-select class="filter-select" ng-model="formData.year" ng-change="generateErroPlot()"
-                  aria-label="Select Year" md-container-class="select-on-body" md-append-to-body="true">
+                  aria-label="Select Year" placeholder="Select Year">
                   <md-option ng-repeat="year in years" ng-value="year">{% raw %}{{year}}{% endraw %}</md-option>
                 </md-select>
                 <md-select class="filter-select" ng-model="formData.region" ng-change="generateErroPlot()"
-                  aria-label="Select Region">
+                  aria-label="Select Region" placeholder="Select Region">
                   <md-option ng-repeat="region in regions" ng-value="region">{% raw %}{{region}}{% endraw %}</md-option>
                 </md-select>
               </div>
             </div>
             <p class="chart-subtitle">Impact of GDP, education, and healthcare access on life expectancy</p>
-            <div id="error-chart" class="chart-placeholder">Chart loading...</div>
+            <div id="error-chart" class="chart-content">
+              <div class="loading-indicator"></div>
+            </div>
           </div>
 
-          <!------------------------------------------------------- Box Chart ------------------------------------------------->
           <div class="chart-container">
             <div class="chart-header">
               <h3 class="chart-title">Regional Life Expectancy Distribution</h3>
             </div>
             <p class="chart-subtitle">Comparative analysis of life expectancy distribution across global regions</p>
-            <h2 style="text-align: center;">Average Life Expectancy at Birth by Region (2000–2021)</h2>
-            <div class="info-box">
+            <div class="info-panel">
+              <h4>Average Life Expectancy at Birth by Region (2000–2021)</h4>
               <p>
                 This box plot compares average life expectancy at birth across global regions from 2000 to 2021,
                 showing significant differences in longevity. Africa has the lowest median, while Europe and the
@@ -154,7 +150,7 @@
                 in between, showing gradual improvements over time.
               </p>
             </div>
-            <div id="box-wrapper" class="chart-placeholder" style="position: relative;">
+            <div id="box-wrapper" class="chart-content">
               <svg id="box-chart"></svg>
               <div id="box-tooltip" class="chart-tooltip"></div>
             </div>
@@ -165,7 +161,7 @@
 
     <!-- Country Comparisons Section -->
     <section id="country-comparisons" class="section-container">
-      <md-card>
+      <md-card class="section-card">
         <md-card-title>
           <md-card-title-text>
             <span class="md-headline">Country Comparisons</span>
@@ -175,12 +171,11 @@
         <md-card-content>
           <div class="chart-container">
             <div class="chart-header">
-              <h3 class="chart-title">Spider (Radar) Chart</h3>
-              <div class="filters">
+              <h3 class="chart-title">Multi-Country Comparison (Radar Chart)</h3>
+              <div class="filter-group">
                 <md-select class="filter-select" ng-model="spiderFormData.selectedCountries" multiple
                   placeholder="Select countries (max 10)" aria-label="Countries">
-                  <md-option ng-repeat="country in countries" ng-value="country">{% raw %}{{country}}{% endraw
-                    %}</md-option>
+                  <md-option ng-repeat="country in countries" ng-value="country">{% raw %}{{country}}{% endraw %}</md-option>
                 </md-select>
                 <md-select class="filter-select" ng-model="spiderFormData.sex" placeholder="Sex" aria-label="Sex">
                   <md-option value="Male">Male</md-option>
@@ -193,58 +188,45 @@
               </div>
             </div>
             <p class="chart-subtitle">Compare multiple countries on life-expectancy metrics</p>
-
-            <div id="radar-chart" class="chart-placeholder">Chart loading...</div>
+            <div id="radar-chart" class="chart-content">
+              <div class="loading-indicator"></div>
+            </div>
           </div>
 
           <div class="chart-container">
             <div class="chart-header">
               <h3 class="chart-title">Life Expectancy vs. Healthy Life Expectancy</h3>
-              <div class="filters">
+              <div class="filter-group">
                 <md-select class="filter-select" ng-model="slopeData.country1" ng-change="updateSlopeChart()"
                   placeholder="Select Country 1" aria-label="Country 1">
-                  <md-option ng-repeat="country in countries" ng-value="country">{% raw %}{{country}}{% endraw
-                    %}</md-option>
+                  <md-option ng-repeat="country in countries" ng-value="country">{% raw %}{{country}}{% endraw %}</md-option>
                 </md-select>
-
                 <md-select class="filter-select" ng-model="slopeData.country2" ng-change="updateSlopeChart()"
                   placeholder="Select Country 2" aria-label="Country 2">
-                  <md-option ng-repeat="country in countries" ng-value="country">{% raw %}{{country}}{% endraw
-                    %}</md-option>
+                  <md-option ng-repeat="country in countries" ng-value="country">{% raw %}{{country}}{% endraw %}</md-option>
                 </md-select>
               </div>
             </div>
-            <p class="info-box">Compare changes in Life Expectancy and Healthy Life Expectancy between countries
-              (2015-2021)</p>
-            <div id="slope-chart" class="chart-placeholder" style="position: relative;">
+            <p class="chart-subtitle">Compare changes in Life Expectancy and Healthy Life Expectancy between countries (2015-2021)</p>
+            <div id="slope-chart" class="chart-content">
               <div id="slope-tooltip" class="chart-tooltip"></div>
             </div>
           </div>
+
           <div class="chart-container">
-            <div class="filters-container">
-              <!-- Region Selection -->
-              <md-input-container class="filter-item">
-                <label>Region</label>
-                <md-select ng-model="violinFormData.region" placeholder="Select Region">
+            <div class="chart-header">
+              <h3 class="chart-title">Distribution by Region and Year</h3>
+              <div class="filter-group">
+                <md-select ng-model="violinFormData.region" placeholder="Select Region" aria-label="Region">
                   <md-option value="all">All Regions</md-option>
-                  <md-option ng-repeat="region in regions" ng-value="region">
-                    {% raw %}{{region}}{% endraw %}
-                  </md-option>
+                  <md-option ng-repeat="region in regions" ng-value="region">{% raw %}{{region}}{% endraw %}</md-option>
                 </md-select>
-              </md-input-container>
-
-              <!-- Year Selection -->
-              <md-input-container class="filter-item">
-                <label>Year</label>
-                <md-select ng-model="violinFormData.year" placeholder="Select Year">
-                  <md-option ng-repeat="year in years" ng-value="year">
-                    {% raw %}{{year}}{% endraw %}
-                  </md-option>
+                <md-select ng-model="violinFormData.year" placeholder="Select Year" aria-label="Year">
+                  <md-option ng-repeat="year in years" ng-value="year">{% raw %}{{year}}{% endraw %}</md-option>
                 </md-select>
-              </md-input-container>
+              </div>
             </div>
-
-            <div id="violin-wrapper" class="chart-placeholder">
+            <div id="violin-wrapper" class="chart-content">
               <div id="violin-chart"></div>
               <div id="violin-tooltip" class="chart-tooltip"></div>
             </div>
@@ -255,7 +237,7 @@
 
     <!-- Gender-Based Analysis Section -->
     <section id="gender-analysis" class="section-container">
-      <md-card>
+      <md-card class="section-card">
         <md-card-title>
           <md-card-title-text>
             <span class="md-headline">Gender-Based Analysis</span>
@@ -263,118 +245,124 @@
           </md-card-title-text>
         </md-card-title>
         <md-card-content>
-          <div class="info-box">
-            <p>
-              The interactive scatter plot visualizes the lowest life expectancy of males at birth from 2000 to 2021,
-              showing trends across different countries. Over time, there is a gradual increase in life expectancy,
-              though disparities remain.
-            </p>
-          </div>
-          <div class="slider-container">
-            <div class="slider-labels">
-              <span>2000</span>
-              <span>2021</span>
+          <div class="chart-container">
+            <div class="chart-header">
+              <h3 class="chart-title">Male Life Expectancy by Country</h3>
             </div>
-            <input type="range" id="year-slider" min="2000" max="2021" value="2000" step="1">
-            <span id="year-display">2000</span>
+            <div class="info-panel">
+              <p>
+                This interactive scatter plot visualizes the lowest life expectancy of males at birth from 2000 to 2021,
+                showing trends across different countries. Over time, there is a gradual increase in life expectancy,
+                though disparities remain.
+              </p>
+            </div>
+            <div class="year-control">
+              <div class="year-labels">
+                <span>2000</span>
+                <span>2021</span>
+              </div>
+              <input type="range" id="year-slider" min="2000" max="2021" value="2000" step="1">
+              <span id="year-display">2000</span>
+            </div>
+            <div id="scatter-chart" class="chart-content"></div>
           </div>
-          <div id="scatter-chart" class="chart-container"></div>
 
           <div class="chart-container">
             <div class="chart-header">
               <h3 class="chart-title">Gender Life Expectancy Comparison</h3>
-              <div class="info-box">
-                <p>This bar chart compares life expectancy between genders, showing how the gap has evolved over time.
-                  Use the year selector to explore different time periods.</p>
-              </div>
             </div>
-
-            <div class="chart-placeholder" id="bar-chart-container">
-                <div class="filters">
-                  <label for="year">Select Year:</label>
-                  <select id="year"></select>
-                </div>
-              <svg width="900" height="600" id="bar-chart"></svg>
+            <div class="info-panel">
+              <p>This bar chart compares life expectancy between genders, showing how the gap has evolved over time.
+                Use the year selector to explore different time periods.</p>
+            </div>
+            <div id="bar-chart-container" class="chart-content">
+              <div class="filter-group">
+                <label for="year">Select Year:</label>
+                <select id="year"></select>
+              </div>
+              <svg width="100%" height="500" id="bar-chart"></svg>
               <div class="chart-tooltip"></div>
             </div>
           </div>
 
-          <div id="heatmap" class="chart-container">
+          <div class="chart-container">
             <div class="chart-header">
               <h3 class="chart-title">Women's Life Expectancy Heatmap</h3>
+              <span class="chart-subtitle">Visualization of women's life expectancy at age 60 across continents</span>
             </div>
-            <p class="chart-subtitle">Visualization of women's life expectancy at age 60 across continents</p>
-            <div class="info-box">
+            <div class="info-panel">
               <p>
                 This heatmap shows women's life expectancy at age 60 across different continents.
                 Darker colors indicate higher life expectancy, while lighter colors represent lower values.
               </p>
             </div>
-            <div id="heatmap-container" class="chart-placeholder"></div>
+            <div id="heatmap-container" class="chart-content"></div>
           </div>
-          <script src="/static/js/finalheatmap.js"></script>
 
           <div class="chart-container">
-            <h2 style="text-align: center;">Female Life Expectancy At Age 60 (2000–2021)</h2>
-            <div class="select-container">
+            <div class="chart-header">
+              <h3 class="chart-title">Female Life Expectancy At Age 60 (2000–2021)</h3>
+            </div>
+            <div class="filter-group centered">
               <label for="country-select">Select Country:</label>
               <select id="country-select"></select>
             </div>
-            <div id="tooltip" class="tooltip"></div>
-            <svg id="line-chart" width="800" height="500"></svg>
+            <div id="tooltip" class="chart-tooltip"></div>
+            <svg id="line-chart" width="100%" height="500"></svg>
           </div>
 
           <div class="chart-container">
             <div class="chart-header">
               <h3 class="chart-title">Global Sex Ratio Distribution</h3>
+              <span class="chart-subtitle">Geographic distribution of life expectancy sex ratios across countries</span>
             </div>
-            <p class="chart-subtitle">Geographic distribution of life expectancy sex ratios across countries</p>
-            <div class="info-box">
+            <div class="info-panel">
               <p>
                 This choropleth map displays the sex ratio of life expectancy across different countries.
                 Darker colors indicate higher ratios (where female life expectancy is higher relative to male),
                 while lighter colors represent lower ratios. Use the year selector to explore changes over time.
               </p>
             </div>
-
-            <!-- The year selector used by finalchoropleth.js -->
-            <div class="filters">
+            <div class="filter-group centered">
               <label for="yearSelector">Select Year:</label>
               <select id="yearSelector" class="filter-select"></select>
             </div>
-
-            <div class="map-container">
+            <div class="map-container chart-content">
               <div id="map"></div>
               <div id="legend" class="legend"></div>
             </div>
-            <div class="chart-container">
-              <div class="chart-header">
-                <h3 class="chart-title">Global Gender Gap in Life Expectancy</h3>
-                <div class="filters">
-                  <md-select class="filter-select" ng-model="beeswarmData.year" placeholder="Select Year"
-                    aria-label="Year">
-                    <md-option ng-repeat="year in years" ng-value="year">{% raw %}{{year}}{% endraw %}</md-option>
-                  </md-select>
-                </div>
-              </div>
-              <p class="chart-subtitle">Comparing male and female life expectancy across countries</p>
-              <div class="info-box">
-                <p>
-                  This bubble chart reveals how men's and women's lifespans differ across regions.
-                  Each circle represents a country, color-coded by continent and sized by population.
-                  The horizontal axis shows female life expectancy while the vertical axis shows male life expectancy.
-                </p>
-              </div>
-              <div id="chart-beeswarm" class="chart-placeholder"></div>
-            </div>
           </div>
-
+            
+          <div class="chart-container">
+            <div class="chart-header">
+              <h3 class="chart-title">Global Gender Gap in Life Expectancy</h3>
+              <div class="filter-group">
+                <md-select class="filter-select" ng-model="beeswarmData.year" placeholder="Select Year" aria-label="Year">
+                  <md-option ng-repeat="year in years" ng-value="year">{% raw %}{{year}}{% endraw %}</md-option>
+                </md-select>
+              </div>
+            </div>
+            <p class="chart-subtitle">Comparing male and female life expectancy across countries</p>
+            <div class="info-panel">
+              <p>
+                This bubble chart reveals how men's and women's lifespans differ across regions.
+                Each circle represents a country, color-coded by continent and sized by population.
+                The horizontal axis shows female life expectancy while the vertical axis shows male life expectancy.
+              </p>
+            </div>
+            <div id="chart-beeswarm" class="chart-content"></div>
+          </div>
         </md-card-content>
       </md-card>
     </section>
+
   </md-content>
+
+  <script src="/static/js/finalbubble.js"></script>
   <script src="/static/js/finalslope.js"></script>
   <script src="/static/js/finalchoropleth.js"></script>
+  <script src="/static/js/finalheatmap.js"></script>
+  
 </body>
 
 </html>

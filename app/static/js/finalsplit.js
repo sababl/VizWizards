@@ -1,6 +1,6 @@
 // Load CSV data
 d3.csv("../static/data/hle.csv").then(data => {
-    console.log(" Raw Data Loaded:", data);
+    // console.log(" Raw Data Loaded:", data);
 
     // Ensure numeric conversion
     data.forEach(d => {
@@ -15,7 +15,7 @@ d3.csv("../static/data/hle.csv").then(data => {
         !isNaN(d.factValueNumeric)
     );
 
-    // console.log(" Filtered Data:", filteredData);
+    // // console.log(" Filtered Data:", filteredData);
 
     if (filteredData.length === 0) {
         console.error("No matching data found!");
@@ -45,7 +45,7 @@ d3.csv("../static/data/hle.csv").then(data => {
         continent: processedData.find(d => d.country === country)?.continent || "Unknown"
     }));
 
-    console.log(" Average HALE by Country:", avgHALEByCountry);
+    // console.log(" Average HALE by Country:", avgHALEByCountry);
 
     //  Find min and max HALE countries for each continent based on **average HALE**
     const minMaxHALEByContinent = d3.rollups(
@@ -67,7 +67,7 @@ d3.csv("../static/data/hle.csv").then(data => {
         maxHALE2021: values.maxHALECountry.avgHALE2021
     }));
 
-    console.log(" Min and Max HALE by Continent:", minMaxHALEByContinent);
+    // console.log(" Min and Max HALE by Continent:", minMaxHALEByContinent);
 
     //  Prepare data for visualization (NO CHANGES HERE)
     let visualData = [];
@@ -78,17 +78,23 @@ d3.csv("../static/data/hle.csv").then(data => {
         visualData.push({ country: d.countryMax2021, year: "2021", hale: d.maxHALE2021 });
     });
 
-    console.log(" Processed Data for Plot:", visualData);
+    // console.log(" Processed Data for Plot:", visualData);
 
     drawChart(visualData);
 });
 
 // Function to draw the chart (UNCHANGED)
 function drawChart(visualData) {
-    const barWidth = 32;  // Even smaller bars to fit more data
-    const margin = { top: 30, right: 30, bottom: 100, left: 70 }; // Reduced bottom space
-    const width = visualData.length * barWidth + 100; // Ensure enough width
-    const height = 200;  // Further reduced height
+    // Update the width and margin calculations
+    const barWidth = 25;  // Decreased bar width
+    const margin = { 
+        top: 30, 
+        right: 120,  // Decreased right margin
+        bottom: 100, 
+        left: 70 
+    };
+    const width = visualData.length * barWidth + 50;
+    const height = 200;
 
     // Ensure scrolling by setting the correct width
     document.getElementById("chart-container").style.width = (width + 50) + "px";
@@ -98,6 +104,18 @@ function drawChart(visualData) {
     const svg = d3.select("#chart")
         .append("g")
         .attr("transform", `translate(${margin.left}, ${margin.top})`);
+
+    const tooltip = d3.select("body").append("div")
+        .attr("class", "chart-tooltip")
+        .style("opacity", 0)
+        .style("position", "absolute")
+        .style("background-color", "white")
+        .style("border", "1px solid #ddd")
+        .style("border-radius", "4px")
+        .style("padding", "8px")
+        .style("pointer-events", "none")
+        .style("font-size", "12px")
+        .style("box-shadow", "2px 2px 6px rgba(0,0,0,0.3)");
 
     // Set up scales
     const xScale = d3.scaleBand()
@@ -117,7 +135,7 @@ function drawChart(visualData) {
 
     const color = d3.scaleOrdinal()
         .domain(["2010", "2021"])
-        .range(["#3498db", "#e74c3c"]); 
+        .range(['var(--primary-light)', 'var(--secondary-light)']); 
 
     // Add X-axis with rotated labels
     const xAxis = svg.append("g")
@@ -142,16 +160,86 @@ function drawChart(visualData) {
         .attr("transform", d => `translate(${xScale(d.country)}, 0)`)
         .selectAll("rect")
         .data(d => [
-            { year: "2010", value: d.year === "2010" ? d.hale : null },
-            { year: "2021", value: d.year === "2021" ? d.hale : null }
-        ])
+            { year: "2010", value: d.year === "2010" ? d.hale : 0 },
+            { year: "2021", value: d.year === "2021" ? d.hale : 0 }
+        ].filter(item => item.value > 0)) // Filter out zero values
         .enter()
         .append("rect")
         .attr("x", d => xSubgroup(d.year))
         .attr("y", d => yScale(d.value))
         .attr("width", xSubgroup.bandwidth())
-        .attr("height", d => height - yScale(d.value))
-        .attr("fill", d => color(d.year));
+        .attr("height", d => {
+            const h = height - yScale(d.value);
+            return isNaN(h) ? 0 : h; // Ensure we never return NaN
+        })
+        .attr("fill", d => color(d.year))
+        .on("mouseover", function(event, d) {
+            d3.select(this)
+                .transition()
+                .duration(200)
+                .style("opacity", 0.7);
+                
+            tooltip.transition()
+                .duration(200)
+                .style("opacity", 1);
+            
+            tooltip.html(`
+                <strong>${d.year}</strong><br/>
+                Country: ${this.parentNode.__data__.country}<br/>
+                HALE: ${d.value.toFixed(1)} years
+            `)
+                .style("left", (event.pageX + 10) + "px")
+                .style("top", (event.pageY - 28) + "px");
+        })
+        .on("mousemove", function(event) {
+            tooltip
+                .style("left", (event.pageX + 10) + "px")
+                .style("top", (event.pageY - 28) + "px");
+        })
+        .on("mouseout", function() {
+            d3.select(this)
+                .transition()
+                .duration(200)
+                .style("opacity", 1);
+                
+            tooltip.transition()
+                .duration(500)
+                .style("opacity", 0);
+        });
 
-    console.log(" Chart is now smaller and properly displayed");
+    // Add legend after drawing the bars
+    // Update legend position
+    const legend = svg.append("g")
+        .attr("class", "legend")
+        .attr("transform", `translate(${width + 10}, 10)`); // Moved legend closer to chart
+
+    // Update legend item spacing and position
+    const years = ["2010", "2021"];
+    years.forEach((year, i) => {
+        const legendRow = legend.append("g")
+            .attr("transform", `translate(0, ${i * 20})`); // Reduced vertical spacing
+            
+        legendRow.append("rect")
+            .attr("width", 12)  // Slightly smaller rectangle
+            .attr("height", 12)
+            .attr("fill", color(year));
+            
+        legendRow.append("text")
+            .attr("x", 20)  // Reduced space between rect and text
+            .attr("y", 10)
+            .style("font-size", "11px")  // Slightly smaller font
+            .style("font-weight", "normal")
+            .text(year);
+    });
+
+    // Add Y-axis label
+    svg.append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("y", 0 - margin.left)
+        .attr("x", 0 - (height / 2))
+        .attr("dy", "1em")
+        .style("text-anchor", "middle")
+        .text("HALE (years)");
+
+    // console.log(" Chart is now smaller and properly displayed");
 }

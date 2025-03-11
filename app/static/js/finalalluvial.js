@@ -1,7 +1,7 @@
 //  Set dimensions for the chart
 const alluvialMargin = { top: 20, right: 40, bottom: 50, left: 130 };
 const alluvialWidth = Math.min(700, window.innerWidth - alluvialMargin.left - alluvialMargin.right);
-const alluvialHeight = Math.min(400, window.innerHeight - alluvialMargin.top - alluvialMargin.bottom);
+const alluvialHeight = Math.min(550, window.innerHeight - alluvialMargin.top - alluvialMargin.bottom);
 
 //  Select the SVG & Add Group Element
 const alluvialSvg = d3.select("#alluvial-chart")
@@ -130,7 +130,7 @@ Promise.all([
         .attr("y", d => yScale(d.Location) + yScale.bandwidth() * 0.5)
         .attr("width", d => xScale(d.LifeExpectancy))
         .attr("height", yScale.bandwidth())
-        .attr("fill", "gray")
+        .attr("fill", "var(--dark-gray)") // Using neutral gray color
         .on("mouseover", function (event, d) {
             alluvialTooltip.style("opacity", 1)
                 .html(`Total Life Expectancy: ${d.LifeExpectancy.toFixed(1)} years`);
@@ -154,7 +154,7 @@ Promise.all([
         .attr("y", d => yScale(d.Location) + yScale.bandwidth() * 0.9)
         .attr("width", d => xScale(d.HealthyLifeExpectancy))
         .attr("height", yScale.bandwidth() * 0.6)
-        .attr("fill", "green")
+        .attr("fill", "var(--primary-light)") // Using visualization green
         .on("mouseover", function (event, d) {
             alluvialTooltip.style("opacity", 1)
                 .html(`Healthy Life Expectancy: ${d.HealthyLifeExpectancy.toFixed(1)} years`);
@@ -177,7 +177,7 @@ Promise.all([
         .attr("y", d => yScale(d.Location) + yScale.bandwidth() * 0.9)
         .attr("width", d => xScale(d.UnhealthyYears))
         .attr("height", yScale.bandwidth() * 0.6)
-        .attr("fill", "red")
+        .attr("fill", "var(--secondary-light)") // Using visualization orange
         .on("mouseover", function (event, d) {
             alluvialTooltip.style("opacity", 1)
                 .html(`Unhealthy Years: ${d.UnhealthyYears.toFixed(1)} years`);
@@ -190,21 +190,41 @@ Promise.all([
             alluvialTooltip.style("opacity", 0);
         });
 
-    //  Add Country Names
-    alluvialSvg.selectAll(".country-label")
-        .data(finalSelectedData)
-        .enter()
-        .append("text")
-        .attr("class", "country-label")
-        .attr("x", -10)
-        .attr("y", d => yScale(d.Location) + yScale.bandwidth() / 2)
-        .attr("dy", ".35em")
-        .attr("text-anchor", "end")
-        .text(d => d.Location);
+    // Add X-axis
+    const xAxis = d3.axisBottom(xScale)
+        .tickFormat(d => d + " years");
 
-    //  Add Legend
+    alluvialSvg.append("g")
+        .attr("class", "x-axis")
+        .attr("transform", `translate(0,${alluvialHeight})`)
+        .call(xAxis);
+
+    // Add Y-axis
+    const yAxis = d3.axisLeft(yScale);
+
+    alluvialSvg.append("g")
+        .attr("class", "y-axis")
+        .call(yAxis)
+        .selectAll("text")
+        .style("text-anchor", "end");
+
+    // Add X-axis label
+    alluvialSvg.append("text")
+        .attr("class", "axis-label")
+        .attr("x", alluvialWidth / 2)
+        .attr("y", alluvialHeight + 40)
+        .style("text-anchor", "middle")
+        .text("Years");
+
+    // Remove country labels since we now have Y-axis
+    alluvialSvg.selectAll(".country-label").remove();
+
+    // Move legend to right side and adjust position
     const legend = alluvialSvg.append("g")
-        .attr("transform", `translate(${alluvialWidth - 700}, 450)`); // Adjust the position
+        .attr("transform", `translate(${alluvialWidth + 20}, 20)`); // Move to right side
+
+    // Update legend styling for better alignment
+    const legendSpacing = 30;
 
     // Legend for Total Life Expectancy (Gray)
     legend.append("rect")
@@ -212,44 +232,44 @@ Promise.all([
         .attr("y", 0)
         .attr("width", 20)
         .attr("height", 20)
-        .attr("fill", "gray");
+        .attr("fill", "var(--dark-gray)");
 
     legend.append("text")
         .attr("x", 30)
-        .attr("y", 15)
+        .attr("y", 10)
         .text("Total Life Expectancy")
         .style("font-size", "12px")
-        .attr("alignment-baseline", "middle");
+        .attr("dominant-baseline", "middle");
 
     // Legend for Healthy Life Expectancy (Green)
     legend.append("rect")
         .attr("x", 0)
-        .attr("y", 30)
+        .attr("y", legendSpacing)
         .attr("width", 20)
         .attr("height", 20)
-        .attr("fill", "green");
+        .attr("fill", "var(--primary-light)");
 
     legend.append("text")
         .attr("x", 30)
-        .attr("y", 45)
+        .attr("y", legendSpacing + 10)
         .text("Healthy Life Expectancy")
         .style("font-size", "12px")
-        .attr("alignment-baseline", "middle");
+        .attr("dominant-baseline", "middle");
 
     // Legend for Unhealthy Years (Red)
     legend.append("rect")
         .attr("x", 0)
-        .attr("y", 60)
+        .attr("y", legendSpacing * 2)
         .attr("width", 20)
         .attr("height", 20)
-        .attr("fill", "red");
+        .attr("fill", "var(--secondary-light)");
 
     legend.append("text")
         .attr("x", 30)
-        .attr("y", 75)
+        .attr("y", legendSpacing * 2 + 10)
         .text("Unhealthy Years")
         .style("font-size", "12px")
-        .attr("alignment-baseline", "middle");
+        .attr("dominant-baseline", "middle");
 
     // console.log(" Bullet Chart Rendered Successfully!");
 

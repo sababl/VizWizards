@@ -8,6 +8,14 @@ app.config(function ($mdThemingProvider) {
         .accentPalette('orange');
 });
 
+// Add filter to format section names
+app.filter('replace', function() {
+    return function(input, from, to) {
+        if (input === undefined) return '';
+        return input.replace(new RegExp(from, 'g'), to);
+    };
+});
+
 // Define the shared FormController
 
 app.controller('FormController', [
@@ -45,7 +53,7 @@ app.controller('FormController', [
         $scope.countries = [];
         $scope.spiderFormData = {
             selectedCountries: [],
-            sex: 'female',
+            sex: 'Male',
             year: '2021'
         };
 
@@ -54,6 +62,9 @@ app.controller('FormController', [
             year: 2021
         };
 
+        // Add this near the start of the controller
+        $scope.sections = ['global-overview', 'regional-insights', 'country-comparisons', 'gender-analysis'];
+        $scope.selectedTab = 0;
 
         // Add to FormController scope initialization
         $scope.violinFormData = {
@@ -91,9 +102,11 @@ app.controller('FormController', [
 
             $http.get('/countries')
                 .then(function (response) {
-                    $scope.countries = response.data.countries || [];
-                    // Provide some default countries if you want automatic chart
-                    if ($scope.countries.length >= 2) {
+                    // Sort countries alphabetically
+                    $scope.countries = (response.data.countries || []).sort((a, b) => a.localeCompare(b));
+                    
+                    // Set default selected countries if available
+                    if ($scope.countries.length >= 3) {
                         $scope.spiderFormData.selectedCountries = [
                             $scope.countries[0],
                             $scope.countries[1],
@@ -255,14 +268,73 @@ app.controller('FormController', [
 
         // Initialize the data structures
         $scope.years = Array.from({ length: 22 }, (_, i) => 2000 + i);
-        $scope.countries = [];
-        $scope.regions = []; 
+        $scope.countries = [].sort((a, b) => a.localeCompare(b));
+        $scope.regions = [];
         $scope.updateSlopeChart = function () {
             if ($scope.slopeData.country1 && $scope.slopeData.country2) {
                 updateChart($scope.slopeData.country1, $scope.slopeData.country2);
             }
         };
+
+        // In chart_config.js, add this after initializing spiderFormData
+        SpiderChartService.setDefaults($scope);
+
+        // In chart_config.js, add to FormController
+        function updateActiveTab() {
+            const sections = [
+                'global-overview',
+                'regional-insights',
+                'country-comparisons',
+                'gender-analysis'
+            ];
+            
+            const scrollPosition = window.pageYOffset || document.documentElement.scrollTop;
+            
+            // Find which section is currently in view
+            for (let i = 0; i < sections.length; i++) {
+                const section = document.getElementById(sections[i]);
+                if (!section) continue;
+                
+                const rect = section.getBoundingClientRect();
+                const sectionTop = rect.top + scrollPosition;
+                const sectionMiddle = sectionTop + (rect.height / 2);
+                
+                // If scroll position is within this section's bounds
+                if (scrollPosition >= sectionTop - 100 && 
+                    scrollPosition < sectionTop + rect.height - 100) {
+                    
+                    // Update the selected tab without triggering scroll
+                    $timeout(function() {
+                        $scope.$apply(function() {
+                            $scope.selectedTab = i;
+                        });
+                    });
+                    break;
+                }
+            }
+        }
+
+        // Add scroll event listener
+        var content = document.getElementById('mainContent');
+        if (content) {
+          content.addEventListener('scroll', debounce(updateActiveTab, 50));
+        }
+        // Update initial state
+        $timeout(updateActiveTab, 10);
     }]);
+
+// Add custom debounce function
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
 
 const ChartConfig = {
     // Color palette

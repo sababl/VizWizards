@@ -1,17 +1,21 @@
 document.addEventListener('DOMContentLoaded', () => {
 
 const container = d3.select("#map");
-const width = container.node().getBoundingClientRect().width;
-const height = Math.min(600, width * 0.6);
+const containerWidth = container.node().getBoundingClientRect().width;
+const containerHeight = window.innerHeight * 0.6; // 60% of viewport height
 
+// Create responsive SVG that fits the container
 const svg = container
     .append("svg")
-    .attr("viewBox", `0 0 ${width} ${height}`)
+    .attr("width", "100%")
+    .attr("height", containerHeight)
+    .attr("viewBox", `0 0 ${containerWidth} ${containerHeight}`)
     .attr("preserveAspectRatio", "xMidYMid meet");
 
+// Adjust projection scale and translation
 const projection = d3.geoNaturalEarth1()
-    .scale(225)
-    .translate([width / 2, height / 2]);
+    .scale((containerWidth / 6.2) * Math.min(containerWidth/1000, 1))
+    .translate([containerWidth / 2, containerHeight / 2]);
 
 const path = d3.geoPath().projection(projection);
 
@@ -89,31 +93,55 @@ Promise.all([
     legend.append("div").attr("class", "no-data")
         .html("<svg width='20' height='10'><rect width='20' height='10' fill='#ccc' stroke='#999' stroke-dasharray='4'></rect></svg> No data");
 
-    const legendSvg = legend.append("svg").attr("width", 200).attr("height", 30);
-    const legendGradient = legendSvg.append("defs").append("linearGradient")
+    // Update the legend dimensions
+    const legendWidth = 20;
+    const legendHeight = 200;
+
+    // Create legend with new dimensions
+    const legendSvg = legend.append("svg")
+        .attr("width", 60)  // Increased width to accommodate labels
+        .attr("height", legendHeight + 30);  // Added space for labels
+
+    // Update gradient for vertical orientation
+    const legendGradient = legendSvg.append("defs")
+        .append("linearGradient")
         .attr("id", "legendGradient")
         .attr("x1", "0%")
-        .attr("x2", "100%")
+        .attr("x2", "0%")
         .attr("y1", "0%")
-        .attr("y2", "0%");
+        .attr("y2", "100%");  // Changed to vertical orientation
 
+    // Update gradient stops
     legendGradient.selectAll("stop")
         .data([
-            { offset: "0%", color: colorScale(0.5) },
-            { offset: "100%", color: colorScale(1.5) }
+            { offset: "0%", color: colorScale(1.5) },    // Reversed order for vertical
+            { offset: "100%", color: colorScale(0.5) }
         ])
         .enter().append("stop")
         .attr("offset", d => d.offset)
         .attr("stop-color", d => d.color);
 
+    // Update rectangle for vertical orientation
     legendSvg.append("rect")
         .attr("x", 0)
-        .attr("y", 5)
-        .attr("width", 150)
-        .attr("height", 10)
+        .attr("y", 0)
+        .attr("width", legendWidth)
+        .attr("height", legendHeight)
         .style("fill", "url(#legendGradient)");
 
-    legendSvg.append("text").attr("x", 0).attr("y", 25).text("0.5");
-    legendSvg.append("text").attr("x", 140).attr("y", 25).text("1.5");
+    // Update text labels for vertical orientation
+    legendSvg.append("text")
+        .attr("x", legendWidth + 5)
+        .attr("y", 10)
+        .text("1.5");
+
+    legendSvg.append("text")
+        .attr("x", legendWidth + 5)
+        .attr("y", legendHeight)
+        .text("0.5");
+
+    // Update the no-data indicator position
+    legend.select(".no-data")
+        .style("margin-top", "10px");
 });
 });

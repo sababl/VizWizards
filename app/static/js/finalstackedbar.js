@@ -1,9 +1,12 @@
 d3.csv("/static/data/bar-hle_avg_filtered.csv").then(function (data) {
-    const margin = { top: 50, right: 70, bottom: 100, left: 100 },
+    const margin = { top: 50, right: 70, bottom: 120, left: 100 }, // Increased bottom margin
         width = 900 - margin.left - margin.right,
         height = 600 - margin.top - margin.bottom;
 
     const svg = d3.select("#bar-chart")
+        .append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
         .append("g")
         .attr("transform", `translate(${margin.left},${margin.top})`);
 
@@ -55,7 +58,10 @@ d3.csv("/static/data/bar-hle_avg_filtered.csv").then(function (data) {
         xAxis.call(d3.axisBottom(x).tickSize(0))
             .selectAll("text")
             .attr("transform", "rotate(-45)")
-            .style("text-anchor", "end");
+            .attr("y", 20)        // Increased y offset
+            .attr("x", -8)      
+            .style("text-anchor", "end")
+            .style("font-size", "12px");
 
         yAxis.call(d3.axisLeft(y));
 
@@ -74,7 +80,7 @@ d3.csv("/static/data/bar-hle_avg_filtered.csv").then(function (data) {
                 tooltip.transition()
                     .duration(200)
                     .style("opacity", 0.9);
-                tooltip.html(`Value: ${d.value}`)
+                tooltip.html(`Value: ${d.FactValueNumeric.toFixed(1)} years`)
                     .style("left", (event.pageX + 10) + "px")
                     .style("top", (event.pageY - 28) + "px");
             })
@@ -96,6 +102,10 @@ d3.csv("/static/data/bar-hle_avg_filtered.csv").then(function (data) {
             .attr("fill", d => colorScale(d.ParentLocation));
 
         bars.exit().remove();
+
+        // Add padding to the bottom of the chart container
+        d3.select("#bar-chart-container")
+            .style("padding-bottom", "40px");
     }
 
     dropdown.on("change", function () {

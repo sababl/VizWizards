@@ -139,13 +139,13 @@ d3.csv("/static/data/le.csv").then(function (data) {
         .attr("transform", `translate(${legendWidth}, 0)`);
 
     // Add legend title
-    legendSvg.append("text")
-        .attr("class", "legend-title")
-        .attr("text-anchor", "middle")
-        .attr("transform", "rotate(-90)")
-        .attr("y", -30)
-        .attr("x", -legendHeight / 2)
-        .text("Female Life Expectancy at Age 60 (years)");
+    // legendSvg.append("text")
+    //     .attr("class", "legend-title")
+    //     .attr("text-anchor", "middle")
+    //     .attr("transform", "rotate(-90)")
+    //     .attr("y", -30)
+    //     .attr("x", -legendHeight / 2)
+    //     .text("Female Life Expectancy at Age 60 (years)");
 
     // Create a vertical gradient
     const legendGradient = legendSvg.append("defs")

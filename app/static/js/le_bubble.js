@@ -1,15 +1,15 @@
-angular.module('myApp').service('BubbleChartService', ['$http', function($http) {
+angular.module('myApp').service('BubbleChartService', ['$http', function ($http) {
 
   const PARENT_LOCATION_COLORS = {
     "Africa": "#143642",
-    "Eastern Mediterranean": "#741C28",
-    "Western Pacific": "#877765",
-    "Americas": "#E7DECD",
+    "Eastern Mediterranean": "#CD3C50FF",
+    "Western Pacific":  "#DF943FFF",
+    "Americas": 'var(--secondary-light)',
     "South-East Asia": "#A1A8BE",
-    "Europe": "#BB8C94"
+    "Europe": "#A9636EFF"
   };
 
-  this.createBubbleChart = function(year) {
+  this.createBubbleChart = function (year) {
     d3.select("#chart-beeswarm").selectAll("*").remove();
 
     // Call chart generation with selected year
@@ -94,8 +94,13 @@ angular.module('myApp').service('BubbleChartService', ['$http', function($http) 
         return { width, height };
       }
 
-      // Define margins
-      const margin = { top: 50, right: 50, bottom: 50, left: 50 };
+      // Update the margin to accommodate the legend
+      const margin = { 
+        top: 50, 
+        right: 150, // Increase right margin for legend
+        bottom: 50, 
+        left: 50 
+      };
 
       // Get dynamic width and height
       let { width, height } = getChartDimensions();
@@ -179,7 +184,8 @@ angular.module('myApp').service('BubbleChartService', ['$http', function($http) 
         .attr("transform", `translate(0,${height})`)
         .call(xAxisGrid)
         .selectAll("line")
-        .style("stroke", "#ccc")
+        .style("stroke", "var(--gray)")  // Use CSS variable for light gray
+        .style("stroke-opacity", 0.5)    // Make it more subtle
         .style("stroke-dasharray", "2,2");
 
 
@@ -193,7 +199,8 @@ angular.module('myApp').service('BubbleChartService', ['$http', function($http) 
         .attr("class", "grid")
         .call(yAxisGrid)
         .selectAll("line")
-        .style("stroke", "#ccc")
+        .style("stroke", "var(--gray)")  // Use CSS variable for light gray
+        .style("stroke-opacity", 0.5)    // Make it more subtle
         .style("stroke-dasharray", "2,2");
 
       // ===================================================
@@ -212,6 +219,12 @@ angular.module('myApp').service('BubbleChartService', ['$http', function($http) 
         .call(yAxis)
         .selectAll("text")
         .style("font-size", "14px");
+
+      // Style the axis grid lines
+      svg.selectAll(".tick line")
+        .style("stroke", "var(--gray)")
+        .style("stroke-opacity", 0.5);
+
       // Add axis labels.
       svg.append("text")
         .attr("x", width / 2)
@@ -228,7 +241,8 @@ angular.module('myApp').service('BubbleChartService', ['$http', function($http) 
       // ===================================================
       // 6. Draw Circles for the Data Points
       // ===================================================
-      svg.selectAll("circle")
+      // After creating the circles, update their styling and store them in a variable
+      const circles = svg.selectAll("circle")
         .data(finalData)
         .enter()
         .append("circle")
@@ -237,7 +251,9 @@ angular.module('myApp').service('BubbleChartService', ['$http', function($http) 
         .attr("r", d => radiusScale(d.population))
         .attr("fill", d => colorScale(d.ParentLocation))
         .attr("stroke", "#333")
-        .attr("stroke-width", 1);
+        .attr("stroke-width", 1)
+        .attr("class", d => `circle-${d.ParentLocation.replace(/\s+/g, '-')}`); // Add class for selection
+
       // Create tooltip div
       const tooltip = d3.select("body").append("div")
         .attr("class", "chart-tooltip")
@@ -257,7 +273,7 @@ angular.module('myApp').service('BubbleChartService', ['$http', function($http) 
             .style("left", (event.pageX + 10) + "px")
             .style("top", (event.pageY - 20) + "px");
         })
-        .on("mouseout", function() {
+        .on("mouseout", function () {
           tooltip.transition()
             .duration(500)
             .style("opacity", 0);
@@ -281,28 +297,72 @@ angular.module('myApp').service('BubbleChartService', ['$http', function($http) 
         .text(d => d.Location);
 
 
-      // Add legend for color of ParentLocation
+      // Update the legend code
       const legendGroup = svg.append("g")
         .attr("class", "legend")
-        .attr("transform", `translate(${width / 2 - 300}, -50)`);
-      
-        let categories = Object.keys(PARENT_LOCATION_COLORS);
-        categories.forEach((cat, i) => {
-          legendGroup.append("rect")
-            .attr("x", i * 100)
-            .attr("y", 0)
-            .attr("width", 15)
-            .attr("height", 15)
-            .attr("fill", PARENT_LOCATION_COLORS[cat]);
-          legendGroup.append("text")
-            .attr("x", i * 100 + 20)
-            .attr("y", 12)
-            .style("font-size", "14px")
-            .style("font-weight", "bold")
-            .text(cat);
-        });
+        .attr("transform", `translate(${width + 20}, 0)`); // Move to right side
 
-        
+      let categories = Object.keys(PARENT_LOCATION_COLORS);
+      const legendSpacing = 25; // Vertical spacing between items
+
+      // Update the legend code to include hover interaction
+      categories.forEach((cat, i) => {
+        // Create legend item group
+        const legendItem = legendGroup.append("g")
+          .attr("transform", `translate(0, ${i * legendSpacing})`);
+
+        // Add colored rectangle
+        legendItem.append("rect")
+          .attr("width", 15)
+          .attr("height", 15)
+          .attr("fill", PARENT_LOCATION_COLORS[cat])
+          .style("cursor", "pointer")
+          .on("mouseover", function() {
+            // Dim all circles
+            svg.selectAll("circle")
+              .transition()
+              .duration(200)
+              .style("opacity", 0.2);
+            
+            // Highlight circles for this continent
+            svg.selectAll(`.circle-${cat.replace(/\s+/g, '-')}`)
+              .transition()
+              .duration(200)
+              .style("opacity", 1);
+          })
+          .on("mouseout", function() {
+            // Reset all circles
+            svg.selectAll("circle")
+              .transition()
+              .duration(200)
+              .style("opacity", 1);
+          });
+
+        // Add text label with same hover behavior
+        legendItem.append("text")
+          .attr("x", 20)
+          .attr("y", 12)
+          .style("font-size", "12px")
+          .style("cursor", "pointer")
+          .text(cat)
+          .on("mouseover", function() {
+            svg.selectAll("circle")
+              .transition()
+              .duration(200)
+              .style("opacity", 0.2);
+            
+            svg.selectAll(`.circle-${cat.replace(/\s+/g, '-')}`)
+              .transition()
+              .duration(200)
+              .style("opacity", 1);
+          })
+          .on("mouseout", function() {
+            svg.selectAll("circle")
+              .transition()
+              .duration(200)
+              .style("opacity", 1);
+          });
+      });
 
     }).catch(function (error) {
       console.error("Error loading data:", error);

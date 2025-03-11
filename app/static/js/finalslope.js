@@ -71,12 +71,6 @@ Promise.all([
     // console.log("Filtered HLE Data:", filteredHLE);
     // console.log("Merged Data:", data);
 
-    // Check specific countries for debugging
-    const testCountries = ["Italy", "USA", "Germany"];
-    testCountries.forEach(country => {
-        // console.log(`Data for ${country}:`, data.filter(d => d.Location === country));
-    });
-
     const uniqueCountries = [...new Set(data.map(d => d.Location))].sort();
 
     const country1Dropdown = d3.select("#country1");
@@ -98,6 +92,32 @@ Promise.all([
         .append("option")
         .text(d => d)
         .attr("value", d => d);
+
+    // Set initial values for the dropdowns
+    if (uniqueCountries.length >= 2) {
+        // Get first two countries
+        const firstCountry = uniqueCountries[0];
+        const secondCountry = uniqueCountries[1];
+
+        // Set first country dropdown
+        country1Dropdown
+            .selectAll("option")
+            .filter(function() {
+                return d3.select(this).attr("value") === firstCountry;
+            })
+            .property("selected", true);
+        
+        // Set second country dropdown
+        country2Dropdown
+            .selectAll("option")
+            .filter(function() {
+                return d3.select(this).attr("value") === secondCountry;
+            })
+            .property("selected", true);
+        
+        // Initialize chart with first two countries
+        updateChart(firstCountry, secondCountry);
+    }
 
     // Add event listeners for the country dropdowns
     country1Dropdown.on("change", function () {
@@ -151,17 +171,35 @@ function updateChart(country1, country2) {
         .domain([minY, maxY])
         .range([s_height, 0]);
 
-    // Draw Axes
+    // Draw Axes with gray grid lines
     s_svg.append("g")
         .attr("transform", `translate(0,${s_height})`)
-        .call(d3.axisBottom(xScale).tickFormat(d3.format("d")).tickSize(-s_height))
+        .call(d3.axisBottom(xScale)
+            .tickFormat(d3.format("d"))
+            .tickSize(-s_height))
         .selectAll("text")
         .style("font-size", "12px");
 
+    // Style the x-axis grid lines
+    s_svg.selectAll(".tick line")
+        .attr("stroke", "var(--gray)")
+        .attr("stroke-opacity", 0.5);
+
+    // Draw y-axis with grid lines
     s_svg.append("g")
-        .call(d3.axisLeft(yScale).tickSize(-s_width))
+        .call(d3.axisLeft(yScale)
+            .tickSize(-s_width))
         .selectAll("text")
         .style("font-size", "12px");
+
+    // Style the y-axis grid lines
+    s_svg.selectAll(".tick line")
+        .attr("stroke", "var(--gray)")
+        .attr("stroke-opacity", 0.5);
+
+    // Remove the domain lines if needed
+    s_svg.selectAll(".domain")
+        .attr("stroke", "var(--dark-gray)");
 
     // Use `curveMonotoneX` for smoother LE lines
     const lineGenerator = d3.line()
@@ -178,29 +216,42 @@ function updateChart(country1, country2) {
 
     const groupedData = d3.groups(selectedData, d => d.Location);
 
+    // Create an array of theme colors instead of using d3.schemeCategory10
+    const themeColors = [
+        'var(--vis-blue)',    // #2C6975
+        'var(--vis-orange)',  // #E05515
+        'var(--vis-green)',   // #019154
+        'var(--vis-teal)',    // #68B2A0
+        'var(--vis-purple)',  // #9C6ADE
+        'var(--vis-yellow)'   // #FFB74D
+    ];
+
     groupedData.forEach(([location, values], i) => {
+        // Life expectancy line
         s_svg.append("path")
             .datum(values)
             .attr("fill", "none")
-            .attr("stroke", d3.schemeCategory10[i % 10])
+            .attr("stroke", themeColors[i % themeColors.length])
             .attr("stroke-width", 2)
             .attr("d", lineGenerator);
 
+        // Healthy life expectancy line (dashed)
         s_svg.append("path")
             .datum(values)
             .attr("fill", "none")
-            .attr("stroke", d3.schemeCategory10[i % 10])
+            .attr("stroke", themeColors[i % themeColors.length])
             .attr("stroke-width", 2)
             .attr("stroke-dasharray", "4,4")
             .attr("d", dashedLineGenerator);
 
+        // Update circles color
         values.forEach(d => {
             if (d.LifeExpectancy !== null) {
                 s_svg.append("circle")
                     .attr("cx", xScale(d.Period))
                     .attr("cy", yScale(d.LifeExpectancy))
                     .attr("r", 4)
-                    .attr("fill", d3.schemeCategory10[i % 10])
+                    .attr("fill", themeColors[i % themeColors.length])
                     // (Tooltip code) Mouse events
                     .on("mouseover", (event) => {
                         s_tooltip
@@ -229,7 +280,7 @@ function updateChart(country1, country2) {
                     .attr("cx", xScale(d.Period))
                     .attr("cy", yScale(d.HealthyLifeExpectancy))
                     .attr("r", 4)
-                    .attr("fill", d3.schemeCategory10[i % 10])
+                    .attr("fill", themeColors[i % themeColors.length])
                     // (Tooltip code) Mouse events
                     .on("mouseover", (event) => {
                         s_tooltip
@@ -277,7 +328,7 @@ function updateChart(country1, country2) {
             .attr("x2", 20)
             .attr("y1", 15)
             .attr("y2", 15)
-            .attr("stroke", d3.schemeCategory10[i % 10])
+            .attr("stroke", themeColors[i % themeColors.length])
             .attr("stroke-width", 2);
 
         legendGroup.append("text")
@@ -292,7 +343,7 @@ function updateChart(country1, country2) {
             .attr("x2", 20)
             .attr("y1", 35)
             .attr("y2", 35)
-            .attr("stroke", d3.schemeCategory10[i % 10])
+            .attr("stroke", themeColors[i % themeColors.length])
             .attr("stroke-width", 2)
             .attr("stroke-dasharray", "4,4");
 

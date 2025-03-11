@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Life Expectancy Analysis</title>
   <!-- Angular Libraries -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.21/lodash.min.js"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-animate.min.js"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-aria.min.js"></script>
@@ -14,10 +15,10 @@
 
   <!-- Angular Material CSS -->
   <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/1.2.5/angular-material.min.css">
-  
+
   <!-- Google Fonts - Roboto -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap">
-  
+
   <!-- D3.js -->
   <script src="https://d3js.org/d3.v7.min.js"></script>
   <script src="https://d3js.org/topojson.v3.min.js"></script>
@@ -37,25 +38,11 @@
       <div layout="row" layout-align="space-between center" style="width: 100%">
         <h2 class="md-title">Life Expectancy Analysis</h2>
       </div>
-      <md-tabs md-stretch-tabs="always" md-selected="selectedTab" class="md-primary">
-        <md-tab>
+      <md-tabs md-stretch-tabs="always" md-selected="selectedTab" class="md-primary" md-no-ink>
+        <md-tab
+          ng-repeat="section in ['global-overview', 'regional-insights', 'country-comparisons', 'gender-analysis']">
           <md-tab-label>
-            <span ng-click="scrollTo('global-overview')">Global Overview</span>
-          </md-tab-label>
-        </md-tab>
-        <md-tab>
-          <md-tab-label>
-            <span ng-click="scrollTo('regional-insights')">Regional & Continental Insights</span>
-          </md-tab-label>
-        </md-tab>
-        <md-tab>
-          <md-tab-label>
-            <span ng-click="scrollTo('country-comparisons')">Country Comparisons</span>
-          </md-tab-label>
-        </md-tab>
-        <md-tab>
-          <md-tab-label>
-            <span ng-click="scrollTo('gender-analysis')">Gender-Based Analysis</span>
+            <span ng-click="scrollTo(section)">{% raw %}{{section | uppercase | replace:'-':' '}}{% endraw %}</span>
           </md-tab-label>
         </md-tab>
       </md-tabs>
@@ -63,7 +50,7 @@
   </md-toolbar>
 
   <!-- Main Content -->
-  <md-content flex layout-padding>
+  <md-content id="mainContent" flex layout-padding>
     <!-- Global Overview Section -->
     <section id="global-overview" class="section-container">
       <md-card class="section-card">
@@ -76,9 +63,15 @@
         <md-card-content>
           <div class="chart-container">
             <div class="chart-header">
-              <h3 class="chart-title">Global Trends</h3>
+              <h3 class="chart-title">Life Expectancy: Progress and Pandemic Dip </h3>
+              <span class="chart-subtitle">Steady gains since 2000, briefly reversed by COVID-19</span>
             </div>
-            <p class="chart-description">Analysis of worldwide life expectancy trends from 1950 to 2020</p>
+            <p class="chart-description">This bar chart tracks the global average life expectancy from 2000 to 2021,
+              revealing a steady climb in longevity over two decades. However, between 2019 and 2020—and extending into
+              2021—there is a noticeable dip in the trend. This downturn is largely attributed to the COVID-19 pandemic,
+              which led to increased mortality rates and strained healthcare systems worldwide, temporarily reversing
+              some of the long-term gains in life expectancy.
+            </p>
             <div id="globalTrendsChart" class="chart-content loading">
               <div class="loading-indicator"></div>
             </div>
@@ -89,6 +82,15 @@
               <h3 class="chart-title">Global Life Expectancy Distribution</h3>
               <span class="chart-subtitle">Distribution across countries (2021)</span>
             </div>
+            <p class="chart-description">This bubble map visualizes life expectancy across different countries. The size
+              of each bubble represents the population of the country, while the color indicates life expectancy. Larger
+              bubbles correspond to more populous countries, and darker colors represent higher life expectancy. The
+              visualization highlights the relationship between population size and life expectancy in 2021. Countries
+              with larger populations and lower life expectancy may face significant public health challenges, whereas
+              smaller countries with high life expectancy often have well-developed healthcare systems. By analyzing
+              both metrics together, this map helps identify global disparities in health and longevity, guiding
+              potential improvements in healthcare policies.
+            </p>
             <div id="map-wrapper" class="chart-content">
               <svg id="bubble-map"></svg>
               <div id="tooltip" class="chart-tooltip"></div>
@@ -104,13 +106,16 @@
         <md-card-title>
           <md-card-title-text>
             <span class="md-headline">Regional & Continental Insights</span>
-            <span class="md-subhead">Detailed analysis of factors influencing life expectancy</span>
+            <span class="md-subhead">Delving into how economic, social, and healthcare factors shape life expectancy
+              differences across regions.
+            </span>
           </md-card-title-text>
         </md-card-title>
         <md-card-content>
           <div class="chart-container">
             <div class="chart-header">
-              <h3 class="chart-title">Regional Impact Factors</h3>
+              <h3 class="chart-title">The Lifespan Spectrum: Insights into Regional Well-Being
+              </h3>
               <div class="filter-group">
                 <md-select class="filter-select" ng-model="formData.year" ng-change="generateErroPlot()"
                   aria-label="Select Year" placeholder="Select Year">
@@ -122,7 +127,14 @@
                 </md-select>
               </div>
             </div>
-            <p class="chart-subtitle">Impact of GDP, education, and healthcare access on life expectancy</p>
+            <p class="chart-description">This visualization opens a window into the diverse health narratives of
+              countries within your selected region. Each error bar not only captures the range of life expectancy at
+              birth but also hints at the underlying stories of progress, challenges, and resilience. The red marker
+              pinpoints the average life expectancy, offering a focal point amidst the variability—a symbol of the
+              collective journey towards improved well-being. Dive in and explore how each country's unique experiences
+              contribute to the broader story of life and longevity
+
+            </p>
             <div id="error-chart" class="chart-content">
               <div class="loading-indicator"></div>
             </div>
@@ -131,10 +143,9 @@
           <div class="chart-container">
             <div class="chart-header">
               <h3 class="chart-title">Regional Life Expectancy Distribution</h3>
+              <p class="chart-subtitle">Average Life Expectancy at Birth by Region (2000–2021)</p>
             </div>
-            <p class="chart-subtitle">Comparative analysis of life expectancy distribution across global regions</p>
-            <div class="info-panel">
-              <h4>Average Life Expectancy at Birth by Region (2000–2021)</h4>
+            <div class="chart-description">
               <p>
                 This box plot compares average life expectancy at birth across global regions from 2000 to 2021,
                 showing significant differences in longevity. Africa has the lowest median, while Europe and the
@@ -151,13 +162,14 @@
           <div class="chart-container">
             <div class="chart-header">
               <h3 class="chart-title">Life Expectancy vs. Healthy Life Expectancy</h3>
-              <span class="chart-subtitle">Comparison of total and healthy life expectancy across regions (2021)</span>
+              <span class="chart-subtitle">Comparison of total and healthy life expectancy across countries
+                (2021)</span>
             </div>
-            <div class="info-panel">
+            <div class="chart-description">
               <p>
-                This chart compares three key metrics across countries: total life expectancy (gray), 
-                healthy life expectancy (green), and unhealthy years (red). It highlights the countries 
-                with the highest and lowest values within each continent, revealing significant variations 
+                This chart compares three key metrics across countries: total life expectancy (gray),
+                healthy life expectancy (green), and unhealthy years (red). It highlights the countries
+                with the highest and lowest values within each continent, revealing significant variations
                 in not just how long people live, but how many of those years are spent in good health.
               </p>
             </div>
@@ -179,11 +191,12 @@
         <md-card-content>
           <div class="chart-container">
             <div class="chart-header">
-              <h3 class="chart-title">Multi-Country Comparison (Radar Chart)</h3>
+              <h3 class="chart-title">Contrasting Countries on Key Life Expectancy Metrics</h3>
               <div class="filter-group">
                 <md-select class="filter-select" ng-model="spiderFormData.selectedCountries" multiple
                   placeholder="Select countries (max 10)" aria-label="Countries">
-                  <md-option ng-repeat="country in countries" ng-value="country">{% raw %}{{country}}{% endraw %}</md-option>
+                  <md-option ng-repeat="country in countries" ng-value="country">{% raw %}{{country}}{% endraw
+                    %}</md-option>
                 </md-select>
                 <md-select class="filter-select" ng-model="spiderFormData.sex" placeholder="Sex" aria-label="Sex">
                   <md-option value="Male">Male</md-option>
@@ -195,7 +208,9 @@
                 </md-select>
               </div>
             </div>
-            <p class="chart-subtitle">Compare multiple countries on life-expectancy metrics</p>
+            <p class="chart-description">This radar chart maps out how different nations stack up on multiple measures
+              of longevity—from life expectancy at birth to healthy years lived. Each axis highlights a key metric,
+              revealing which countries excel and where gaps may persist. </p>
             <div id="radar-chart" class="chart-content">
               <div class="loading-indicator"></div>
             </div>
@@ -207,15 +222,22 @@
               <div class="filter-group">
                 <md-select class="filter-select" ng-model="slopeData.country1" ng-change="updateSlopeChart()"
                   placeholder="Select Country 1" aria-label="Country 1">
-                  <md-option ng-repeat="country in countries" ng-value="country">{% raw %}{{country}}{% endraw %}</md-option>
+                  <md-option ng-repeat="country in countries" ng-value="country">{% raw %}{{country}}{% endraw
+                    %}</md-option>
                 </md-select>
                 <md-select class="filter-select" ng-model="slopeData.country2" ng-change="updateSlopeChart()"
                   placeholder="Select Country 2" aria-label="Country 2">
-                  <md-option ng-repeat="country in countries" ng-value="country">{% raw %}{{country}}{% endraw %}</md-option>
+                  <md-option ng-repeat="country in countries" ng-value="country">{% raw %}{{country}}{% endraw
+                    %}</md-option>
                 </md-select>
               </div>
             </div>
-            <p class="chart-subtitle">Compare changes in Life Expectancy and Healthy Life Expectancy between countries (2015-2021)</p>
+            <p class="chart-description">This slope chart visualizes the changes in Life Expectancy and Healthy Life
+              Expectancy from 2015-2021 for selected countries. The solid lines represent total life expectancy, while
+              the dashed lines indicate the number of years people are expected to live in good health. A small gap
+              between the two lines suggests a high quality of life, whereas a larger gap indicates that people are
+              living longer but with more years in poor health.
+            </p>
             <div id="slope-chart" class="chart-content">
               <div id="slope-tooltip" class="chart-tooltip"></div>
             </div>
@@ -234,6 +256,13 @@
                 </md-select>
               </div>
             </div>
+            <p class="chart-description">This violin plot provides a compelling visualization of life expectancy
+              distributions across different regions or countries. Each violin shape illustrates the density of life
+              expectancy values, highlighting variations within each group. The plot also features extreme
+              values—minimum and maximum estimates—offering insight into disparities and outliers. By comparing regions
+              side by side, we can uncover patterns, anomalies, and trends that shape global health outcomes. Explore
+              how life expectancy varies across the world and discover the stories hidden within the data!
+            </p>
             <div id="violin-wrapper" class="chart-content">
               <div id="violin-chart"></div>
               <div id="violin-tooltip" class="chart-tooltip"></div>
@@ -255,9 +284,9 @@
         <md-card-content>
           <div class="chart-container">
             <div class="chart-header">
-              <h3 class="chart-title">Male Life Expectancy by Country</h3>
+              <h3 class="chart-title">Lowest Male Life Expectancy by Country</h3>
             </div>
-            <div class="info-panel">
+            <div class="chart-description">
               <p>
                 This interactive scatter plot visualizes the lowest life expectancy of males at birth from 2000 to 2021,
                 showing trends across different countries. Over time, there is a gradual increase in life expectancy,
@@ -277,31 +306,36 @@
 
           <div class="chart-container">
             <div class="chart-header">
-              <h3 class="chart-title">Gender Life Expectancy Comparison</h3>
-            </div>
-            <div class="info-panel">
-              <p>This bar chart compares life expectancy between genders, showing how the gap has evolved over time.
-                Use the year selector to explore different time periods.</p>
-            </div>
-            <div id="bar-chart-container" class="chart-content">
+              <h3 class="chart-title">Average Healthy Life Expectancy at Age 60 (2000-2021)</h3>
               <div class="filter-group">
                 <label for="year">Select Year:</label>
                 <select id="year"></select>
               </div>
-              <svg width="100%" height="500" id="bar-chart"></svg>
+            </div>
+            <div class="chart-description">
+              <p>This bar chart represents average healthy life expectancy at age 60 across different regions over time.
+                The consistent height of the bars indicates that life expectancy beyond 60 has remained relatively
+                stable, with variations among regions. Europe and the Americas have the highest life expectancy, while
+                Africa shows the lowest. This visualization highlights longevity trends and aging populations in
+                different global regions.</p>
+            </div>
+            <div id="bar-chart-container" class="chart-content">
+
+              <div width="100%" height="400" id="bar-chart"></div>
               <div class="chart-tooltip"></div>
             </div>
           </div>
 
           <div class="chart-container">
             <div class="chart-header">
-              <h3 class="chart-title">Women's Life Expectancy Heatmap</h3>
+              <h3 class="chart-title">Female Life Expectancy at Age 60 (years)</h3>
               <span class="chart-subtitle">Visualization of women's life expectancy at age 60 across continents</span>
             </div>
-            <div class="info-panel">
+            <div class="chart-description">
               <p>
-                This heatmap shows women's life expectancy at age 60 across different continents.
-                Darker colors indicate higher life expectancy, while lighter colors represent lower values.
+                This heatmap displays how women’s life expectancy at age 60 varies across continents. Each cell’s color
+                reveals differences in longevity: darker squares indicate higher values, while lighter squares represent
+                lower figures. The grid highlights how socio-economic and healthcare factors shape aging worldwide.
               </p>
             </div>
             <div id="heatmap-container" class="chart-content"></div>
@@ -310,11 +344,12 @@
           <div class="chart-container">
             <div class="chart-header">
               <h3 class="chart-title">Female Life Expectancy At Age 60 (2000–2021)</h3>
+              <div class="filter-group">
+                <label for="country-select">Select Country:</label>
+                <select id="country-select"></select>
+              </div>
             </div>
-            <div class="filter-group centered">
-              <label for="country-select">Select Country:</label>
-              <select id="country-select"></select>
-            </div>
+
             <div id="tooltip" class="chart-tooltip"></div>
             <svg id="line-chart" width="100%" height="500"></svg>
           </div>
@@ -322,36 +357,38 @@
           <div class="chart-container">
             <div class="chart-header">
               <h3 class="chart-title">Global Sex Ratio Distribution</h3>
-              <span class="chart-subtitle">Geographic distribution of life expectancy sex ratios across countries</span>
+              <div class="filter-group">
+                <label for="yearSelector">Select Year:</label>
+                <select id="yearSelector" class="filter-select"></select>
+              </div>
             </div>
-            <div class="info-panel">
+            <div class="chart-description">
               <p>
-                This choropleth map displays the sex ratio of life expectancy across different countries.
-                Darker colors indicate higher ratios (where female life expectancy is higher relative to male),
-                while lighter colors represent lower ratios. Use the year selector to explore changes over time.
+                This map visualizes the ratio of female to male healthy life expectancy across different countries from
+                2000 to 2021. The color gradient represents how much longer or shorter females live in healthy
+                conditions compared to males, with lighter shades indicating a more equal ratio and darker shades
+                showing a larger gap in favor of females.
               </p>
             </div>
-            <div class="filter-group centered">
-              <label for="yearSelector">Select Year:</label>
-              <select id="yearSelector" class="filter-select"></select>
-            </div>
+
             <div class="map-container chart-content">
               <div id="map"></div>
               <div id="legend" class="legend"></div>
             </div>
           </div>
-            
+
           <div class="chart-container">
             <div class="chart-header">
               <h3 class="chart-title">Global Gender Gap in Life Expectancy</h3>
               <div class="filter-group">
-                <md-select class="filter-select" ng-model="beeswarmData.year" placeholder="Select Year" aria-label="Year">
+                <md-select class="filter-select" ng-model="beeswarmData.year" placeholder="Select Year"
+                  aria-label="Year">
                   <md-option ng-repeat="year in years" ng-value="year">{% raw %}{{year}}{% endraw %}</md-option>
                 </md-select>
               </div>
             </div>
             <p class="chart-subtitle">Comparing male and female life expectancy across countries</p>
-            <div class="info-panel">
+            <div class="chart-description">
               <p>
                 This bubble chart reveals how men's and women's lifespans differ across regions.
                 Each circle represents a country, color-coded by continent and sized by population.
@@ -359,6 +396,38 @@
               </p>
             </div>
             <div id="chart-beeswarm" class="chart-content"></div>
+          </div>
+
+          <div class="chart-container">
+            <div class="chart-header">
+              <h3 class="chart-title">Regional extremes in male HALE
+              </h3>
+              <span class="chart-subtitle">Healthy Life Expectancy at Birth for Males (2010 vs 2021)</span>
+            </div>
+            <div class="chart-description">
+              <p>
+                This split plot visualization compares the Healthy Life Expectancy (HALE) at birth for males across
+                different continents in 2010 and 2021. Instead of displaying all countries, the chart highlights the
+                most representative ones within each continent. For each continent, the country with the lowest average
+                HALE and the country with the highest average HALE were selected based on their average values in 2010
+                and 2021. Each selected country has two bars: a blue bar representing HALE in 2010 and a red bar
+                representing HALE in 2021. This allows us to observe health improvements or declines over time. By
+                focusing on extreme cases within each continent, the visualization effectively reveals disparities in
+                life expectancy, the impact of healthcare systems, and overall living conditions. The split plot format
+                helps provide a clear comparison of global health trends while avoiding clutter.
+
+              </p>
+            </div>
+            <!-- Chart Container -->
+            <div id="chart-wrapper" class="chart-content">
+              <div id="chart-container">
+                <svg id="chart"></svg>
+
+              </div>
+              <!-- Legend -->
+              <div id="legend" class="legend">
+              </div>
+            </div>
           </div>
         </md-card-content>
       </md-card>
@@ -379,7 +448,7 @@
   <script src="/static/js/finalchoropleth.js"></script>
   <script src="/static/js/finalheatmap.js"></script>
   <script src="/static/js/finalalluvial.js"></script>
-  
+  <script src="/static/js/finalsplit.js"></script>
 </body>
 
 </html>

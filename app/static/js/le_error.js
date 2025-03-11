@@ -170,7 +170,7 @@ angular.module('myApp').service('ErrorChartService', ['$http', '$q', function($h
 
                 svg.append("path")
                     .datum(lifeData)
-                    .attr("class", "mean-line")
+                    .attr("class", "line")
                     .attr("fill", "none")
                     .attr("stroke", "blue")
                     .attr("stroke-width", 2)

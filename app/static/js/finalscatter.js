@@ -30,11 +30,17 @@ fetch('/static/data/finalscatter_lowest_life_expectancy_male_filtered.csv')
         .range([height, 0]);
         
    
-const customColors = ["#143642", "#741C28", "#877765", "#E7DECD", "#A1A8BE", "#BB8C94"];
+const themeColors = [
+    'var(--vis-orange)',  // #E05515
+    'var(--vis-green)',   // #019154
+    'var(--vis-blue)',    // #20d0f3
+    'var(--vis-purple)',  // #9C6ADE
+    'var(--vis-yellow)',   // #FFB74D
+];
 
 const colorScale = d3.scaleOrdinal()
     .domain(selectedCountries)
-    .range(customColors);
+    .range(themeColors); 
 
     
     const xAxis = d3.axisBottom(xScale).tickFormat(d3.format("d"));
@@ -75,38 +81,52 @@ const colorScale = d3.scaleOrdinal()
         });
 
     function updateChart(selectedYear) {
-        const yearData = data.filter(d => d.Period === selectedYear);
+        // Filter data for selected year and remove null/undefined values
+        const yearData = data.filter(d => 
+            d.Period === selectedYear && 
+            d.FactValueNumeric != null && 
+            !isNaN(d.FactValueNumeric)
+        );
+
+        // Update color scale domain to only include countries with data for this year
+        const availableCountries = yearData.map(d => d.Location);
+        colorScale.domain(availableCountries);
+
+        // Remove existing dots
         svg.selectAll(".dot").remove();
         
+        // Create new dots only for countries with data
         svg.selectAll(".dot")
-        .data(yearData, d => d.Location)
-        .enter()
-        .append("circle")
-        .attr("class", "dot")
-        .attr("r", 10) 
-        .attr("cx", d => xScale(d.Period))
-        .attr("cy", d => yScale(d.FactValueNumeric))
-        .style("fill", d => colorScale(d.Location))
-        .on("mouseover", function(event, d) {
-            d3.select(this)
-                .transition()
-                .duration(200)
-                .attr("r", 16); 
-            tooltip.transition()
-                .duration(200)
-                .style("opacity", .9);
-            tooltip.html(`Country: ${d.Location}<br/>Year: ${d.Period}<br/>Life Expectancy: ${d.FactValueNumeric.toFixed(2)} years`)
-                .style("left", (event.pageX + 10) + "px")
-                .style("top", (event.pageY - 28) + "px");
-        })
-        .on("mouseout", function() {
-            d3.select(this)
-                .transition()
-                .duration(200)
-                .attr("r", 10); 
-            tooltip.transition()
-                .duration(500)
-                .style("opacity", 0);
+            .data(yearData, d => d.Location)
+            .enter()
+            .append("circle")
+            .attr("class", "dot")
+            .attr("r", 10) 
+            .attr("cx", d => xScale(d.Period))
+            .attr("cy", d => yScale(d.FactValueNumeric))
+            .style("fill", d => colorScale(d.Location))
+            .style("stroke", "var(--dark-gray)")
+            .style("stroke-width", 1)
+            .on("mouseover", function(event, d) {
+                d3.select(this)
+                    .transition()
+                    .duration(200)
+                    .attr("r", 16); 
+                tooltip.transition()
+                    .duration(200)
+                    .style("opacity", .9);
+                tooltip.html(`Country: ${d.Location}<br/>Year: ${d.Period}<br/>Life Expectancy: ${d.FactValueNumeric.toFixed(2)} years`)
+                    .style("left", (event.pageX + 10) + "px")
+                    .style("top", (event.pageY - 28) + "px");
+            })
+            .on("mouseout", function() {
+                d3.select(this)
+                    .transition()
+                    .duration(200)
+                    .attr("r", 10); 
+                tooltip.transition()
+                    .duration(500)
+                    .style("opacity", 0);
             });
     }
     

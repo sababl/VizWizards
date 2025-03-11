@@ -92,39 +92,45 @@ angular.module('myApp').factory('SpiderChartService', ['$http', '$mdToast', func
     const containerWidth = container ? container.getBoundingClientRect().width : 500;
     const containerHeight = container ? container.getBoundingClientRect().height : 400;
 
-    // Chart dimensions - use available space effectively
-    const width = containerWidth - 20; // Slight padding
-    const height = containerHeight - 60; // Leave room for title
-    
-    // Calculate optimal center position and radius
-    const center = { 
-      x: width / 2, 
-      y: height / 2 + 20 // Shift down to make room for title
-    };
-    
-    // Adjust margins for better spacing
-    const margin = { top: 50, right: 30, bottom: 30, left: 30 };
-    const radius = Math.min(width, height) / 2.5 - Math.max(margin.top, margin.right, margin.bottom, margin.left);
+    // Chart dimensions - adjust dynamically
+    const width = containerWidth - 40;
+    const height = containerHeight - 40;
 
-    // Create SVG container
+    // Adjust margins to accommodate labels
+    const margin = { top: 50, right: 100, bottom: 50, left: 100 }; // Increased right and left margins
+
+    // Calculate radius with adjusted divisor
+    const radius = Math.min(width - margin.left - margin.right, height - margin.top - margin.bottom) / 2;
+
+    // Update center calculation
+    const center = { 
+      x: (width - margin.left - margin.right) / 2,
+      y: (height - margin.top - margin.bottom) / 2
+    };
+
+    // Update SVG container with new dimensions and add a group for the title
     const svg = d3.select(elementId)
       .append('svg')
-      .attr('width', width)
-      .attr('height', height)
-      .attr('viewBox', `0 0 ${width} ${height}`)
-      .attr('preserveAspectRatio', 'xMidYMid meet')
-      .append('g')
-      .attr("transform", `translate(${center.x},${center.y})`);
+      .attr('width', width + margin.left + margin.right)
+      .attr('height', height + margin.top + margin.bottom);
 
-    // Title area
-    svg.append("text")
-      .attr("x", 0)
-      .attr("y", -center.y + 25)
-      .attr("text-anchor", "middle")
-      .style("font-size", "16px")
-      .style("font-weight", "bold")
-      .style("fill", "#333")
-      .text(`Life Expectancy - ${sex} (${year})`);
+    // Add title group
+    const titleGroup = svg.append('g')
+      .attr('class', 'title-group');
+
+    // Add chart group with proper translation
+    const chartGroup = svg.append('g')
+      .attr("transform", `translate(${center.x + margin.left}, ${center.y + margin.top})`);
+
+    // Title area - moved above the chart
+    // titleGroup.append("text")
+    //   .attr("x", width / 2 + margin.left)
+    //   .attr("y", margin.top / 2)
+    //   .attr("text-anchor", "middle")
+    //   .style("font-size", "16px")
+    //   .style("font-weight", "bold")
+    //   .style("fill", "#333")
+    //   .text(`Life Expectancy - ${sex} (${year})`);
 
     // Find max value for scaling
     const maxValue = d3.max(
@@ -155,7 +161,7 @@ angular.module('myApp').factory('SpiderChartService', ['$http', '$mdToast', func
       .curve(d3.curveLinearClosed);
 
     // Create background circles
-    const axisGrid = svg.append('g').attr('class', 'axisWrapper');
+    const axisGrid = chartGroup.append('g').attr('class', 'axisWrapper');
     // Fewer levels for cleaner look (3 instead of 5)
     const levels = 3;
     const levelStep = roundedMax / levels;
@@ -186,7 +192,7 @@ angular.module('myApp').factory('SpiderChartService', ['$http', '$mdToast', func
       .style('text-anchor', 'start');
 
     // Axis lines
-    const axis = svg.selectAll('.axis')
+    const axis = chartGroup.selectAll('.axis')
       .data(indicators)
       .enter()
       .append('g')
@@ -203,7 +209,6 @@ angular.module('myApp').factory('SpiderChartService', ['$http', '$mdToast', func
 
     // Calculate optimal position for axis labels
     function getAxisLabelPosition(i) {
-      // Position labels based on their quadrant
       const angle = angleSlice * i - Math.PI / 2;
       const labelRadius = radialScale(roundedMax * 1.2);
       
@@ -307,7 +312,7 @@ angular.module('myApp').factory('SpiderChartService', ['$http', '$mdToast', func
     // Plot data for each location
     chartDatasets.forEach((dataset, index) => {
       // Plot area
-      svg.append('path')
+      chartGroup.append('path')
         .datum(dataset.data)
         .attr('id', `shape-${index}`)
         .attr('d', line)
@@ -317,7 +322,7 @@ angular.module('myApp').factory('SpiderChartService', ['$http', '$mdToast', func
         .style('stroke-width', 2);
 
       // Add data points
-      svg.selectAll(`.dataPoints-${index}`)
+      chartGroup.selectAll(`.dataPoints-${index}`)
         .data(dataset.data)
         .enter()
         .append('circle')

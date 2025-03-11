@@ -23,12 +23,12 @@
   --cream: #F9F6F2;
   
   /* Visualization colors */
-  --vis-blue: #2C6975;
-  --vis-teal: #68B2A0;
-  --vis-orange: #E05515;
-  --vis-green: #019154;
-  --vis-purple: #9C6ADE;
-  --vis-yellow: #FFB74D;
+  --vis-blue: #4D7F78;
+  --vis-teal: #877765;
+  --vis-orange: #B43D00;
+  --vis-green: #1C554F;
+  --vis-purple: #A1A8BE;
+  --vis-yellow: #BB8C94;
   
   /* Spacing variables */
   --space-xs: 4px;
@@ -97,27 +97,39 @@ md-tabs md-tabs-wrapper {
   background-color: var(--primary) !important;
 }
 
+/* Update the md-tabs styles */
 md-tabs .md-tab {
-  color: var(--off-white) !important;
-  font-size: 14px;
-  text-transform: uppercase;
-  font-weight: 500;
-  opacity: 0.8;
-  transition: opacity var(--transition-fast);
+    color: var(--off-white) !important;
+    font-size: 14px;
+    text-transform: uppercase;
+    font-weight: 500;
+    opacity: 0.8;
+    transition: all var(--transition-fast);
+    padding: var(--space-sm) var(--space-md);
+    border-radius: var(--radius-sm);
 }
 
 md-tabs .md-tab:hover {
-  opacity: 1;
+    opacity: 1;
+    background-color: rgba(255, 255, 255, 0.1);
 }
 
 md-tabs .md-tab.md-active {
-  color: var(--white) !important;
-  opacity: 1;
+    color: var(--white) !important;
+    opacity: 1;
+    background-color: var(--primary-dark);
+    box-shadow: var(--shadow-sm);
+    position: relative;
 }
 
 md-tabs md-ink-bar {
-  background-color: var(--secondary) !important;
-  height: 3px;
+    background-color: var(--secondary) !important;
+    height: 3px;
+}
+
+/* Add a subtle transition effect */
+md-tabs .md-tab {
+    transition: all 0.3s ease;
 }
 
 /* Section Containers */
@@ -163,7 +175,7 @@ md-card-content {
 .chart-container {
   margin-bottom: var(--space-xl);
   border-radius: var(--radius-md);
-  overflow: hidden;
+  /* overflow: hidden; */
   background-color: var(--white);
   box-shadow: var(--shadow-sm);
   padding: var(--space-lg);
@@ -206,7 +218,7 @@ md-card-content {
   border-radius: var(--radius-sm);
   background-color: var(--off-white);
   border: 1px solid var(--gray);
-  overflow: hidden;
+  /* overflow: hidden; */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -257,7 +269,7 @@ md-card-content {
 .map-container {
   width: 100%;
   height: 500px;
-  overflow: hidden;
+  /* overflow: hidden; */
 }
 
 #bubble-map,
@@ -399,4 +411,44 @@ label {
 .whisker-cap {
   stroke: #000;
   stroke-width: 1px;
+}
+
+
+#chart-wrapper {
+  width: 100%;
+  overflow-x: auto !important;
+  /* overflow-y: hidden; */
+  white-space: nowrap;
+  padding-bottom: 5px;
+  display: block;
+}
+
+#chart-container {
+  min-width: 1000px;
+  width: fit-content;
+}
+
+#chart {
+  height: 300px !important;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  margin: 0 10px;
+}
+
+.legend-color {
+  width: 20px;
+  height: 20px;
+  display: inline-block;
+  margin-right: 5px;
+  border-radius: 3px;
+}
+
+
+.line {
+  fill: none;
+  stroke-width: 2px;
+  stroke: darkgreen;
 }

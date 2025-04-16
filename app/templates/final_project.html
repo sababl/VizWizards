@@ -79,7 +79,7 @@
 
           <div class="chart-container">
             <div class="chart-header">
-              <h3 class="chart-title">Global Life Expectancy Distribution</h3>
+              <h3 class="chart-title">Global Life Expectancy Distribution in 2021</h3>
               <span class="chart-subtitle">Distribution across countries (2021)</span>
             </div>
             <p class="chart-description">This bubble map visualizes life expectancy across different countries. The size
@@ -175,7 +175,7 @@
             </div>
             <div id="alluvial-chart" class="chart-content"></div>
           </div>
-          
+
           <div class="chart-container">
             <div class="chart-header">
               <h3 class="chart-title">Average Healthy Life Expectancy at Age 60 (2000-2021)</h3>
@@ -304,6 +304,28 @@
           </md-card-title-text>
         </md-card-title>
         <md-card-content>
+
+          <div class="chart-container">
+            <div class="chart-header">
+              <h3 class="chart-title">Global Gender Gap in Life Expectancy</h3>
+              <div class="filter-group">
+                <md-select class="filter-select" ng-model="beeswarmData.year" placeholder="Select Year"
+                  aria-label="Year">
+                  <md-option ng-repeat="year in years" ng-value="year">{% raw %}{{year}}{% endraw %}</md-option>
+                </md-select>
+              </div>
+            </div>
+            <p class="chart-subtitle">Comparing male and female life expectancy across countries</p>
+            <div class="chart-description">
+              <p>
+                This bubble chart reveals how men's and women's lifespans differ across regions.
+                Each circle represents a country, color-coded by continent and sized by population.
+                The horizontal axis shows female life expectancy while the vertical axis shows male life expectancy.
+              </p>
+            </div>
+            <div id="chart-beeswarm" class="chart-content"></div>
+          </div>
+
           <div class="chart-container">
             <div class="chart-header">
               <h3 class="chart-title">Lowest Male Life Expectancy by Country</h3>
@@ -330,7 +352,7 @@
 
           <div class="chart-container">
             <div class="chart-header">
-              <h3 class="chart-title">Female Life Expectancy at Age 60 (years)</h3>
+              <h3 class="chart-title">Female Life Expectancy at Age 60 (years) by continent</h3>
               <span class="chart-subtitle">Visualization of women's life expectancy at age 60 across continents</span>
             </div>
             <div class="chart-description">
@@ -345,7 +367,7 @@
 
           <div class="chart-container">
             <div class="chart-header">
-              <h3 class="chart-title">Female Life Expectancy At Age 60 (2000–2021)</h3>
+              <h3 class="chart-title">Female Life Expectancy At Age 60 (2000–2021) by country</h3>
               <div class="filter-group">
                 <label for="country-select">Select Country:</label>
                 <select id="country-select"></select>
@@ -390,27 +412,6 @@
               <div id="map"></div>
               <div id="legend" class="legend"></div>
             </div>
-          </div>
-
-          <div class="chart-container">
-            <div class="chart-header">
-              <h3 class="chart-title">Global Gender Gap in Life Expectancy</h3>
-              <div class="filter-group">
-                <md-select class="filter-select" ng-model="beeswarmData.year" placeholder="Select Year"
-                  aria-label="Year">
-                  <md-option ng-repeat="year in years" ng-value="year">{% raw %}{{year}}{% endraw %}</md-option>
-                </md-select>
-              </div>
-            </div>
-            <p class="chart-subtitle">Comparing male and female life expectancy across countries</p>
-            <div class="chart-description">
-              <p>
-                This bubble chart reveals how men's and women's lifespans differ across regions.
-                Each circle represents a country, color-coded by continent and sized by population.
-                The horizontal axis shows female life expectancy while the vertical axis shows male life expectancy.
-              </p>
-            </div>
-            <div id="chart-beeswarm" class="chart-content"></div>
           </div>
 
           <div class="chart-container">

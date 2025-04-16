@@ -211,32 +211,7 @@
           </md-card-title-text>
         </md-card-title>
         <md-card-content>
-          <div class="chart-container">
-            <div class="chart-header">
-              <h3 class="chart-title">Contrasting Countries on Key Life Expectancy Metrics</h3>
-              <div class="filter-group">
-                <md-select class="filter-select" ng-model="spiderFormData.selectedCountries" multiple
-                  placeholder="Select countries (max 10)" aria-label="Countries">
-                  <md-option ng-repeat="country in countries" ng-value="country">{% raw %}{{country}}{% endraw
-                    %}</md-option>
-                </md-select>
-                <md-select class="filter-select" ng-model="spiderFormData.sex" placeholder="Sex" aria-label="Sex">
-                  <md-option value="Male">Male</md-option>
-                  <md-option value="Female">Female</md-option>
-                  <md-option value="Both sexes">Both sexes</md-option>
-                </md-select>
-                <md-select class="filter-select" ng-model="spiderFormData.year" placeholder="Year" aria-label="Year">
-                  <md-option ng-repeat="year in years" ng-value="year">{% raw %}{{year}}{% endraw %}</md-option>
-                </md-select>
-              </div>
-            </div>
-            <p class="chart-description">This radar chart maps out how different nations stack up on multiple measures
-              of longevity—from life expectancy at birth to healthy years lived. Each axis highlights a key metric,
-              revealing which countries excel and where gaps may persist. </p>
-            <div id="radar-chart" class="chart-content">
-              <div class="loading-indicator"></div>
-            </div>
-          </div>
+
 
           <div class="chart-container">
             <div class="chart-header">
@@ -288,6 +263,32 @@
             <div id="violin-wrapper" class="chart-content">
               <div id="violin-chart"></div>
               <div id="violin-tooltip" class="chart-tooltip"></div>
+            </div>
+          </div>
+          <div class="chart-container">
+            <div class="chart-header">
+              <h3 class="chart-title">Contrasting Countries on Key Life Expectancy Metrics</h3>
+              <div class="filter-group">
+                <md-select class="filter-select" ng-model="spiderFormData.selectedCountries" multiple
+                  placeholder="Select countries (max 10)" aria-label="Countries">
+                  <md-option ng-repeat="country in countries" ng-value="country">{% raw %}{{country}}{% endraw
+                    %}</md-option>
+                </md-select>
+                <md-select class="filter-select" ng-model="spiderFormData.sex" placeholder="Sex" aria-label="Sex">
+                  <md-option value="Male">Male</md-option>
+                  <md-option value="Female">Female</md-option>
+                  <md-option value="Both sexes">Both sexes</md-option>
+                </md-select>
+                <md-select class="filter-select" ng-model="spiderFormData.year" placeholder="Year" aria-label="Year">
+                  <md-option ng-repeat="year in years" ng-value="year">{% raw %}{{year}}{% endraw %}</md-option>
+                </md-select>
+              </div>
+            </div>
+            <p class="chart-description">This radar chart maps out how different nations stack up on multiple measures
+              of longevity—from life expectancy at birth to healthy years lived. Each axis highlights a key metric,
+              revealing which countries excel and where gaps may persist. </p>
+            <div id="radar-chart" class="chart-content">
+              <div class="loading-indicator"></div>
             </div>
           </div>
         </md-card-content>
